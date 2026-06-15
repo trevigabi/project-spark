@@ -194,7 +194,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
           </div>
         </div>
         {gradeOpen && (
-          <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} onFull={onFullGrade} />
+          <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
         )}
       </div>
     );
