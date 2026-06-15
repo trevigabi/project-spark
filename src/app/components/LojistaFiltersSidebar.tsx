@@ -45,7 +45,9 @@ export const defaultFilters: CatalogFilters = {
   category: 'Todos',
   colors: [],
   priceRange: [priceMin, priceMax],
+  priceTable: 'padrao',
 };
+
 
 interface Props {
   filters: CatalogFilters;
