@@ -7,10 +7,20 @@ import { products, Product, formatCurrency, Client } from "../data/mockData";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
+interface CatalogFiltersShape {
+  search: string;
+  line: string;
+  category: string;
+  colors: string[];
+  priceRange: [number, number];
+}
+
 interface CatalogPageProps {
   onNavigate: (view: View) => void;
   onSelectProduct?: (product: Product) => void;
   selectedClient?: Client | null;
+  externalFilters?: CatalogFiltersShape;
+  onExternalFiltersChange?: (f: CatalogFiltersShape) => void;
 }
 
 const lines = ['Todos', 'Premium', 'Urban', 'Sport'];
