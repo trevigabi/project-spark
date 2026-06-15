@@ -126,7 +126,7 @@ function GradeInline({ product, onAdd, onClose }: {
   );
 }
 
-function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, viewMode, gradeOpen, onAddGrade, onCloseGrade, onFullGrade }: {
+function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, viewMode, gradeOpen, onAddGrade, onCloseGrade }: {
   product: Product;
   onOrder: () => void;
   onQuickBuy: () => void;
@@ -136,7 +136,6 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
   gradeOpen: boolean;
   onAddGrade: (qtys: Record<string, number>) => void;
   onCloseGrade: () => void;
-  onFullGrade: () => void;
 }) {
   const [imgError, setImgError] = useState(false);
 
