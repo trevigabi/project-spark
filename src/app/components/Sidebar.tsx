@@ -247,7 +247,8 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
           { icon: LogOut, label: 'Sair', action: onLogout },
         ]
       : [
-          { icon: Clock, label: 'Meus Pedidos', view: 'history' },
+          { icon: ShoppingBag, label: 'Meus Pedidos', view: 'history' },
+          { icon: Clock, label: 'Histórico de compras', view: 'history' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
           { icon: Users, label: 'Meu Perfil' },
           { icon: LogOut, label: 'Sair', action: onLogout },
