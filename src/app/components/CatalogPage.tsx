@@ -7,10 +7,20 @@ import { products, Product, formatCurrency, Client } from "../data/mockData";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
+interface CatalogFiltersShape {
+  search: string;
+  line: string;
+  category: string;
+  colors: string[];
+  priceRange: [number, number];
+}
+
 interface CatalogPageProps {
   onNavigate: (view: View) => void;
   onSelectProduct?: (product: Product) => void;
   selectedClient?: Client | null;
+  externalFilters?: CatalogFiltersShape;
+  onExternalFiltersChange?: (f: CatalogFiltersShape) => void;
 }
 
 const lines = ['Todos', 'Premium', 'Urban', 'Sport'];
@@ -162,8 +172,9 @@ function ProductCard({ product, onOrder, onToggleFav, viewMode }: {
   );
 }
 
-export function CatalogPage({ onNavigate, onSelectProduct }: CatalogPageProps) {
-  const [search, setSearch] = useState('');
+export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChange }: CatalogPageProps) {
+  const usingExternal = !!externalFilters;
+  const [internalSearch, setInternalSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedLine, setSelectedLine] = useState('Todos');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -174,14 +185,26 @@ export function CatalogPage({ onNavigate, onSelectProduct }: CatalogPageProps) {
     new Set(products.filter(p => p.isFavorite).map(p => p.id))
   );
 
+  const search = usingExternal ? externalFilters!.search : internalSearch;
+  const setSearch = (v: string) => {
+    if (usingExternal && onExternalFiltersChange) onExternalFiltersChange({ ...externalFilters!, search: v });
+    else setInternalSearch(v);
+  };
+  const effLine = usingExternal ? externalFilters!.line : selectedLine;
+  const effCategory = usingExternal ? externalFilters!.category : selectedCategory;
+  const effColors = usingExternal ? externalFilters!.colors : [];
+  const effPriceRange = usingExternal ? externalFilters!.priceRange : null;
+
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.reference.toLowerCase().includes(search.toLowerCase()) ||
       p.line.toLowerCase().includes(search.toLowerCase());
-    const matchLine = selectedLine === 'Todos' || p.line === selectedLine;
-    const matchCat = selectedCategory === 'Todos' || p.category === selectedCategory;
-    const matchCol = selectedCollection === 'Todas' || p.collection === selectedCollection;
-    return matchSearch && matchLine && matchCat && matchCol;
+    const matchLine = effLine === 'Todos' || p.line === effLine;
+    const matchCat = effCategory === 'Todos' || p.category === effCategory;
+    const matchCol = usingExternal || selectedCollection === 'Todas' || p.collection === selectedCollection;
+    const matchColors = effColors.length === 0 || p.colors.some(c => effColors.includes(c));
+    const matchPrice = !effPriceRange || (p.price >= effPriceRange[0] && p.price <= effPriceRange[1]);
+    return matchSearch && matchLine && matchCat && matchCol && matchColors && matchPrice;
   });
 
   const sorted = [...filtered].sort((a, b) => {
@@ -224,17 +247,19 @@ export function CatalogPage({ onNavigate, onSelectProduct }: CatalogPageProps) {
           )}
         </div>
 
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg border transition-colors ${showFilters || hasActiveFilters ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
-          style={{ fontSize: '0.83rem', fontWeight: 500 }}
-        >
-          <Filter className="w-4 h-4" />
-          Filtros
-          {hasActiveFilters && (
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          )}
-        </button>
+        {!usingExternal && (
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg border transition-colors ${showFilters || hasActiveFilters ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
+            style={{ fontSize: '0.83rem', fontWeight: 500 }}
+          >
+            <Filter className="w-4 h-4" />
+            Filtros
+            {hasActiveFilters && (
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            )}
+          </button>
+        )}
 
         <select
           value={sortBy}
@@ -264,7 +289,7 @@ export function CatalogPage({ onNavigate, onSelectProduct }: CatalogPageProps) {
       </div>
 
       {/* Filter Panel */}
-      {showFilters && (
+      {!usingExternal && showFilters && (
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>

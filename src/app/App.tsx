@@ -14,6 +14,7 @@ import { MarketingStudio } from "./components/MarketingStudio";
 import { SelloutDashboard } from "./components/SelloutDashboard";
 import { AdminPage } from "./components/AdminPage";
 import { ClientsPage } from "./components/ClientsPage";
+import { LojistaFiltersSidebar, defaultFilters, type CatalogFilters } from "./components/LojistaFiltersSidebar";
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
@@ -34,12 +35,15 @@ export default function App() {
   const [profile, setProfile] = useState<Profile>('admin');
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>(defaultFilters);
 
   const handleLogin = (selectedProfile: Profile) => {
     setProfile(selectedProfile);
     setAuthenticated(true);
-    setCurrentView('dashboard');
+    // Lojista entra direto no catálogo
+    setCurrentView(selectedProfile === 'lojista' ? 'catalog' : 'dashboard');
     setSelectedClient(null);
+    setCatalogFilters(defaultFilters);
   };
 
   const handleLogout = () => {
@@ -68,7 +72,14 @@ export default function App() {
         if (profile === 'rep') return <DashboardRep onNavigate={navigate} selectedClient={selectedClient} />;
         return <DashboardLojista onNavigate={navigate} />;
       case 'catalog':
-        return <CatalogPage onNavigate={navigate} selectedClient={selectedClient} />;
+        return (
+          <CatalogPage
+            onNavigate={navigate}
+            selectedClient={selectedClient}
+            externalFilters={profile === 'lojista' ? catalogFilters : undefined}
+            onExternalFiltersChange={profile === 'lojista' ? setCatalogFilters : undefined}
+          />
+        );
       case 'order-grade':
         return <OrderGrade onNavigate={navigate} selectedClient={selectedClient} />;
       case 'cart':
@@ -88,16 +99,26 @@ export default function App() {
     }
   };
 
+  const isLojistaCatalog = profile === 'lojista' && currentView === 'catalog';
+
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
-      <Sidebar
-        currentView={currentView}
-        onNavigate={navigate}
-        profile={profile}
-        onLogout={handleLogout}
-        notifications={4}
-        selectedClient={selectedClient}
-      />
+      {isLojistaCatalog ? (
+        <LojistaFiltersSidebar
+          filters={catalogFilters}
+          onChange={setCatalogFilters}
+          onLogout={handleLogout}
+        />
+      ) : (
+        <Sidebar
+          currentView={currentView}
+          onNavigate={navigate}
+          profile={profile}
+          onLogout={handleLogout}
+          notifications={4}
+          selectedClient={selectedClient}
+        />
+      )}
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar
           title={viewInfo.title}
