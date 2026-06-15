@@ -332,7 +332,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
       </div>
 
       {gradeOpen && (
-        <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
+        <GradeCompact product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
       )}
     </div>
   );
