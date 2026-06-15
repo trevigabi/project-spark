@@ -247,17 +247,19 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
           )}
         </div>
 
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg border transition-colors ${showFilters || hasActiveFilters ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
-          style={{ fontSize: '0.83rem', fontWeight: 500 }}
-        >
-          <Filter className="w-4 h-4" />
-          Filtros
-          {hasActiveFilters && (
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          )}
-        </button>
+        {!usingExternal && (
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg border transition-colors ${showFilters || hasActiveFilters ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
+            style={{ fontSize: '0.83rem', fontWeight: 500 }}
+          >
+            <Filter className="w-4 h-4" />
+            Filtros
+            {hasActiveFilters && (
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            )}
+          </button>
+        )}
 
         <select
           value={sortBy}
