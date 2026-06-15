@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Search, Filter, Grid3X3, List, Heart, Star, ShoppingCart, ChevronDown,
-  X, Package2, Tag, Layers, ArrowUpDown, Eye,
+  X, Package2, Tag, Layers, ArrowUpDown, Eye, Zap, Check,
 } from "lucide-react";
 import { products, Product, formatCurrency, Client } from "../data/mockData";
 
