@@ -368,21 +368,26 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(
     new Set(products.filter(p => p.isFavorite).map(p => p.id))
   );
-  const [quickBuyProduct, setQuickBuyProduct] = useState<Product | null>(null);
+  const [gradeOpenId, setGradeOpenId] = useState<string | null>(null);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  const addQuick = (p: Product) => {
-    setQuickBuyProduct(null);
-    setDetailProduct(null);
-    setToast(`${p.name} adicionado ao carrinho`);
+  const showToast = (msg: string) => {
+    setToast(msg);
     setTimeout(() => setToast(null), 2200);
   };
+  const addGrade = (p: Product, qtys: Record<string, number>) => {
+    const total = Object.values(qtys).reduce((a, b) => a + b, 0);
+    if (total === 0) return;
+    setGradeOpenId(null);
+    showToast(`${total} ${total === 1 ? 'par' : 'pares'} de ${p.name} adicionados`);
+  };
   const goGrade = () => {
-    setQuickBuyProduct(null);
+    setGradeOpenId(null);
     setDetailProduct(null);
     onNavigate('order-grade');
   };
+
 
   const search = usingExternal ? externalFilters!.search : internalSearch;
   const setSearch = (v: string) => {
