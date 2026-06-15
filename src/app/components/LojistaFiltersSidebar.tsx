@@ -194,23 +194,15 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             <FilterSection icon={DollarSign} label="Faixa de preço">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-muted-foreground" style={{ fontSize: '0.72rem' }}>
-                  <span>{formatCurrency(filters.priceRange[0])}</span>
+                  <span>{formatCurrency(priceMin)}</span>
                   <span>{formatCurrency(filters.priceRange[1])}</span>
                 </div>
                 <input
                   type="range"
                   min={priceMin}
                   max={priceMax}
-                  value={filters.priceRange[0]}
-                  onChange={e => onChange({ ...filters, priceRange: [Number(e.target.value), filters.priceRange[1]] })}
-                  className="w-full accent-primary"
-                />
-                <input
-                  type="range"
-                  min={priceMin}
-                  max={priceMax}
                   value={filters.priceRange[1]}
-                  onChange={e => onChange({ ...filters, priceRange: [filters.priceRange[0], Number(e.target.value)] })}
+                  onChange={e => onChange({ ...filters, priceRange: [priceMin, Number(e.target.value)] })}
                   className="w-full accent-primary"
                 />
               </div>
