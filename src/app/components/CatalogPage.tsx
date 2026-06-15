@@ -13,7 +13,9 @@ interface CatalogFiltersShape {
   category: string;
   colors: string[];
   priceRange: [number, number];
+  priceTable: string;
 }
+
 
 interface CatalogPageProps {
   onNavigate: (view: View) => void;
