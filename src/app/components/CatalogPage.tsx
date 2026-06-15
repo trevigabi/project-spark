@@ -278,8 +278,8 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
 }
 
 
-function ProductDetailModal({ product, onClose, onQuickBuy, onGrade, onToggleFav, isFavorite }: {
-  product: Product; onClose: () => void; onQuickBuy: () => void; onGrade: () => void;
+function ProductDetailModal({ product, onClose, onAddGrade, onToggleFav, isFavorite }: {
+  product: Product; onClose: () => void; onAddGrade: (qtys: Record<string, number>) => void;
   onToggleFav: () => void; isFavorite: boolean;
 }) {
   const [activeImg, setActiveImg] = useState(0);
@@ -306,7 +306,12 @@ function ProductDetailModal({ product, onClose, onQuickBuy, onGrade, onToggleFav
           </div>
           <div className="p-5 space-y-4">
             <div>
-              <h2 className="text-foreground" style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.01em' }}>{product.name}</h2>
+              <div className="flex items-start justify-between gap-2">
+                <h2 className="text-foreground" style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.01em' }}>{product.name}</h2>
+                <button onClick={onToggleFav} className={`p-2 rounded-lg border border-border transition-colors flex-shrink-0 ${isFavorite ? 'text-red-400 border-red-400/30 bg-red-400/10' : 'text-muted-foreground hover:text-red-400'}`}>
+                  <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-400' : ''}`} />
+                </button>
+              </div>
               <div className="flex items-center gap-3 mt-1">
                 <StarRating rating={product.rating} />
                 <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{product.soldUnits.toLocaleString('pt-BR')} vendidos</span>
@@ -335,38 +340,10 @@ function ProductDetailModal({ product, onClose, onQuickBuy, onGrade, onToggleFav
                 ))}
               </div>
             </div>
-            <div>
-              <p className="text-muted-foreground mb-1.5" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Grade disponível</p>
-              <div className="flex flex-wrap gap-1.5">
-                {Object.entries(product.grades).map(([size, qty]) => (
-                  <span key={size} className="px-2.5 py-1 rounded-lg border border-border bg-secondary/40 text-foreground" style={{ fontSize: '0.75rem', fontWeight: 500 }}>
-                    {size} <span className="text-muted-foreground">· {qty}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="pt-3 border-t border-border flex items-center gap-2">
-              <button onClick={onToggleFav} className={`p-2.5 rounded-lg border border-border transition-colors ${isFavorite ? 'text-red-400 border-red-400/30 bg-red-400/10' : 'text-muted-foreground hover:text-red-400'}`}>
-                <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-400' : ''}`} />
-              </button>
-              <button
-                onClick={onQuickBuy}
-                disabled={product.availability === 'esgotado'}
-                className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-                style={{ fontSize: '0.85rem', fontWeight: 600 }}
-              >
-                <Zap className="w-4 h-4" /> Comprar agora
-              </button>
-              <button
-                onClick={onGrade}
-                disabled={product.availability === 'esgotado'}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-                style={{ fontSize: '0.85rem', fontWeight: 600 }}
-              >
-                <Layers className="w-4 h-4" /> Por grade
-              </button>
-            </div>
           </div>
+        </div>
+        <div className="border-t border-border">
+          <GradeInline product={product} onAdd={onAddGrade} />
         </div>
       </div>
     </div>
