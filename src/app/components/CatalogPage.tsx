@@ -606,8 +606,8 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               gradeOpen={gradeOpenId === product.id}
               onAddGrade={(qtys) => addGrade(product, qtys)}
               onCloseGrade={() => setGradeOpenId(null)}
-              onFullGrade={goGrade}
             />
+
           ))}
         </div>
       )}
