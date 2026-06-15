@@ -14,6 +14,7 @@ import { MarketingStudio } from "./components/MarketingStudio";
 import { SelloutDashboard } from "./components/SelloutDashboard";
 import { AdminPage } from "./components/AdminPage";
 import { ClientsPage } from "./components/ClientsPage";
+import { LojistaFiltersSidebar, defaultFilters, type CatalogFilters } from "./components/LojistaFiltersSidebar";
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
