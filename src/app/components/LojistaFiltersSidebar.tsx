@@ -107,7 +107,27 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
         </div>
       ) : (
         <>
-          {/* Title */}
+          {/* Tabela de Preço */}
+          <div className="px-3 pt-3 pb-3 border-b border-sidebar-border">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <DollarSign className="w-3 h-3 text-primary" />
+              <span className="text-muted-foreground" style={{ fontSize: '0.66rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Tabela de preço
+              </span>
+            </div>
+            <select
+              value={filters.priceTable}
+              onChange={e => onChange({ ...filters, priceTable: e.target.value })}
+              className="w-full px-2.5 py-2 rounded-md bg-secondary/40 border border-border text-foreground outline-none focus:border-primary cursor-pointer"
+              style={{ fontSize: '0.78rem', fontWeight: 500 }}
+            >
+              {priceTables.map(t => (
+                <option key={t.id} value={t.id}>{t.label} — {t.desc}</option>
+              ))}
+            </select>
+          </div>
+
+
           <div className="px-4 pt-4 pb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="w-3.5 h-3.5 text-primary" />
