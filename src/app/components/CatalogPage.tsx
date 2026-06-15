@@ -588,9 +588,13 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               product={{ ...product, isFavorite: favoriteIds.has(product.id) }}
               viewMode="grid"
               onOrder={() => onNavigate('order-grade')}
-              onQuickBuy={() => setQuickBuyProduct(product)}
+              onQuickBuy={() => setGradeOpenId(gradeOpenId === product.id ? null : product.id)}
               onOpenDetail={() => setDetailProduct(product)}
               onToggleFav={() => toggleFav(product.id)}
+              gradeOpen={gradeOpenId === product.id}
+              onAddGrade={(qtys) => addGrade(product, qtys)}
+              onCloseGrade={() => setGradeOpenId(null)}
+              onFullGrade={goGrade}
             />
           ))}
         </div>
@@ -602,21 +606,16 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               product={{ ...product, isFavorite: favoriteIds.has(product.id) }}
               viewMode="list"
               onOrder={() => onNavigate('order-grade')}
-              onQuickBuy={() => setQuickBuyProduct(product)}
+              onQuickBuy={() => setGradeOpenId(gradeOpenId === product.id ? null : product.id)}
               onOpenDetail={() => setDetailProduct(product)}
               onToggleFav={() => toggleFav(product.id)}
+              gradeOpen={gradeOpenId === product.id}
+              onAddGrade={(qtys) => addGrade(product, qtys)}
+              onCloseGrade={() => setGradeOpenId(null)}
+              onFullGrade={goGrade}
             />
           ))}
         </div>
-      )}
-
-      {quickBuyProduct && (
-        <QuickBuyPopup
-          product={quickBuyProduct}
-          onClose={() => setQuickBuyProduct(null)}
-          onQuick={() => addQuick(quickBuyProduct)}
-          onGrade={goGrade}
-        />
       )}
 
       {detailProduct && (
@@ -624,11 +623,12 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
           product={{ ...detailProduct, isFavorite: favoriteIds.has(detailProduct.id) }}
           isFavorite={favoriteIds.has(detailProduct.id)}
           onClose={() => setDetailProduct(null)}
-          onQuickBuy={() => setQuickBuyProduct(detailProduct)}
+          onQuickBuy={() => { setGradeOpenId(detailProduct.id); setDetailProduct(null); }}
           onGrade={goGrade}
           onToggleFav={() => toggleFav(detailProduct.id)}
         />
       )}
+
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-[60] bg-foreground text-background px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 animate-in slide-in-from-bottom-2">
