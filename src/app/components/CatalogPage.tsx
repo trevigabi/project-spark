@@ -172,8 +172,9 @@ function ProductCard({ product, onOrder, onToggleFav, viewMode }: {
   );
 }
 
-export function CatalogPage({ onNavigate, onSelectProduct }: CatalogPageProps) {
-  const [search, setSearch] = useState('');
+export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChange }: CatalogPageProps) {
+  const usingExternal = !!externalFilters;
+  const [internalSearch, setInternalSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedLine, setSelectedLine] = useState('Todos');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -184,14 +185,26 @@ export function CatalogPage({ onNavigate, onSelectProduct }: CatalogPageProps) {
     new Set(products.filter(p => p.isFavorite).map(p => p.id))
   );
 
+  const search = usingExternal ? externalFilters!.search : internalSearch;
+  const setSearch = (v: string) => {
+    if (usingExternal && onExternalFiltersChange) onExternalFiltersChange({ ...externalFilters!, search: v });
+    else setInternalSearch(v);
+  };
+  const effLine = usingExternal ? externalFilters!.line : selectedLine;
+  const effCategory = usingExternal ? externalFilters!.category : selectedCategory;
+  const effColors = usingExternal ? externalFilters!.colors : [];
+  const effPriceRange = usingExternal ? externalFilters!.priceRange : null;
+
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.reference.toLowerCase().includes(search.toLowerCase()) ||
       p.line.toLowerCase().includes(search.toLowerCase());
-    const matchLine = selectedLine === 'Todos' || p.line === selectedLine;
-    const matchCat = selectedCategory === 'Todos' || p.category === selectedCategory;
-    const matchCol = selectedCollection === 'Todas' || p.collection === selectedCollection;
-    return matchSearch && matchLine && matchCat && matchCol;
+    const matchLine = effLine === 'Todos' || p.line === effLine;
+    const matchCat = effCategory === 'Todos' || p.category === effCategory;
+    const matchCol = usingExternal || selectedCollection === 'Todas' || p.collection === selectedCollection;
+    const matchColors = effColors.length === 0 || p.colors.some(c => effColors.includes(c));
+    const matchPrice = !effPriceRange || (p.price >= effPriceRange[0] && p.price <= effPriceRange[1]);
+    return matchSearch && matchLine && matchCat && matchCol && matchColors && matchPrice;
   });
 
   const sorted = [...filtered].sort((a, b) => {
