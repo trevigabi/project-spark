@@ -7,7 +7,6 @@ import { DashboardAdmin } from "./components/DashboardAdmin";
 import { DashboardRep } from "./components/DashboardRep";
 import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
-import { LojistaApp } from "./components/LojistaApp";
 import { OrderGrade } from "./components/OrderGrade";
 import { CartPage } from "./components/CartPage";
 import { OrderHistory } from "./components/OrderHistory";
@@ -60,11 +59,6 @@ export default function App() {
         <LoginPage onLogin={handleLogin} />
       </div>
     );
-  }
-
-  // Lojista perfil: self-service direto no catálogo, sem shell padrão.
-  if (profile === 'lojista') {
-    return <LojistaApp onLogout={handleLogout} />;
   }
 
   const renderView = () => {
