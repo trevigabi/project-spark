@@ -43,6 +43,68 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+function GradeCompact({ product, onAdd, onClose }: {
+  product: Product; onAdd: (qtys: Record<string, number>) => void; onClose?: () => void;
+}) {
+  const sizes = Object.keys(product.grades);
+  const [qtys, setQtys] = useState<Record<string, number>>(
+    Object.fromEntries(sizes.map(s => [s, 0]))
+  );
+  const total = Object.values(qtys).reduce((a, b) => a + b, 0);
+  const subtotal = total * product.price;
+  const set = (s: string, v: number) => setQtys(q => ({ ...q, [s]: Math.max(0, v) }));
+
+  return (
+    <div className="px-3 pb-3 pt-2 border-t border-border bg-secondary/30">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-foreground" style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          Compra rápida — Grade
+        </p>
+        {onClose && (
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-0.5">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+      <div className="space-y-1">
+        {sizes.map(s => (
+          <div key={s} className="flex items-center justify-between bg-white/50 rounded-md px-2 py-1">
+            <div className="flex items-center gap-2">
+              <span className="text-foreground" style={{ fontSize: '0.78rem', fontWeight: 600 }}>Nº {s}</span>
+              <span className="text-emerald-600" style={{ fontSize: '0.65rem' }}>{product.grades[s]} disp.</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={() => set(s, qtys[s] - 1)} className="w-5 h-5 rounded bg-secondary text-foreground hover:bg-secondary/70 flex items-center justify-center" style={{ fontSize: '0.7rem', lineHeight: 1 }}>−</button>
+              <input
+                type="number"
+                value={qtys[s]}
+                onChange={e => set(s, Number(e.target.value) || 0)}
+                className="w-8 text-center bg-transparent text-foreground outline-none"
+                style={{ fontSize: '0.72rem', fontWeight: 600 }}
+              />
+              <button onClick={() => set(s, qtys[s] + 1)} className="w-5 h-5 rounded bg-secondary text-foreground hover:bg-secondary/70 flex items-center justify-center" style={{ fontSize: '0.7rem', lineHeight: 1 }}>+</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between mt-2 mb-2">
+        <span className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>
+          {total} {total === 1 ? 'par' : 'pares'}
+        </span>
+        <span className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(subtotal)}</span>
+      </div>
+      <button
+        onClick={() => onAdd(qtys)}
+        disabled={total === 0}
+        className="w-full px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5"
+        style={{ fontSize: '0.78rem', fontWeight: 600 }}
+      >
+        <ShoppingCart className="w-3.5 h-3.5" /> Adicionar
+      </button>
+    </div>
+  );
+}
+
 function GradeInline({ product, onAdd, onClose }: {
   product: Product; onAdd: (qtys: Record<string, number>) => void; onClose?: () => void;
 }) {
@@ -108,20 +170,19 @@ function GradeInline({ product, onAdd, onClose }: {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-2 mb-2">
+      <div className="flex items-center justify-end gap-3 mt-2 mb-1">
         <span className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>
-          {total} {total === 1 ? 'par' : 'pares'}
+          {total} {total === 1 ? 'par' : 'pares'} · <span className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(subtotal)}</span>
         </span>
-        <span className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(subtotal)}</span>
+        <button
+          onClick={() => onAdd(qtys)}
+          disabled={total === 0}
+          className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center gap-1.5"
+          style={{ fontSize: '0.78rem', fontWeight: 600 }}
+        >
+          <ShoppingCart className="w-3.5 h-3.5" /> Adicionar
+        </button>
       </div>
-      <button
-        onClick={() => onAdd(qtys)}
-        disabled={total === 0}
-        className="w-full px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5"
-        style={{ fontSize: '0.78rem', fontWeight: 600 }}
-      >
-        <ShoppingCart className="w-3.5 h-3.5" /> Adicionar
-      </button>
     </div>
   );
 }
@@ -194,7 +255,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
           </div>
         </div>
         {gradeOpen && (
-          <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
+          <GradeCompact product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
         )}
       </div>
     );
@@ -271,7 +332,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
       </div>
 
       {gradeOpen && (
-        <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
+        <GradeCompact product={product} onAdd={onAddGrade} onClose={onCloseGrade} />
       )}
     </div>
   );
