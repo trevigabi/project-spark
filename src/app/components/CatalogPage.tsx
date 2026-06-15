@@ -541,6 +541,8 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               product={{ ...product, isFavorite: favoriteIds.has(product.id) }}
               viewMode="grid"
               onOrder={() => onNavigate('order-grade')}
+              onQuickBuy={() => setQuickBuyProduct(product)}
+              onOpenDetail={() => setDetailProduct(product)}
               onToggleFav={() => toggleFav(product.id)}
             />
           ))}
@@ -553,9 +555,38 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               product={{ ...product, isFavorite: favoriteIds.has(product.id) }}
               viewMode="list"
               onOrder={() => onNavigate('order-grade')}
+              onQuickBuy={() => setQuickBuyProduct(product)}
+              onOpenDetail={() => setDetailProduct(product)}
               onToggleFav={() => toggleFav(product.id)}
             />
           ))}
+        </div>
+      )}
+
+      {quickBuyProduct && (
+        <QuickBuyPopup
+          product={quickBuyProduct}
+          onClose={() => setQuickBuyProduct(null)}
+          onQuick={() => addQuick(quickBuyProduct)}
+          onGrade={goGrade}
+        />
+      )}
+
+      {detailProduct && (
+        <ProductDetailModal
+          product={{ ...detailProduct, isFavorite: favoriteIds.has(detailProduct.id) }}
+          isFavorite={favoriteIds.has(detailProduct.id)}
+          onClose={() => setDetailProduct(null)}
+          onQuickBuy={() => setQuickBuyProduct(detailProduct)}
+          onGrade={goGrade}
+          onToggleFav={() => toggleFav(detailProduct.id)}
+        />
+      )}
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-[60] bg-foreground text-background px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 animate-in slide-in-from-bottom-2">
+          <Check className="w-4 h-4 text-emerald-400" />
+          <span style={{ fontSize: '0.82rem', fontWeight: 500 }}>{toast}</span>
         </div>
       )}
     </div>
