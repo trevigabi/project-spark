@@ -11,7 +11,16 @@ export type CatalogFilters = {
   category: string;
   colors: string[];
   priceRange: [number, number];
+  priceTable: string;
 };
+
+export const priceTables = [
+  { id: 'padrao', label: 'Tabela Padrão', desc: '30/60/90 dias' },
+  { id: 'avista', label: 'À vista', desc: '5% desconto' },
+  { id: 'promo', label: 'Tabela Promocional', desc: 'Coleção atual' },
+  { id: 'atacado', label: 'Atacado', desc: 'Acima de 50 pares' },
+];
+
 
 const lines = ['Todos', 'Premium', 'Urban', 'Sport', 'Flow', 'Flow XL', 'Coil', 'Hertz', 'Hertz Art'];
 const categories = ['Todos', 'Social', 'Casual', 'Esportivo', 'Sandália', 'Bota'];
