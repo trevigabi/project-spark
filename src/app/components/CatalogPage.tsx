@@ -617,8 +617,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
           product={{ ...detailProduct, isFavorite: favoriteIds.has(detailProduct.id) }}
           isFavorite={favoriteIds.has(detailProduct.id)}
           onClose={() => setDetailProduct(null)}
-          onQuickBuy={() => { setGradeOpenId(detailProduct.id); setDetailProduct(null); }}
-          onGrade={goGrade}
+          onAddGrade={(qtys) => { addGrade(detailProduct, qtys); setDetailProduct(null); }}
           onToggleFav={() => toggleFav(detailProduct.id)}
         />
       )}
