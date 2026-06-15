@@ -43,8 +43,8 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function GradeInline({ product, onAdd, onClose, onFull }: {
-  product: Product; onAdd: (qtys: Record<string, number>) => void; onClose: () => void; onFull: () => void;
+function GradeInline({ product, onAdd, onClose }: {
+  product: Product; onAdd: (qtys: Record<string, number>) => void; onClose?: () => void;
 }) {
   const sizes = Object.keys(product.grades);
   const [qtys, setQtys] = useState<Record<string, number>>(
@@ -54,58 +54,74 @@ function GradeInline({ product, onAdd, onClose, onFull }: {
   const subtotal = total * product.price;
   const set = (s: string, v: number) => setQtys(q => ({ ...q, [s]: Math.max(0, v) }));
 
+  const colCount = sizes.length;
+  const gridTemplate = `90px repeat(${colCount}, minmax(0, 1fr)) 60px`;
+
   return (
-    <div className="px-3 pb-3 pt-1 border-t border-border bg-secondary/30">
-      <div className="flex items-center justify-between mb-2 mt-2">
+    <div className="px-3 pb-3 pt-2 border-t border-border bg-secondary/30">
+      <div className="flex items-center justify-between mb-2">
         <p className="text-foreground" style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
           Compra rápida — Grade
         </p>
-        <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-0.5">
-          <X className="w-3.5 h-3.5" />
-        </button>
+        {onClose && (
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-0.5">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
-      <div className="grid grid-cols-5 gap-1.5 mb-2">
-        {sizes.map(s => (
-          <div key={s} className="flex flex-col items-center gap-1 bg-white border border-border rounded-md p-1.5">
-            <span className="text-muted-foreground" style={{ fontSize: '0.62rem', fontWeight: 600 }}>{s}</span>
-            <div className="flex items-center gap-0.5">
+
+      <div className="bg-white border border-border rounded-lg overflow-hidden">
+        <div className="grid items-center bg-secondary/60 border-b border-border" style={{ gridTemplateColumns: gridTemplate }}>
+          <div className="px-2 py-1.5 text-muted-foreground" style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Numeração</div>
+          {sizes.map(s => (
+            <div key={s} className="px-1 py-1.5 text-center text-foreground" style={{ fontSize: '0.72rem', fontWeight: 600 }}>Nº {s}</div>
+          ))}
+          <div className="px-1 py-1.5 text-center text-muted-foreground" style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Total</div>
+        </div>
+
+        <div className="grid items-center border-b border-border" style={{ gridTemplateColumns: gridTemplate }}>
+          <div className="px-2 py-1.5 text-muted-foreground" style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Estoque</div>
+          {sizes.map(s => (
+            <div key={s} className="px-1 py-1.5 text-center text-emerald-600" style={{ fontSize: '0.72rem', fontWeight: 600 }}>{product.grades[s]}</div>
+          ))}
+          <div className="px-1 py-1.5 text-center text-muted-foreground" style={{ fontSize: '0.7rem' }}>
+            {Object.values(product.grades).reduce((a, b) => a + b, 0)}
+          </div>
+        </div>
+
+        <div className="grid items-center" style={{ gridTemplateColumns: gridTemplate }}>
+          <div className="px-2 py-1.5 text-muted-foreground" style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Quantidade</div>
+          {sizes.map(s => (
+            <div key={s} className="px-1 py-1.5 flex items-center justify-center gap-0.5">
               <button onClick={() => set(s, qtys[s] - 1)} className="w-4 h-4 rounded bg-secondary text-foreground hover:bg-secondary/70 flex items-center justify-center" style={{ fontSize: '0.7rem', lineHeight: 1 }}>−</button>
               <input
                 type="number"
                 value={qtys[s]}
                 onChange={e => set(s, Number(e.target.value) || 0)}
-                className="w-7 text-center bg-transparent text-foreground outline-none"
+                className="w-8 text-center bg-transparent text-foreground outline-none"
                 style={{ fontSize: '0.72rem', fontWeight: 600 }}
               />
               <button onClick={() => set(s, qtys[s] + 1)} className="w-4 h-4 rounded bg-secondary text-foreground hover:bg-secondary/70 flex items-center justify-center" style={{ fontSize: '0.7rem', lineHeight: 1 }}>+</button>
             </div>
-            <span className="text-muted-foreground" style={{ fontSize: '0.58rem' }}>est. {product.grades[s]}</span>
-          </div>
-        ))}
+          ))}
+          <div className="px-1 py-1.5 text-center text-foreground mono" style={{ fontSize: '0.78rem', fontWeight: 700 }}>{total}</div>
+        </div>
       </div>
-      <div className="flex items-center justify-between mb-2">
+
+      <div className="flex items-center justify-between mt-2 mb-2">
         <span className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>
           {total} {total === 1 ? 'par' : 'pares'}
         </span>
-        <span className="text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 700 }}>{formatCurrency(subtotal)}</span>
+        <span className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(subtotal)}</span>
       </div>
-      <div className="flex gap-1.5">
-        <button
-          onClick={onFull}
-          className="flex-1 px-2 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 flex items-center justify-center gap-1"
-          style={{ fontSize: '0.7rem', fontWeight: 500 }}
-        >
-          <Layers className="w-3 h-3" /> Grade completa
-        </button>
-        <button
-          onClick={() => onAdd(qtys)}
-          disabled={total === 0}
-          className="flex-[1.4] px-2 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-1"
-          style={{ fontSize: '0.72rem', fontWeight: 600 }}
-        >
-          <ShoppingCart className="w-3 h-3" /> Adicionar
-        </button>
-      </div>
+      <button
+        onClick={() => onAdd(qtys)}
+        disabled={total === 0}
+        className="w-full px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5"
+        style={{ fontSize: '0.78rem', fontWeight: 600 }}
+      >
+        <ShoppingCart className="w-3.5 h-3.5" /> Adicionar
+      </button>
     </div>
   );
 }
