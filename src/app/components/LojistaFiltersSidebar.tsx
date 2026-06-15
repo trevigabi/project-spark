@@ -11,7 +11,16 @@ export type CatalogFilters = {
   category: string;
   colors: string[];
   priceRange: [number, number];
+  priceTable: string;
 };
+
+export const priceTables = [
+  { id: 'padrao', label: 'Tabela Padrão', desc: '30/60/90 dias' },
+  { id: 'avista', label: 'À vista', desc: '5% desconto' },
+  { id: 'promo', label: 'Tabela Promocional', desc: 'Coleção atual' },
+  { id: 'atacado', label: 'Atacado', desc: 'Acima de 50 pares' },
+];
+
 
 const lines = ['Todos', 'Premium', 'Urban', 'Sport', 'Flow', 'Flow XL', 'Coil', 'Hertz', 'Hertz Art'];
 const categories = ['Todos', 'Social', 'Casual', 'Esportivo', 'Sandália', 'Bota'];
@@ -36,7 +45,9 @@ export const defaultFilters: CatalogFilters = {
   category: 'Todos',
   colors: [],
   priceRange: [priceMin, priceMax],
+  priceTable: 'padrao',
 };
+
 
 interface Props {
   filters: CatalogFilters;
@@ -96,7 +107,27 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
         </div>
       ) : (
         <>
-          {/* Title */}
+          {/* Tabela de Preço */}
+          <div className="px-3 pt-3 pb-3 border-b border-sidebar-border">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <DollarSign className="w-3 h-3 text-primary" />
+              <span className="text-muted-foreground" style={{ fontSize: '0.66rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Tabela de preço
+              </span>
+            </div>
+            <select
+              value={filters.priceTable}
+              onChange={e => onChange({ ...filters, priceTable: e.target.value })}
+              className="w-full px-2.5 py-2 rounded-md bg-secondary/40 border border-border text-foreground outline-none focus:border-primary cursor-pointer"
+              style={{ fontSize: '0.78rem', fontWeight: 500 }}
+            >
+              {priceTables.map(t => (
+                <option key={t.id} value={t.id}>{t.label} — {t.desc}</option>
+              ))}
+            </select>
+          </div>
+
+
           <div className="px-4 pt-4 pb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="w-3.5 h-3.5 text-primary" />

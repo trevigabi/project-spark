@@ -13,7 +13,9 @@ interface CatalogFiltersShape {
   category: string;
   colors: string[];
   priceRange: [number, number];
+  priceTable: string;
 }
+
 
 interface CatalogPageProps {
   onNavigate: (view: View) => void;
@@ -41,13 +43,84 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, viewMode }: {
+function GradeInline({ product, onAdd, onClose, onFull }: {
+  product: Product; onAdd: (qtys: Record<string, number>) => void; onClose: () => void; onFull: () => void;
+}) {
+  const sizes = Object.keys(product.grades);
+  const [qtys, setQtys] = useState<Record<string, number>>(
+    Object.fromEntries(sizes.map(s => [s, 0]))
+  );
+  const total = Object.values(qtys).reduce((a, b) => a + b, 0);
+  const subtotal = total * product.price;
+  const set = (s: string, v: number) => setQtys(q => ({ ...q, [s]: Math.max(0, v) }));
+
+  return (
+    <div className="px-3 pb-3 pt-1 border-t border-border bg-secondary/30">
+      <div className="flex items-center justify-between mb-2 mt-2">
+        <p className="text-foreground" style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          Compra rápida — Grade
+        </p>
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-0.5">
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      <div className="grid grid-cols-5 gap-1.5 mb-2">
+        {sizes.map(s => (
+          <div key={s} className="flex flex-col items-center gap-1 bg-white border border-border rounded-md p-1.5">
+            <span className="text-muted-foreground" style={{ fontSize: '0.62rem', fontWeight: 600 }}>{s}</span>
+            <div className="flex items-center gap-0.5">
+              <button onClick={() => set(s, qtys[s] - 1)} className="w-4 h-4 rounded bg-secondary text-foreground hover:bg-secondary/70 flex items-center justify-center" style={{ fontSize: '0.7rem', lineHeight: 1 }}>−</button>
+              <input
+                type="number"
+                value={qtys[s]}
+                onChange={e => set(s, Number(e.target.value) || 0)}
+                className="w-7 text-center bg-transparent text-foreground outline-none"
+                style={{ fontSize: '0.72rem', fontWeight: 600 }}
+              />
+              <button onClick={() => set(s, qtys[s] + 1)} className="w-4 h-4 rounded bg-secondary text-foreground hover:bg-secondary/70 flex items-center justify-center" style={{ fontSize: '0.7rem', lineHeight: 1 }}>+</button>
+            </div>
+            <span className="text-muted-foreground" style={{ fontSize: '0.58rem' }}>est. {product.grades[s]}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>
+          {total} {total === 1 ? 'par' : 'pares'}
+        </span>
+        <span className="text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 700 }}>{formatCurrency(subtotal)}</span>
+      </div>
+      <div className="flex gap-1.5">
+        <button
+          onClick={onFull}
+          className="flex-1 px-2 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 flex items-center justify-center gap-1"
+          style={{ fontSize: '0.7rem', fontWeight: 500 }}
+        >
+          <Layers className="w-3 h-3" /> Grade completa
+        </button>
+        <button
+          onClick={() => onAdd(qtys)}
+          disabled={total === 0}
+          className="flex-[1.4] px-2 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-1"
+          style={{ fontSize: '0.72rem', fontWeight: 600 }}
+        >
+          <ShoppingCart className="w-3 h-3" /> Adicionar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, viewMode, gradeOpen, onAddGrade, onCloseGrade, onFullGrade }: {
   product: Product;
   onOrder: () => void;
   onQuickBuy: () => void;
   onOpenDetail: () => void;
   onToggleFav: () => void;
   viewMode: 'grid' | 'list';
+  gradeOpen: boolean;
+  onAddGrade: (qtys: Record<string, number>) => void;
+  onCloseGrade: () => void;
+  onFullGrade: () => void;
 }) {
   const [imgError, setImgError] = useState(false);
 
@@ -59,50 +132,55 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
 
   if (viewMode === 'list') {
     return (
-      <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-4 hover:border-border/60 transition-colors group">
-        <button onClick={onOpenDetail} className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
-          {!imgError ? (
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package2 className="w-6 h-6 text-muted-foreground/40" />
+      <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-border/60 transition-colors group">
+        <div className="p-4 flex items-center gap-4">
+          <button onClick={onOpenDetail} className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+            {!imgError ? (
+              <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Package2 className="w-6 h-6 text-muted-foreground/40" />
+              </div>
+            )}
+          </button>
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpenDetail}>
+            <div className="flex items-start gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-muted-foreground" style={{ fontSize: '0.7rem', fontWeight: 500 }}>{product.reference}</p>
+                <p className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 600 }}>{product.name}</p>
+                <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{product.line} · {product.category} · {product.collection}</p>
+              </div>
+              <StarRating rating={product.rating} />
             </div>
-          )}
-        </button>
-        <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpenDetail}>
-          <div className="flex items-start gap-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-muted-foreground" style={{ fontSize: '0.7rem', fontWeight: 500 }}>{product.reference}</p>
-              <p className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 600 }}>{product.name}</p>
-              <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{product.line} · {product.category} · {product.collection}</p>
+            <div className="flex items-center gap-3 mt-2">
+              <span className={`px-2 py-0.5 rounded-full ${availColor}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{product.availability}</span>
+              <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{product.material}</span>
+              <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{product.soldUnits.toLocaleString('pt-BR')} vendidos</span>
             </div>
-            <StarRating rating={product.rating} />
           </div>
-          <div className="flex items-center gap-3 mt-2">
-            <span className={`px-2 py-0.5 rounded-full ${availColor}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{product.availability}</span>
-            <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{product.material}</span>
-            <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{product.soldUnits.toLocaleString('pt-BR')} vendidos</span>
+          <div className="text-right flex-shrink-0 space-y-2">
+            <div>
+              <p className="text-foreground mono" style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>{formatCurrency(product.price)}</p>
+              <p className="text-muted-foreground line-through" style={{ fontSize: '0.75rem' }}>{formatCurrency(product.priceRetail)}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={onToggleFav} className={`p-2 rounded-lg border border-border transition-colors ${product.isFavorite ? 'text-red-400 border-red-400/30 bg-red-400/10' : 'text-muted-foreground hover:text-red-400'}`}>
+                <Heart className={`w-3.5 h-3.5 ${product.isFavorite ? 'fill-red-400' : ''}`} />
+              </button>
+              <button
+                onClick={onQuickBuy}
+                disabled={product.availability === 'esgotado'}
+                className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center gap-1.5"
+                style={{ fontSize: '0.78rem', fontWeight: 600 }}
+              >
+                <Zap className="w-3.5 h-3.5" /> Compra rápida
+              </button>
+            </div>
           </div>
         </div>
-        <div className="text-right flex-shrink-0 space-y-2">
-          <div>
-            <p className="text-foreground mono" style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>{formatCurrency(product.price)}</p>
-            <p className="text-muted-foreground line-through" style={{ fontSize: '0.75rem' }}>{formatCurrency(product.priceRetail)}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={onToggleFav} className={`p-2 rounded-lg border border-border transition-colors ${product.isFavorite ? 'text-red-400 border-red-400/30 bg-red-400/10' : 'text-muted-foreground hover:text-red-400'}`}>
-              <Heart className={`w-3.5 h-3.5 ${product.isFavorite ? 'fill-red-400' : ''}`} />
-            </button>
-            <button
-              onClick={onQuickBuy}
-              disabled={product.availability === 'esgotado'}
-              className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 flex items-center gap-1.5"
-              style={{ fontSize: '0.78rem', fontWeight: 600 }}
-            >
-              <Zap className="w-3.5 h-3.5" /> Compra rápida
-            </button>
-          </div>
-        </div>
+        {gradeOpen && (
+          <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} onFull={onFullGrade} />
+        )}
       </div>
     );
   }
@@ -176,48 +254,14 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
           </div>
         </div>
       </div>
+
+      {gradeOpen && (
+        <GradeInline product={product} onAdd={onAddGrade} onClose={onCloseGrade} onFull={onFullGrade} />
+      )}
     </div>
   );
 }
 
-function QuickBuyPopup({ product, onClose, onQuick, onGrade }: {
-  product: Product; onClose: () => void; onQuick: () => void; onGrade: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
-      <div className="bg-card border border-border rounded-2xl w-full max-w-md p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-start gap-3 mb-5">
-          <img src={product.image} alt={product.name} className="w-16 h-16 rounded-lg object-cover bg-secondary flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-muted-foreground" style={{ fontSize: '0.7rem', fontWeight: 500 }}>{product.reference}</p>
-            <p className="text-foreground truncate" style={{ fontSize: '0.95rem', fontWeight: 600 }}>{product.name}</p>
-            <p className="text-foreground mono mt-1" style={{ fontSize: '0.95rem', fontWeight: 700 }}>{formatCurrency(product.price)}</p>
-          </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1"><X className="w-4 h-4" /></button>
-        </div>
-        <p className="text-muted-foreground mb-3" style={{ fontSize: '0.8rem' }}>Como você quer comprar?</p>
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={onQuick}
-            className="rounded-xl border border-border bg-secondary/40 hover:border-primary/50 hover:bg-primary/5 transition-colors p-4 text-left group"
-          >
-            <Zap className="w-5 h-5 text-primary mb-2" />
-            <p className="text-foreground" style={{ fontSize: '0.88rem', fontWeight: 600 }}>Rápida</p>
-            <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.72rem' }}>1 par adicionado ao carrinho</p>
-          </button>
-          <button
-            onClick={onGrade}
-            className="rounded-xl border border-border bg-secondary/40 hover:border-primary/50 hover:bg-primary/5 transition-colors p-4 text-left"
-          >
-            <Layers className="w-5 h-5 text-primary mb-2" />
-            <p className="text-foreground" style={{ fontSize: '0.88rem', fontWeight: 600 }}>Por grade</p>
-            <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.72rem' }}>Escolha tamanhos e quantidades</p>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ProductDetailModal({ product, onClose, onQuickBuy, onGrade, onToggleFav, isFavorite }: {
   product: Product; onClose: () => void; onQuickBuy: () => void; onGrade: () => void;
@@ -326,21 +370,26 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(
     new Set(products.filter(p => p.isFavorite).map(p => p.id))
   );
-  const [quickBuyProduct, setQuickBuyProduct] = useState<Product | null>(null);
+  const [gradeOpenId, setGradeOpenId] = useState<string | null>(null);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  const addQuick = (p: Product) => {
-    setQuickBuyProduct(null);
-    setDetailProduct(null);
-    setToast(`${p.name} adicionado ao carrinho`);
+  const showToast = (msg: string) => {
+    setToast(msg);
     setTimeout(() => setToast(null), 2200);
   };
+  const addGrade = (p: Product, qtys: Record<string, number>) => {
+    const total = Object.values(qtys).reduce((a, b) => a + b, 0);
+    if (total === 0) return;
+    setGradeOpenId(null);
+    showToast(`${total} ${total === 1 ? 'par' : 'pares'} de ${p.name} adicionados`);
+  };
   const goGrade = () => {
-    setQuickBuyProduct(null);
+    setGradeOpenId(null);
     setDetailProduct(null);
     onNavigate('order-grade');
   };
+
 
   const search = usingExternal ? externalFilters!.search : internalSearch;
   const setSearch = (v: string) => {
@@ -541,9 +590,13 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               product={{ ...product, isFavorite: favoriteIds.has(product.id) }}
               viewMode="grid"
               onOrder={() => onNavigate('order-grade')}
-              onQuickBuy={() => setQuickBuyProduct(product)}
+              onQuickBuy={() => setGradeOpenId(gradeOpenId === product.id ? null : product.id)}
               onOpenDetail={() => setDetailProduct(product)}
               onToggleFav={() => toggleFav(product.id)}
+              gradeOpen={gradeOpenId === product.id}
+              onAddGrade={(qtys) => addGrade(product, qtys)}
+              onCloseGrade={() => setGradeOpenId(null)}
+              onFullGrade={goGrade}
             />
           ))}
         </div>
@@ -555,21 +608,16 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               product={{ ...product, isFavorite: favoriteIds.has(product.id) }}
               viewMode="list"
               onOrder={() => onNavigate('order-grade')}
-              onQuickBuy={() => setQuickBuyProduct(product)}
+              onQuickBuy={() => setGradeOpenId(gradeOpenId === product.id ? null : product.id)}
               onOpenDetail={() => setDetailProduct(product)}
               onToggleFav={() => toggleFav(product.id)}
+              gradeOpen={gradeOpenId === product.id}
+              onAddGrade={(qtys) => addGrade(product, qtys)}
+              onCloseGrade={() => setGradeOpenId(null)}
+              onFullGrade={goGrade}
             />
           ))}
         </div>
-      )}
-
-      {quickBuyProduct && (
-        <QuickBuyPopup
-          product={quickBuyProduct}
-          onClose={() => setQuickBuyProduct(null)}
-          onQuick={() => addQuick(quickBuyProduct)}
-          onGrade={goGrade}
-        />
       )}
 
       {detailProduct && (
@@ -577,11 +625,12 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
           product={{ ...detailProduct, isFavorite: favoriteIds.has(detailProduct.id) }}
           isFavorite={favoriteIds.has(detailProduct.id)}
           onClose={() => setDetailProduct(null)}
-          onQuickBuy={() => setQuickBuyProduct(detailProduct)}
+          onQuickBuy={() => { setGradeOpenId(detailProduct.id); setDetailProduct(null); }}
           onGrade={goGrade}
           onToggleFav={() => toggleFav(detailProduct.id)}
         />
       )}
+
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-[60] bg-foreground text-background px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 animate-in slide-in-from-bottom-2">
