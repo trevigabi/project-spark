@@ -1,0 +1,306 @@
+export type Grade = { [size: string]: number };
+
+export interface Product {
+  id: string;
+  name: string;
+  reference: string;
+  line: string;
+  category: string;
+  collection: string;
+  price: number;
+  priceRetail: number;
+  image: string;
+  availability: 'disponível' | 'baixo estoque' | 'esgotado';
+  colors: string[];
+  material: string;
+  isFavorite?: boolean;
+  rating: number;
+  soldUnits: number;
+  grades: Grade;
+  description: string;
+}
+
+export interface CommercialPolicy {
+  id: string;
+  name: string;
+  discount: number;
+  paymentCondition: string;
+  minOrderValue: number;
+}
+
+export interface Order {
+  id: string;
+  date: string;
+  client: string;
+  clientId: string;
+  rep: string;
+  status: 'aprovado' | 'em análise' | 'faturado' | 'cancelado' | 'entregue';
+  total: number;
+  items: number;
+  paymentCondition: string;
+  collection: string;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  cnpj: string;
+  city: string;
+  state: string;
+  region: string;
+  rep: string;
+  lastOrder: string;
+  totalPurchased: number;
+  status: 'ativo' | 'inativo' | 'em aberto';
+  avatar: string;
+  policyId: string;
+}
+
+export interface SelloutRecord {
+  month: string;
+  sellIn: number;
+  sellOut: number;
+  stock: number;
+}
+
+export interface RegionPerformance {
+  region: string;
+  revenue: number;
+  target: number;
+  growth: number;
+  orders: number;
+}
+
+export const commercialPolicies: CommercialPolicy[] = [
+  { id: 'TAB-A', name: 'Tabela A', discount: 0, paymentCondition: '5x sem juros', minOrderValue: 1500 },
+  { id: 'TAB-B', name: 'Tabela B', discount: 3, paymentCondition: '5x sem juros', minOrderValue: 1200 },
+  { id: 'TAB-C', name: 'Tabela C', discount: 5, paymentCondition: '3x sem juros', minOrderValue: 800 },
+];
+
+export const products: Product[] = [
+  {
+    id: 'P001',
+    name: 'Flow XL Denim',
+    reference: '2502-19',
+    line: 'Flow XL',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 154.95,
+    priceRetail: 309.90,
+    image: 'https://cdn.dooca.store/153486/products/flow-xl-2502-10-black-reflect-b-suclc_1600x1600+fill_ffffff.jpg?v=1773944251',
+    availability: 'disponível',
+    colors: ['Denim', 'Azul'],
+    material: 'Lona',
+    isFavorite: true,
+    rating: 4.8,
+    soldUnits: 1400,
+    description: 'Tênis infantil linha Flow XL, modelo Denim. Grade 90-120-150-180-210.',
+    grades: { '90': 240, '120': 180, '150': 320, '180': 60, '210': 120 },
+  },
+  {
+    id: 'P002',
+    name: 'Coil Branco',
+    reference: '2510-01',
+    line: 'Coil',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 107.48,
+    priceRetail: 214.95,
+    image: 'https://cdn.dooca.store/153486/products/226-tesla-1_1600x1600+fill_ffffff.jpg?v=1727965004',
+    availability: 'disponível',
+    colors: ['Branco'],
+    material: 'Sintético',
+    isFavorite: false,
+    rating: 4.6,
+    soldUnits: 1200,
+    description: 'Tênis infantil linha Coil, modelo Branco.',
+    grades: { '90': 180, '120': 220, '150': 300, '180': 140, '210': 80 },
+  },
+  {
+    id: 'P003',
+    name: 'Hertz Art Vermelho',
+    reference: '2489-04',
+    line: 'Hertz Art',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 124.95,
+    priceRetail: 249.90,
+    image: 'https://cdn.dooca.store/153486/products/21-tesla_1600x1600+fill_ffffff.jpg?v=1720100415',
+    availability: 'baixo estoque',
+    colors: ['Vermelho', 'Branco'],
+    material: 'Sintético',
+    isFavorite: false,
+    rating: 4.2,
+    soldUnits: 480,
+    description: 'Tênis infantil linha Hertz Art, modelo Vermelho.',
+    grades: { '90': 20, '120': 30, '150': 40, '180': 15, '210': 10 },
+  },
+  {
+    id: 'P004',
+    name: 'Hertz Marrom',
+    reference: '2491-07',
+    line: 'Hertz',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 124.95,
+    priceRetail: 249.90,
+    image: 'https://cdn.dooca.store/153486/products/dsc00810jpg_1600x1600+fill_ffffff.jpg?v=1759512194',
+    availability: 'disponível',
+    colors: ['Marrom'],
+    material: 'Sintético',
+    isFavorite: false,
+    rating: 4.5,
+    soldUnits: 920,
+    description: 'Tênis infantil linha Hertz, modelo Marrom.',
+    grades: { '90': 160, '120': 200, '150': 260, '180': 120, '210': 60 },
+  },
+  {
+    id: 'P005',
+    name: 'Flow Preto',
+    reference: '2501-02',
+    line: 'Flow',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 109.95,
+    priceRetail: 219.90,
+    image: 'https://cdn.dooca.store/153486/products/flow-xl-2502-10-black-reflect-b-suclc_1600x1600+fill_ffffff.jpg?v=1773944251',
+    availability: 'disponível',
+    colors: ['Preto'],
+    material: 'Sintético',
+    isFavorite: false,
+    rating: 4.6,
+    soldUnits: 1060,
+    description: 'Tênis infantil linha Flow, modelo Preto.',
+    grades: { '90': 200, '120': 240, '150': 280, '180': 100, '210': 60 },
+  },
+  {
+    id: 'P006',
+    name: 'Coil Navy',
+    reference: '2511-03',
+    line: 'Coil',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 107.48,
+    priceRetail: 214.95,
+    image: 'https://cdn.dooca.store/153486/products/226-tesla-1_1600x1600+fill_ffffff.jpg?v=1727965004',
+    availability: 'disponível',
+    colors: ['Navy', 'Branco'],
+    material: 'Sintético',
+    isFavorite: false,
+    rating: 4.4,
+    soldUnits: 840,
+    description: 'Tênis infantil linha Coil, modelo Navy.',
+    grades: { '90': 140, '120': 180, '150': 220, '180': 100, '210': 50 },
+  },
+  {
+    id: 'P007',
+    name: 'Hertz Art Azul',
+    reference: '2489-06',
+    line: 'Hertz Art',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 124.95,
+    priceRetail: 249.90,
+    image: 'https://cdn.dooca.store/153486/products/21-tesla_1600x1600+fill_ffffff.jpg?v=1720100415',
+    availability: 'disponível',
+    colors: ['Azul', 'Branco'],
+    material: 'Sintético',
+    isFavorite: false,
+    rating: 4.3,
+    soldUnits: 560,
+    description: 'Tênis infantil linha Hertz Art, modelo Azul.',
+    grades: { '90': 100, '120': 140, '150': 180, '180': 80, '210': 40 },
+  },
+  {
+    id: 'P008',
+    name: 'Flow XL Preto',
+    reference: '2502-02',
+    line: 'Flow XL',
+    category: 'Tênis',
+    collection: 'Coleção 2026',
+    price: 154.95,
+    priceRetail: 309.90,
+    image: 'https://cdn.dooca.store/153486/products/dsc00810jpg_1600x1600+fill_ffffff.jpg?v=1759512194',
+    availability: 'disponível',
+    colors: ['Preto'],
+    material: 'Lona',
+    isFavorite: true,
+    rating: 4.7,
+    soldUnits: 1100,
+    description: 'Tênis infantil linha Flow XL, modelo Preto.',
+    grades: { '90': 200, '120': 250, '150': 300, '180': 120, '210': 70 },
+  },
+];
+
+export const orders: Order[] = [
+  { id: 'PED-2026-0412', date: '2026-06-09', client: 'Calçadão Paulista LTDA', clientId: 'CLI-001', rep: 'Marcos Andrade', status: 'aprovado', total: 10540.00, items: 124, paymentCondition: '5x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0411', date: '2026-06-08', client: 'Sapataria Mineira', clientId: 'CLI-002', rep: 'Fernanda Lima', status: 'faturado', total: 7310.00, items: 86, paymentCondition: '5x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0410', date: '2026-06-07', client: 'Mundo dos Sapatos RJ', clientId: 'CLI-003', rep: 'Carlos Mendes', status: 'em análise', total: 14616.00, items: 168, paymentCondition: '5x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0409', date: '2026-06-06', client: 'Pé de Pato Bahia', clientId: 'CLI-004', rep: 'Ana Santos', status: 'entregue', total: 5760.00, items: 72, paymentCondition: '3x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0408', date: '2026-06-05', client: 'Shoestore Norte', clientId: 'CLI-005', rep: 'Marcos Andrade', status: 'cancelado', total: 3840.00, items: 48, paymentCondition: '3x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0407', date: '2026-06-04', client: 'Fashion Feet SP', clientId: 'CLI-006', rep: 'Fernanda Lima', status: 'entregue', total: 18480.00, items: 210, paymentCondition: '5x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0406', date: '2026-06-03', client: 'Step Up Calçados', clientId: 'CLI-007', rep: 'Carlos Mendes', status: 'faturado', total: 9180.00, items: 108, paymentCondition: '5x sem juros', collection: 'Coleção 2026' },
+  { id: 'PED-2026-0405', date: '2026-06-02', client: 'Andar Bem Gaúcha', clientId: 'CLI-008', rep: 'Ana Santos', status: 'entregue', total: 5120.00, items: 64, paymentCondition: '3x sem juros', collection: 'Coleção 2026' },
+];
+
+export const clients: Client[] = [
+  { id: 'CLI-001', name: 'Calçadão Paulista LTDA', cnpj: '12.345.678/0001-90', city: 'São Paulo', state: 'SP', region: 'Sudeste', rep: 'Marcos Andrade', lastOrder: '2026-06-09', totalPurchased: 142000, status: 'ativo', avatar: 'CP', policyId: 'TAB-A' },
+  { id: 'CLI-002', name: 'Sapataria Mineira', cnpj: '23.456.789/0001-01', city: 'Belo Horizonte', state: 'MG', region: 'Sudeste', rep: 'Fernanda Lima', lastOrder: '2026-06-08', totalPurchased: 76500, status: 'ativo', avatar: 'SM', policyId: 'TAB-B' },
+  { id: 'CLI-003', name: 'Mundo dos Sapatos RJ', cnpj: '34.567.890/0001-12', city: 'Rio de Janeiro', state: 'RJ', region: 'Sudeste', rep: 'Carlos Mendes', lastOrder: '2026-06-07', totalPurchased: 196000, status: 'ativo', avatar: 'MS', policyId: 'TAB-A' },
+  { id: 'CLI-004', name: 'Pé de Pato Bahia', cnpj: '45.678.901/0001-23', city: 'Salvador', state: 'BA', region: 'Nordeste', rep: 'Ana Santos', lastOrder: '2026-06-06', totalPurchased: 54000, status: 'ativo', avatar: 'PB', policyId: 'TAB-C' },
+  { id: 'CLI-005', name: 'Shoestore Norte', cnpj: '56.789.012/0001-34', city: 'Manaus', state: 'AM', region: 'Norte', rep: 'Marcos Andrade', lastOrder: '2026-06-05', totalPurchased: 33400, status: 'em aberto', avatar: 'SN', policyId: 'TAB-C' },
+  { id: 'CLI-006', name: 'Fashion Feet SP', cnpj: '67.890.123/0001-45', city: 'Campinas', state: 'SP', region: 'Sudeste', rep: 'Fernanda Lima', lastOrder: '2026-06-04', totalPurchased: 246000, status: 'ativo', avatar: 'FF', policyId: 'TAB-A' },
+  { id: 'CLI-007', name: 'Step Up Calçados', cnpj: '78.901.234/0001-56', city: 'Curitiba', state: 'PR', region: 'Sul', rep: 'Carlos Mendes', lastOrder: '2026-06-03', totalPurchased: 123500, status: 'ativo', avatar: 'SU', policyId: 'TAB-B' },
+  { id: 'CLI-008', name: 'Andar Bem Gaúcha', cnpj: '89.012.345/0001-67', city: 'Porto Alegre', state: 'RS', region: 'Sul', rep: 'Ana Santos', lastOrder: '2026-06-02', totalPurchased: 70400, status: 'ativo', avatar: 'AB', policyId: 'TAB-B' },
+];
+
+export const selloutData: SelloutRecord[] = [
+  { month: 'Jan', sellIn: 420000, sellOut: 380000, stock: 140000 },
+  { month: 'Fev', sellIn: 380000, sellOut: 410000, stock: 110000 },
+  { month: 'Mar', sellIn: 510000, sellOut: 480000, stock: 140000 },
+  { month: 'Abr', sellIn: 620000, sellOut: 590000, stock: 170000 },
+  { month: 'Mai', sellIn: 580000, sellOut: 540000, stock: 210000 },
+  { month: 'Jun', sellIn: 490000, sellOut: 460000, stock: 240000 },
+];
+
+export const regionData: RegionPerformance[] = [
+  { region: 'Sudeste', revenue: 1840000, target: 1600000, growth: 12.4, orders: 284 },
+  { region: 'Sul', revenue: 920000, target: 850000, growth: 8.2, orders: 142 },
+  { region: 'Nordeste', revenue: 680000, target: 720000, growth: -5.6, orders: 108 },
+  { region: 'Centro-Oeste', revenue: 480000, target: 440000, growth: 9.1, orders: 76 },
+  { region: 'Norte', revenue: 280000, target: 300000, growth: -6.7, orders: 44 },
+];
+
+export const kpiData = {
+  totalSellIn: 3000000,
+  totalSellOut: 2860000,
+  activeClients: 247,
+  pendingOrders: 18,
+  avgTicket: 8800,
+  collectionGiro: 78.4,
+  monthlyGrowth: 9.8,
+  encalheAlerts: 6,
+};
+
+export const topProducts = [
+  { name: 'Flow XL Denim', units: 1400, revenue: 125860, growth: 18.2 },
+  { name: 'Coil Branco', units: 1200, revenue: 113880, growth: 14.6 },
+  { name: 'Flow XL Preto', units: 1100, revenue: 98890, growth: 11.3 },
+  { name: 'Flow Preto', units: 1060, revenue: 84694, growth: 8.9 },
+  { name: 'Hertz Marrom', units: 920, revenue: 78108, growth: 6.4 },
+];
+
+export const repTargets = [
+  { name: 'Marcos Andrade', target: 480000, achieved: 524000, clients: 68, orders: 82 },
+  { name: 'Fernanda Lima', target: 420000, achieved: 398000, clients: 54, orders: 71 },
+  { name: 'Carlos Mendes', target: 390000, achieved: 441000, clients: 62, orders: 79 },
+  { name: 'Ana Santos', target: 350000, achieved: 312000, clients: 48, orders: 58 },
+];
+
+export const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+export const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+};
