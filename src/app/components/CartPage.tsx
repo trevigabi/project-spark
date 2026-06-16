@@ -76,6 +76,37 @@ export function CartPage({ onNavigate }: CartPageProps) {
 
   const selectedPayment = paymentOptions.find(p => p.id === paymentId) ?? paymentOptions[0];
 
+  const updateQty = (productId: string, size: string, delta: number) => {
+    setCart(prev => prev.map(item => {
+      if (item.product.id !== productId) return item;
+      const newSizes = { ...item.sizes, [size]: Math.max(0, (item.sizes[size] || 0) + delta) };
+      if (newSizes[size] === 0) delete newSizes[size];
+      return { ...item, sizes: newSizes };
+    }).filter(item => Object.keys(item.sizes).length > 0));
+  };
+
+  const removeItem = (productId: string) => {
+    setCart(prev => prev.filter(item => item.product.id !== productId));
+  };
+
+  const getItemTotal = (item: CartItem) => {
+    const pairs = Object.values(item.sizes).reduce((a, b) => a + b, 0);
+    return { pairs, value: pairs * item.product.price };
+  };
+
+  const grandTotal = cart.reduce((acc, item) => acc + getItemTotal(item).value, 0);
+  const grandPairs = cart.reduce((acc, item) => acc + getItemTotal(item).pairs, 0);
+
+  const tableDiscount = (grandTotal * policy.discount) / 100;
+  const paymentAdj = (grandTotal * (selectedPayment?.surcharge ?? 0)) / 100;
+  const campaignDiscount = campaigns
+    .filter(c => campaignIds.includes(c.id))
+    .reduce((acc, c) => acc + (grandTotal * c.discount) / 100, 0);
+  const discount = tableDiscount + campaignDiscount + Math.max(0, -paymentAdj);
+  const finalTotal = grandTotal - tableDiscount - campaignDiscount + paymentAdj;
+  const belowMin = finalTotal < policy.minOrderValue;
+
+
 
   if (step === 'done') {
     return (
