@@ -353,20 +353,46 @@ export function CartPage({ onNavigate }: CartPageProps) {
                   <span className="text-muted-foreground" style={{ fontSize: '0.82rem' }}>{grandPairs} pares</span>
                   <span className="text-foreground mono" style={{ fontSize: '0.82rem' }}>{formatCurrency(grandTotal)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-emerald-400" style={{ fontSize: '0.82rem' }}>Desconto 12%</span>
-                  <span className="text-emerald-400 mono" style={{ fontSize: '0.82rem' }}>-{formatCurrency(discount)}</span>
-                </div>
+                {tableDiscount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-emerald-400" style={{ fontSize: '0.82rem' }}>Desconto {policy.name} ({policy.discount}%)</span>
+                    <span className="text-emerald-400 mono" style={{ fontSize: '0.82rem' }}>-{formatCurrency(tableDiscount)}</span>
+                  </div>
+                )}
+                {campaignDiscount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-emerald-400" style={{ fontSize: '0.82rem' }}>Campanhas</span>
+                    <span className="text-emerald-400 mono" style={{ fontSize: '0.82rem' }}>-{formatCurrency(campaignDiscount)}</span>
+                  </div>
+                )}
+                {paymentAdj !== 0 && (
+                  <div className="flex justify-between">
+                    <span className={paymentAdj < 0 ? 'text-emerald-400' : 'text-amber-400'} style={{ fontSize: '0.82rem' }}>
+                      Ajuste pagamento
+                    </span>
+                    <span className={`mono ${paymentAdj < 0 ? 'text-emerald-400' : 'text-amber-400'}`} style={{ fontSize: '0.82rem' }}>
+                      {paymentAdj < 0 ? '-' : '+'}{formatCurrency(Math.abs(paymentAdj))}
+                    </span>
+                  </div>
+                )}
                 <div className="h-px bg-border my-2" />
                 <div className="flex justify-between">
                   <span className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 600 }}>Total</span>
                   <span className="text-foreground mono" style={{ fontSize: '1rem', fontWeight: 700 }}>{formatCurrency(finalTotal)}</span>
                 </div>
-                <div className="text-muted-foreground text-center pt-1" style={{ fontSize: '0.72rem' }}>
-                  Condição: {paymentCond}
-                </div>
+                {step === 'checkout' && selectedPayment && (
+                  <div className="text-muted-foreground text-center pt-1" style={{ fontSize: '0.72rem' }}>
+                    Condição: {selectedPayment.label}
+                  </div>
+                )}
+                {belowMin && step === 'checkout' && (
+                  <div className="mt-2 rounded-md bg-amber-400/10 border border-amber-400/30 px-2.5 py-2 text-amber-400" style={{ fontSize: '0.72rem' }}>
+                    Pedido mínimo da {policy.name}: {formatCurrency(policy.minOrderValue)}
+                  </div>
+                )}
               </div>
             </div>
+
 
             {step === 'cart' ? (
               <button
