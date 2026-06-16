@@ -58,7 +58,6 @@ export function Sidebar({ currentView, onNavigate, profile, onLogout, notificati
     if (profile === 'lojista') {
       return [
         { id: 'catalog', label: 'Catálogo', icon: Package2 },
-        { id: 'order-grade', label: 'Novo Pedido', icon: ShoppingBag },
       ];
     }
     return [
