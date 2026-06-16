@@ -214,21 +214,111 @@ export function CartPage({ onNavigate }: CartPageProps) {
                 );
               })
             ) : (
-              /* Checkout form */
-              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-                <h3 className="text-foreground" style={{ fontWeight: 600 }}>Dados do pedido</h3>
-                <div>
-                  <label className="block text-muted-foreground mb-1.5" style={{ fontSize: '0.78rem' }}>Condição de pagamento</label>
-                  <select
-                    value={paymentCond}
-                    onChange={e => setPaymentCond(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary"
-                    style={{ fontSize: '0.85rem' }}
-                  >
-                    {['À Vista', '30 DDL', '30/60 DDL', '30/60/90 DDL', '60/90/120 DDL'].map(c => <option key={c}>{c}</option>)}
-                  </select>
+              /* Checkout — Tabela, Condição, Campanhas */
+              <div className="space-y-4">
+                {/* Tabela de preço aplicada */}
+                <div className="bg-card border border-border rounded-xl p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-foreground flex items-center gap-2" style={{ fontWeight: 600 }}>
+                      <Tag className="w-4 h-4 text-primary" /> Política comercial aplicada
+                    </h3>
+                    <select
+                      value={tableId}
+                      onChange={e => { setTableId(e.target.value); setPaymentId((paymentOptionsByTable[e.target.value] ?? [])[0]?.id ?? ''); setCampaignIds([]); }}
+                      className="px-2.5 py-1.5 rounded-md border border-border bg-surface text-foreground outline-none focus:border-primary"
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      {commercialPolicies.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Desconto da tabela</p>
+                      <p className="text-foreground mono mt-0.5" style={{ fontSize: '0.9rem', fontWeight: 600 }}>{policy.discount === 0 ? 'sem desconto' : `${policy.discount}%`}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Pagamento padrão</p>
+                      <p className="text-foreground mt-0.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{policy.paymentCondition}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Pedido mínimo</p>
+                      <p className="text-foreground mono mt-0.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{formatCurrency(policy.minOrderValue)}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
+
+                {/* Condições de pagamento disponíveis */}
+                <div className="bg-card border border-border rounded-xl p-5">
+                  <h3 className="text-foreground flex items-center gap-2 mb-3" style={{ fontWeight: 600 }}>
+                    <CreditCard className="w-4 h-4 text-primary" /> Condições de pagamento disponíveis
+                  </h3>
+                  <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>
+                    Opções habilitadas para a <span className="text-foreground" style={{ fontWeight: 600 }}>{policy.name}</span>.
+                  </p>
+                  <div className="space-y-2">
+                    {paymentOptions.map(opt => {
+                      const active = paymentId === opt.id;
+                      return (
+                        <label
+                          key={opt.id}
+                          className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${active ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/40'}`}
+                        >
+                          <input type="radio" name="payment" checked={active} onChange={() => setPaymentId(opt.id)} className="mt-1 accent-primary" />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <p className="text-foreground" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{opt.label}</p>
+                              {opt.surcharge !== 0 && (
+                                <span className={`mono ${opt.surcharge < 0 ? 'text-emerald-400' : 'text-amber-400'}`} style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                                  {opt.surcharge < 0 ? `${opt.surcharge}%` : `+${opt.surcharge}%`}
+                                </span>
+                              )}
+                            </div>
+                            {opt.description && <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.72rem' }}>{opt.description}</p>}
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Campanhas disponíveis */}
+                {campaigns.length > 0 && (
+                  <div className="bg-card border border-border rounded-xl p-5">
+                    <h3 className="text-foreground flex items-center gap-2 mb-3" style={{ fontWeight: 600 }}>
+                      <Sparkles className="w-4 h-4 text-primary" /> Campanhas disponíveis
+                    </h3>
+                    <div className="space-y-2">
+                      {campaigns.map(c => {
+                        const active = campaignIds.includes(c.id);
+                        return (
+                          <label
+                            key={c.id}
+                            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${active ? 'border-emerald-400/60 bg-emerald-400/5' : 'border-border hover:bg-secondary/40'}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => setCampaignIds(prev => prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id])}
+                              className="mt-1 accent-emerald-400"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <p className="text-foreground flex items-center gap-1.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                                  <Percent className="w-3 h-3 text-emerald-400" /> {c.name}
+                                </p>
+                                <span className="text-emerald-400 mono" style={{ fontSize: '0.75rem', fontWeight: 600 }}>-{c.discount}%</span>
+                              </div>
+                              <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.72rem' }}>{c.description}</p>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Observações */}
+                <div className="bg-card border border-border rounded-xl p-5">
                   <label className="block text-muted-foreground mb-1.5" style={{ fontSize: '0.78rem' }}>Observações</label>
                   <textarea
                     value={obs}
@@ -239,6 +329,7 @@ export function CartPage({ onNavigate }: CartPageProps) {
                     style={{ fontSize: '0.85rem' }}
                   />
                 </div>
+
                 {approvalRequired && (
                   <div className="flex items-start gap-2 rounded-lg bg-amber-400/5 border border-amber-400/20 p-3">
                     <FileText className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -248,19 +339,9 @@ export function CartPage({ onNavigate }: CartPageProps) {
                     </div>
                   </div>
                 )}
-                <div className="space-y-2 text-sm">
-                  {cart.map(item => {
-                    const { pairs, value } = getItemTotal(item);
-                    return (
-                      <div key={item.product.id} className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{item.product.name} ({pairs} pares)</span>
-                        <span className="text-foreground mono" style={{ fontWeight: 500 }}>{formatCurrency(value)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             )}
+
           </div>
 
           {/* Summary */}
