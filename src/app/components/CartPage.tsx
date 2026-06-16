@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Package2 } from "lucide-react";
-import { products, formatCurrency } from "../data/mockData";
+import { useState, useMemo } from "react";
+import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Package2, Tag, Sparkles, Percent } from "lucide-react";
+import { products, formatCurrency, commercialPolicies } from "../data/mockData";
+
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
