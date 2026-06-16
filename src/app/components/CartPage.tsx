@@ -29,42 +29,53 @@ const initialCart: CartItem[] = [
   },
 ];
 
+// Condições de pagamento disponíveis por tabela de preço
+const paymentOptionsByTable: Record<string, { id: string; label: string; surcharge: number; description?: string }[]> = {
+  'TAB-A': [
+    { id: 'avista', label: 'À vista (PIX/Boleto)', surcharge: -3, description: '3% de desconto adicional' },
+    { id: '30',    label: '30 DDL',               surcharge: 0 },
+    { id: '30-60', label: '30/60 DDL',            surcharge: 0 },
+    { id: '5x',    label: '5x sem juros',         surcharge: 0, description: 'Condição padrão da Tabela A' },
+  ],
+  'TAB-B': [
+    { id: 'avista', label: 'À vista (PIX/Boleto)', surcharge: -2 },
+    { id: '30-60', label: '30/60 DDL',            surcharge: 0 },
+    { id: '5x',    label: '5x sem juros',         surcharge: 0, description: 'Condição padrão da Tabela B' },
+  ],
+  'TAB-C': [
+    { id: 'avista', label: 'À vista (PIX/Boleto)', surcharge: -2 },
+    { id: '30',    label: '30 DDL',               surcharge: 0 },
+    { id: '3x',    label: '3x sem juros',         surcharge: 0, description: 'Condição padrão da Tabela C' },
+  ],
+};
+
+// Campanhas ativas por tabela de preço
+const campaignsByTable: Record<string, { id: string; name: string; description: string; discount: number }[]> = {
+  'TAB-A': [
+    { id: 'mid-year', name: 'Mid Year Boost', description: 'Coleção 2026 · 5% extra em pedidos acima de R$ 5.000', discount: 5 },
+  ],
+  'TAB-B': [
+    { id: 'fidelidade', name: 'Fidelidade Tesla', description: 'Clientes recorrentes · 4% adicional', discount: 4 },
+  ],
+  'TAB-C': [
+    { id: 'parceiro', name: 'Parceiro Regional', description: '3% de desconto em coleção atual', discount: 3 },
+  ],
+};
+
 export function CartPage({ onNavigate }: CartPageProps) {
   const [cart, setCart] = useState<CartItem[]>(initialCart);
-  const [paymentCond, setPaymentCond] = useState('30/60/90 DDL');
+  const [tableId, setTableId] = useState<string>('TAB-A');
+  const policy = useMemo(() => commercialPolicies.find(p => p.id === tableId)!, [tableId]);
+  const paymentOptions = paymentOptionsByTable[tableId] ?? [];
+  const campaigns = campaignsByTable[tableId] ?? [];
+  const [paymentId, setPaymentId] = useState<string>(paymentOptions[0]?.id ?? '');
+  const [campaignIds, setCampaignIds] = useState<string[]>([]);
   const [obs, setObs] = useState('');
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [approvalRequired] = useState(true);
 
-  const updateQty = (productId: string, size: string, delta: number) => {
-    setCart(prev => prev.map(item => {
-      if (item.product.id !== productId) return item;
-      const newSizes = { ...item.sizes, [size]: Math.max(0, (item.sizes[size] || 0) + delta) };
-      if (newSizes[size] === 0) delete newSizes[size];
-      return { ...item, sizes: newSizes };
-    }).filter(item => Object.keys(item.sizes).length > 0));
-  };
+  const selectedPayment = paymentOptions.find(p => p.id === paymentId) ?? paymentOptions[0];
 
-  const removeItem = (productId: string) => {
-    setCart(prev => prev.filter(item => item.product.id !== productId));
-  };
-
-  const getItemTotal = (item: CartItem) => {
-    const pairs = Object.values(item.sizes).reduce((a, b) => a + b, 0);
-    return { pairs, value: pairs * item.product.price };
-  };
-
-  const grandTotal = cart.reduce((acc, item) => {
-    const { value } = getItemTotal(item);
-    return acc + value;
-  }, 0);
-  const grandPairs = cart.reduce((acc, item) => {
-    const { pairs } = getItemTotal(item);
-    return acc + pairs;
-  }, 0);
-
-  const discount = grandTotal * 0.12;
-  const finalTotal = grandTotal - discount;
 
   if (step === 'done') {
     return (
