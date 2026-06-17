@@ -274,7 +274,6 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
         ]
       : [
           { icon: ShoppingBag, label: 'Meus Pedidos', view: 'history' },
-          { icon: Clock, label: 'Histórico de compras', view: 'history' },
           { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ];
