@@ -228,7 +228,7 @@ interface TopBarProps {
   selectedClient?: Client | null;
 }
 
-export function TopBar({ title, subtitle, profile, currentView, notifications = 4, actions, onNavigate, onLogout, cartCount = 3, selectedClient }: TopBarProps) {
+export function TopBar({ title, subtitle, profile, currentView, notifications = 4, actions, onNavigate, onLogout, cartCount = 0, selectedClient }: TopBarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
   const avatarRef = useRef<HTMLButtonElement>(null);
