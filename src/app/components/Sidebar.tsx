@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
@@ -38,6 +38,13 @@ interface SidebarProps {
 export function Sidebar({ currentView, onNavigate, profile, onLogout, notifications = 4, selectedClient }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Auto-collapse sidebar when lojista enters the cart
+  useEffect(() => {
+    if (profile === 'lojista' && currentView === 'cart') {
+      setCollapsed(true);
+    }
+  }, [profile, currentView]);
 
   const profileInfo = profileLabels[profile];
   const ProfileIcon = profileInfo.icon;
