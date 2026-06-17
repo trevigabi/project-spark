@@ -243,14 +243,14 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
       ? [
           { icon: BarChart3, label: 'Indicadores', view: 'dashboard' as View },
           { icon: Users, label: 'Clientes', view: 'clients' as View },
-          { icon: Package2, label: 'Catálogo', view: 'catalog' as View },
+          ...(selectedClient ? [{ icon: Package2, label: 'Catálogo', view: 'catalog' as View }] : []),
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
         ]
       : profile === 'rep'
       ? [
           { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' as View },
           { icon: Store, label: 'Carteira de Clientes', view: 'clients' as View },
-          { icon: Package2, label: 'Catálogo', view: 'catalog' as View },
+          ...(selectedClient ? [{ icon: Package2, label: 'Catálogo', view: 'catalog' as View }] : []),
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
         ]
       : [
