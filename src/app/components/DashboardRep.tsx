@@ -41,7 +41,7 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
     'entregue': 'bg-purple-400/20 text-purple-400',
   };
 
-  if (!selectedClient && !showDashboard) {
+  if (!embedded && !selectedClient && !showDashboard) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[60vh]">
         <div className="text-center max-w-md">
