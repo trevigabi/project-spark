@@ -75,23 +75,6 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
         </div>
       ) : (
         <>
-      {/* Banner — client selected */}
-      {selectedClient && (
-        <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
-          <Store className="w-4 h-4 text-primary flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-primary truncate" style={{ fontSize: '0.88rem', fontWeight: 600 }}>{selectedClient.name}</p>
-            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Cliente selecionado — clique em outro para trocar</p>
-          </div>
-          <button
-            onClick={() => setSelectedClient(null)}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
-            title="Remover seleção"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
 
       {/* Mode toggle: Carteira do dia / Todos */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -116,23 +99,6 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
         )}
       </div>
 
-      {/* Banner — client selected */}
-      {selectedClient && (
-        <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
-          <Store className="w-4 h-4 text-primary flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-primary truncate" style={{ fontSize: '0.88rem', fontWeight: 600 }}>{selectedClient.name}</p>
-            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Cliente selecionado — clique em outro para trocar</p>
-          </div>
-          <button
-            onClick={() => setSelectedClient(null)}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
-            title="Remover seleção"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
