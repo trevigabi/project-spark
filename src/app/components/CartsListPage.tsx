@@ -88,33 +88,76 @@ export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, o
           </p>
         </div>
         <button
-          onClick={() => setNewOpen(o => !o)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          onClick={() => canCreate && setNewOpen(o => !o)}
+          disabled={!canCreate}
+          title={canCreate ? 'Criar novo carrinho' : 'Selecione um cliente para criar um carrinho'}
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition-colors ${canCreate ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'}`}
           style={{ fontSize: '0.83rem', fontWeight: 600 }}
         >
           <Plus className="w-4 h-4" /> Novo carrinho
         </button>
       </div>
 
-      {/* Banner sem cliente selecionado */}
-      {!selectedClient && onNavigateClients && (
-        <div className="flex items-center justify-between gap-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-5">
-          <div className="flex items-center gap-2.5">
+      {/* Bloco sem cliente selecionado: busca rápida + atalho para carteira */}
+      {!selectedClient && (
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-5">
+          <div className="flex items-center gap-2.5 mb-3">
             <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
               <Users className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <p className="text-foreground" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Nenhum cliente selecionado</p>
-              <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Escolha um carrinho existente abaixo ou selecione um cliente para começar.</p>
+              <p className="text-foreground" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Selecione um cliente para criar um carrinho</p>
+              <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Busque pelo nome ou abra sua carteira de clientes.</p>
             </div>
           </div>
-          <button
-            onClick={onNavigateClients}
-            className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-            style={{ fontSize: '0.78rem', fontWeight: 600 }}
-          >
-            Selecionar cliente
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <div className="flex items-center gap-2 rounded-lg bg-background border border-border px-3 py-2">
+                <Search className="w-3.5 h-3.5 text-muted-foreground" />
+                <input
+                  value={clientQuery}
+                  onChange={e => setClientQuery(e.target.value)}
+                  placeholder="Buscar cliente por nome ou código..."
+                  className="flex-1 bg-transparent outline-none text-foreground placeholder-muted-foreground"
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+              {clientQuery && clientMatches.length > 0 && (
+                <div className="absolute z-10 left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+                  {clientMatches.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        onSelectClient?.(c);
+                        setClientQuery('');
+                        setNewOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-secondary/60 flex items-center gap-2 transition-colors"
+                    >
+                      <Store className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-foreground" style={{ fontSize: '0.82rem' }}>{c.name}</span>
+                      <span className="text-muted-foreground ml-auto mono" style={{ fontSize: '0.7rem' }}>{c.id}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {clientQuery && clientMatches.length === 0 && (
+                <div className="absolute z-10 left-0 right-0 mt-1 bg-card border border-border rounded-lg p-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>
+                  Nenhum cliente encontrado.
+                </div>
+              )}
+            </div>
+            {onNavigateClients && (
+              <button
+                onClick={onNavigateClients}
+                className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+                style={{ fontSize: '0.8rem', fontWeight: 600 }}
+              >
+                <Users className="w-3.5 h-3.5" />
+                Buscar clientes em carteira
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -144,31 +187,21 @@ export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, o
         </div>
       )}
 
-      {newOpen && (
+      {newOpen && selectedClient && (
         <div className="bg-card border border-border rounded-xl p-4 mb-5">
-          <p className="text-foreground mb-3" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Criar novo carrinho</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.72rem' }}>Cliente</label>
-              <select
-                value={newClientId}
-                onChange={e => setNewClientId(e.target.value)}
-                className="w-full px-2.5 py-2 rounded-md border border-border bg-surface text-foreground outline-none focus:border-primary"
-                style={{ fontSize: '0.82rem' }}
-              >
-                {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.72rem' }}>Nome do carrinho</label>
-              <input
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                placeholder="Ex.: Reposição Inverno 26"
-                className="w-full px-2.5 py-2 rounded-md border border-border bg-surface text-foreground placeholder-muted-foreground outline-none focus:border-primary"
-                style={{ fontSize: '0.82rem' }}
-              />
-            </div>
+          <p className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Criar novo carrinho</p>
+          <p className="text-muted-foreground mb-3 flex items-center gap-1.5" style={{ fontSize: '0.78rem' }}>
+            <Store className="w-3 h-3" /> Cliente: <span className="text-foreground" style={{ fontWeight: 600 }}>{selectedClient.name}</span>
+          </p>
+          <div>
+            <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.72rem' }}>Nome do carrinho</label>
+            <input
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              placeholder="Ex.: Reposição Inverno 26"
+              className="w-full px-2.5 py-2 rounded-md border border-border bg-surface text-foreground placeholder-muted-foreground outline-none focus:border-primary"
+              style={{ fontSize: '0.82rem' }}
+            />
           </div>
           <div className="flex justify-end gap-2 mt-3">
             <button onClick={() => setNewOpen(false)} className="px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground" style={{ fontSize: '0.8rem' }}>Cancelar</button>
