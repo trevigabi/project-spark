@@ -239,10 +239,13 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
   const dropdownItems: DropdownItem[] =
     profile === 'admin'
       ? [
-          { icon: LayoutDashboard, label: 'Dashboard', view: 'dashboard' },
-          { icon: ShoppingBag, label: 'Pedidos', view: 'history' },
+          { icon: BarChart3, label: 'Indicadores', view: 'dashboard' },
+          { icon: Package2, label: 'Catálogo', view: 'catalog' },
+          { icon: Users, label: 'Clientes', view: 'clients' },
+          { icon: Clock, label: 'Pedidos', view: 'history' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
-          { icon: BarChart3, label: 'Sell-out', view: 'sellout' },
+          { icon: UserCheck, label: 'Representantes', view: 'admin' },
+          { icon: Tag, label: 'Política Comercial', view: 'admin' },
           { icon: Settings, label: 'Gestão', view: 'admin' },
           { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },

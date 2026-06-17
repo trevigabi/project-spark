@@ -59,8 +59,8 @@ export default function App() {
 
   const navigate = (view: View) => setCurrentView(view);
 
-  const viewInfo = currentView === 'dashboard' && profile === 'rep'
-    ? { title: 'Indicadores', subtitle: 'Sua performance e carteira' }
+  const viewInfo = currentView === 'dashboard' && (profile === 'rep' || profile === 'admin')
+    ? { title: 'Indicadores', subtitle: profile === 'admin' ? 'Visão geral da indústria' : 'Sua performance e carteira' }
     : viewTitles[currentView];
 
   if (!authenticated) {
@@ -112,15 +112,16 @@ export default function App() {
   };
 
   const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
+  const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'profile'];
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
   const isRepHistory = profile === 'rep' && currentView === 'history';
   const isRepMarketing = profile === 'rep' && currentView === 'marketing';
   const isRepCart = profile === 'rep' && currentView === 'cart';
-  const isAdminCart = profile === 'admin' && currentView === 'cart';
+  const isAdminNoSidebar = profile === 'admin' && noSidebarViews.includes(currentView);
   const isLojistCart = profile === 'lojista' && currentView === 'cart';
   const isProfile = currentView === 'profile';
-  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminCart || isLojistCart || isProfile;
+  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminNoSidebar || isLojistCart || isProfile;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
@@ -150,7 +151,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
-          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isProfile ? null : selectedClient}
+          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isAdminNoSidebar || isProfile ? null : selectedClient}
         />
         <main className="flex-1 overflow-y-auto">
           {renderView()}
