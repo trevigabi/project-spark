@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft, FolderPlus, List } from "lucide-react";
 import { products, formatCurrency, commercialPolicies } from "../data/mockData";
 import type { CartContext } from "./CartsListPage";
 
@@ -9,6 +9,8 @@ type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'histor
 interface CartPageProps {
   onNavigate: (view: View) => void;
   cartContext?: CartContext | null;
+  multiCart?: boolean;
+  onCreateNewCart?: (name: string) => void;
 }
 
 interface CartItem {
