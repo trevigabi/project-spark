@@ -736,10 +736,8 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    setPendingAdd({ product: confirmAdd.product, qtys: confirmAdd.qtys });
                     setConfirmAdd(null);
-                    setCreatingMode(false);
-                    setCreatingNewName('');
+                    onNavigate('carts');
                   }}
                   className="flex-1 px-3 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                   style={{ fontSize: '0.82rem', fontWeight: 500 }}
