@@ -101,6 +101,7 @@ export default function App() {
           <CartsListPage
             selectedClient={selectedClient}
             onNavigateClients={() => setCurrentView('clients')}
+            onSelectClient={(c) => setSelectedClient(c)}
             onOpenCart={(ctx) => {
               // Se o carrinho pertence a outro cliente, troca automaticamente o cliente ativo
               if (!selectedClient || selectedClient.id !== ctx.clientId) {
