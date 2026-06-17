@@ -66,7 +66,7 @@ export function MarketingStudio() {
   ];
 
   return (
-    <div className="p-6 max-w-[900px] mx-auto w-full space-y-5">
+    <div className="p-6 max-w-[1200px] mx-auto w-full space-y-5">
       {/* Header */}
       <div className="rounded-xl bg-gradient-to-r from-purple-500/10 via-primary/5 to-transparent border border-purple-500/20 p-5">
         <div className="flex items-center gap-3">
