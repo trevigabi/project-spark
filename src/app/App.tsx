@@ -9,7 +9,7 @@ import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
 import { CartPage } from "./components/CartPage";
-import { CartsListPage, type CartContext } from "./components/CartsListPage";
+import { CartsListPage, mockCarts, type CartContext } from "./components/CartsListPage";
 import { OrderHistory } from "./components/OrderHistory";
 import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
 import { MarketingStudio } from "./components/MarketingStudio";
