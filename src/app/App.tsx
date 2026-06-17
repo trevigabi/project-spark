@@ -105,13 +105,13 @@ export default function App() {
     }
   };
 
-  const isLojistaCatalog = profile === 'lojista' && currentView === 'catalog';
+  const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const hideSidebar = isRepClients;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
-      {isLojistaCatalog ? (
+      {isFiltersCatalog ? (
         <LojistaFiltersSidebar
           filters={catalogFilters}
           onChange={setCatalogFilters}
