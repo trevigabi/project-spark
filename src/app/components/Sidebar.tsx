@@ -245,6 +245,7 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           { icon: Users, label: 'Clientes', view: 'clients' as View },
           ...(selectedClient ? [{ icon: Package2, label: 'Catálogo', view: 'catalog' as View }] : []),
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
+          { icon: Settings, label: 'Gestão', view: 'admin' as View },
         ]
       : profile === 'rep'
       ? [
@@ -262,9 +263,6 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
     profile === 'admin'
       ? [
           { icon: Clock, label: 'Pedidos', view: 'history' },
-          { icon: UserCheck, label: 'Representantes', view: 'admin' },
-          { icon: Tag, label: 'Política Comercial', view: 'admin' },
-          { icon: Settings, label: 'Gestão', view: 'admin' },
           { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ]
@@ -349,10 +347,14 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
 
         {/* Client chip — before avatar */}
         {selectedClient && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 border border-border/60 rounded-lg flex-shrink-0">
+          <button
+            onClick={() => onNavigate('history')}
+            className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 border border-border/60 rounded-lg flex-shrink-0 hover:bg-secondary/60 hover:border-primary/30 transition-colors"
+            title="Ver histórico de pedidos deste cliente"
+          >
             <Store className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-muted-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
-          </div>
+            <span className="text-muted-foreground hover:text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
+          </button>
         )}
 
         {/* Avatar + dropdown */}
