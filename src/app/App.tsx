@@ -178,6 +178,7 @@ export default function App() {
         );
       case 'history':
         if (profile === 'lojista') return <LojistaHistoryDashboard onNavigate={navigate} />;
+        if (selectedClient) return <LojistaHistoryDashboard onNavigate={navigate} />;
         return <OrderHistory onNavigate={navigate} profile={profile} />;
       case 'marketing':
         return <MarketingStudio />;
@@ -203,8 +204,9 @@ export default function App() {
   const isRepCart = profile === 'rep' && currentView === 'cart';
   const isAdminNoSidebar = profile === 'admin' && noSidebarViews.includes(currentView);
   const isLojistCart = profile === 'lojista' && currentView === 'cart';
+  const isLojistHistory = profile === 'lojista' && currentView === 'history';
   const isProfile = currentView === 'profile';
-  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminNoSidebar || isLojistCart || isProfile;
+  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminNoSidebar || isLojistCart || isLojistHistory || isProfile;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
