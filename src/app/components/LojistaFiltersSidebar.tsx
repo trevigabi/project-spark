@@ -195,7 +195,7 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
 
             {/* Cores */}
             <FilterSection icon={Palette} label="Cores">
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-6 gap-1.5">
                 {allColors.map(c => {
                   const active = filters.colors.includes(c);
                   const bg = colorSwatch[c] || '#94a3b8';
@@ -204,11 +204,11 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
                       key={c}
                       onClick={() => toggleColor(c)}
                       title={c}
-                      className={`relative w-8 h-8 rounded-full border-2 transition-all ${active ? 'border-primary scale-110' : 'border-border hover:border-foreground/40'}`}
+                      className={`relative w-5 h-5 rounded-full border-2 transition-all ${active ? 'border-primary scale-110' : 'border-border hover:border-foreground/40'}`}
                       style={{ background: bg }}
                     >
                       {active && (
-                        <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold" style={{ color: bg === '#fff' ? '#111' : '#fff' }}>✓</span>
+                        <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold" style={{ color: bg === '#fff' ? '#111' : '#fff' }}>✓</span>
                       )}
                     </button>
                   );
