@@ -235,15 +235,31 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
   const ProfileIcon = profileInfo.icon;
 
   type DropdownItem = { label: string; icon: React.ComponentType<{ className?: string }>; view?: View; action?: () => void };
+  type HeaderItem = { label: string; icon: React.ComponentType<{ className?: string }>; view: View };
+
+  const headerItems: HeaderItem[] =
+    profile === 'admin'
+      ? [
+          { icon: Users, label: 'Clientes', view: 'clients' },
+          { icon: Package2, label: 'Catálogo', view: 'catalog' },
+          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
+        ]
+      : profile === 'rep'
+      ? [
+          { icon: Store, label: 'Carteira de Clientes', view: 'clients' },
+          { icon: Package2, label: 'Catálogo', view: 'catalog' },
+          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
+        ]
+      : [
+          { icon: Package2, label: 'Catálogo', view: 'catalog' },
+          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
+        ];
 
   const dropdownItems: DropdownItem[] =
     profile === 'admin'
       ? [
           { icon: BarChart3, label: 'Indicadores', view: 'dashboard' },
-          { icon: Package2, label: 'Catálogo', view: 'catalog' },
-          { icon: Users, label: 'Clientes', view: 'clients' },
           { icon: Clock, label: 'Pedidos', view: 'history' },
-          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
           { icon: UserCheck, label: 'Representantes', view: 'admin' },
           { icon: Tag, label: 'Política Comercial', view: 'admin' },
           { icon: Settings, label: 'Gestão', view: 'admin' },
@@ -253,17 +269,13 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
       : profile === 'rep'
       ? [
           { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' },
-          { icon: Package2, label: 'Catálogo', view: 'catalog' },
-          { icon: Store, label: 'Carteira de Clientes', view: 'clients' },
           { icon: Clock, label: 'Pedidos', view: 'history' },
-          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
           { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ]
       : [
           { icon: ShoppingBag, label: 'Meus Pedidos', view: 'history' },
           { icon: Clock, label: 'Histórico de compras', view: 'history' },
-          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
           { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ];
@@ -295,6 +307,28 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
 
       <div className="flex items-center gap-1 flex-shrink-0">
         {actions}
+
+        {/* Header nav items */}
+        {headerItems.map(item => {
+          const Icon = item.icon;
+          const active = currentView === item.view;
+          return (
+            <button
+              key={item.label}
+              onClick={() => onNavigate(item.view)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+                active
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+              }`}
+              style={{ fontSize: '0.78rem', fontWeight: active ? 600 : 500 }}
+              title={item.label}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">{item.label}</span>
+            </button>
+          );
+        })}
 
         {/* Cart — hidden for admin */}
         {profile !== 'admin' && (
