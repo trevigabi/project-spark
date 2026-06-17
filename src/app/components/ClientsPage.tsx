@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Search, MapPin, Users, Store, X, BarChart3, Sparkles } from "lucide-react";
+import { Search, MapPin, Users, BarChart3, Sparkles } from "lucide-react";
 import { clients, Client, formatCurrency } from "../data/mockData";
-import { DashboardRep } from "./DashboardRep";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -21,7 +20,7 @@ const statusColors: Record<string, string> = {
 const SUGGESTED_REP = 'Marcos Andrade';
 
 export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: ClientsPageProps) {
-  const [tab, setTab] = useState<'carteira' | 'indicadores'>('carteira');
+  
   const [mode, setMode] = useState<'sugerida' | 'todos'>('sugerida');
   const [search, setSearch] = useState('');
   const [regionFilter, setRegionFilter] = useState('Todos');
@@ -51,30 +50,18 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
   return (
     <div className="p-6 max-w-[1200px] mx-auto space-y-5">
 
-      {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-border">
+      {/* Indicadores CTA */}
+      <div className="flex justify-end">
         <button
-          onClick={() => setTab('carteira')}
-          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors ${tab === 'carteira' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-          style={{ fontSize: '0.85rem', fontWeight: 600 }}
-        >
-          <Store className="w-4 h-4" /> Sua carteira de clientes
-        </button>
-        <button
-          onClick={() => setTab('indicadores')}
-          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors ${tab === 'indicadores' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-          style={{ fontSize: '0.85rem', fontWeight: 600 }}
+          onClick={() => onNavigate('dashboard')}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-primary bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          style={{ fontSize: '0.82rem', fontWeight: 600 }}
         >
           <BarChart3 className="w-4 h-4" /> Meus indicadores
         </button>
       </div>
 
-      {tab === 'indicadores' ? (
-        <div className="-mx-6 -mb-5">
-          <DashboardRep onNavigate={onNavigate} selectedClient={selectedClient} embedded />
-        </div>
-      ) : (
-        <>
+
 
       {/* Mode toggle: Carteira do dia / Todos */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -207,8 +194,6 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
           </div>
         )}
       </div>
-        </>
-      )}
     </div>
   );
 }
