@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  LayoutDashboard, Package2, ShoppingBag, ShoppingCart, Clock,
+  LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
   Footprints, Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
   UserCheck, Tag,
@@ -9,7 +9,7 @@ import {
 import type { Client } from "../data/mockData";
 
 export type View =
-  | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history'
+  | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history'
   | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile';
 
 type Profile = 'admin' | 'rep' | 'lojista';
@@ -327,12 +327,13 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
       <div className="flex items-center gap-1 flex-shrink-0">
         {actions}
 
-        {/* Cart */}
+        {/* Cart(s) — admin uses multi-cart icon and view */}
         <button
-          onClick={() => onNavigate('cart')}
+          onClick={() => onNavigate(profile === 'admin' ? 'carts' : 'cart')}
           className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+          title={profile === 'admin' ? 'Carrinhos' : 'Carrinho'}
         >
-          <ShoppingCart className="w-4 h-4" />
+          {profile === 'admin' ? <ShoppingBasket className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
           {cartCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground rounded-full flex items-center justify-center" style={{ fontSize: '0.6rem', fontWeight: 700 }}>
               {cartCount}

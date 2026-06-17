@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Package2, Tag, Sparkles, Percent } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft } from "lucide-react";
 import { products, formatCurrency, commercialPolicies } from "../data/mockData";
+import type { CartContext } from "./CartsListPage";
 
 
-type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
+type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
 interface CartPageProps {
   onNavigate: (view: View) => void;
+  cartContext?: CartContext | null;
 }
 
 interface CartItem {
@@ -62,7 +64,7 @@ const campaignsByTable: Record<string, { id: string; name: string; description: 
   ],
 };
 
-export function CartPage({ onNavigate }: CartPageProps) {
+export function CartPage({ onNavigate, cartContext }: CartPageProps) {
   const [cart, setCart] = useState<CartItem[]>(initialCart);
   const [tableId, setTableId] = useState<string>('TAB-A');
   const policy = useMemo(() => commercialPolicies.find(p => p.id === tableId)!, [tableId]);
@@ -138,6 +140,27 @@ export function CartPage({ onNavigate }: CartPageProps) {
 
   return (
     <div className="p-6 max-w-[1200px] mx-auto w-full">
+      {cartContext && (
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => onNavigate('carts')}
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+              style={{ fontSize: '0.78rem' }}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Carrinhos
+            </button>
+            <div className="w-px h-5 bg-border" />
+            <div className="min-w-0">
+              <p className="text-foreground truncate" style={{ fontSize: '1rem', fontWeight: 700 }}>{cartContext.cartName}</p>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <Store className="w-3 h-3" />
+                <span className="truncate" style={{ fontSize: '0.75rem' }}>Cliente: <span className="text-foreground" style={{ fontWeight: 600 }}>{cartContext.clientName}</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Step indicator */}
       <div className="flex items-center gap-3 mb-6">
         <button

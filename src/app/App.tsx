@@ -9,6 +9,7 @@ import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
 import { CartPage } from "./components/CartPage";
+import { CartsListPage, type CartContext } from "./components/CartsListPage";
 import { OrderHistory } from "./components/OrderHistory";
 import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
 import { MarketingStudio } from "./components/MarketingStudio";
@@ -25,6 +26,7 @@ const viewTitles: Record<View, { title: string; subtitle?: string }> = {
   catalog: { title: 'Catálogo' },
   'order-grade': { title: 'Pedido por Grade', subtitle: 'Monte pedidos em menos de 2 minutos' },
   cart: { title: 'Carrinho', subtitle: 'Revise e finalize seu pedido' },
+  carts: { title: 'Carrinhos', subtitle: 'Selecione um carrinho ou crie um novo' },
   history: { title: 'Histórico de Pedidos', subtitle: 'Todos os seus pedidos' },
   marketing: { title: 'Estúdio de Marketing IA', subtitle: 'Crie campanhas profissionais automaticamente' },
   sellout: { title: 'Sell-out Intelligence', subtitle: 'Análise de performance comercial' },
@@ -38,6 +40,7 @@ export default function App() {
   const [profile, setProfile] = useState<Profile>('admin');
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [activeCart, setActiveCart] = useState<CartContext | null>(null);
   const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>(defaultFilters);
 
   const handleLogin = (selectedProfile: Profile) => {
@@ -92,7 +95,9 @@ export default function App() {
       case 'order-grade':
         return <OrderGrade onNavigate={navigate} selectedClient={selectedClient} />;
       case 'cart':
-        return <CartPage onNavigate={navigate} />;
+        return <CartPage onNavigate={navigate} cartContext={activeCart} />;
+      case 'carts':
+        return <CartsListPage onOpenCart={(ctx) => { setActiveCart(ctx); setCurrentView('cart'); }} />;
       case 'history':
         if (profile === 'lojista') return <LojistaHistoryDashboard onNavigate={navigate} />;
         return <OrderHistory onNavigate={navigate} profile={profile} />;
@@ -112,7 +117,7 @@ export default function App() {
   };
 
   const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
-  const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'profile'];
+  const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'carts', 'profile'];
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
   const isRepHistory = profile === 'rep' && currentView === 'history';
