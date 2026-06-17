@@ -161,6 +161,30 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart }
               </div>
             </div>
           </div>
+          {multiCart && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onNavigate('carts')}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                style={{ fontSize: '0.75rem', fontWeight: 500 }}
+                title="Selecionar outro carrinho"
+              >
+                <List className="w-3.5 h-3.5" /> Outros carrinhos
+              </button>
+              <button
+                onClick={() => {
+                  const name = window.prompt(`Nome do novo carrinho para ${cartContext.clientName}:`, '');
+                  if (name === null) return;
+                  onCreateNewCart?.(name || 'Novo carrinho');
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                title="Criar outro carrinho para este cliente"
+              >
+                <FolderPlus className="w-3.5 h-3.5" /> Novo carrinho
+              </button>
+            </div>
+          )}
         </div>
       )}
       {/* Step indicator */}
