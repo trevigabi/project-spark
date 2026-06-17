@@ -61,6 +61,8 @@ export default function App() {
 
   const viewInfo = currentView === 'dashboard' && profile === 'rep'
     ? { title: 'Indicadores', subtitle: 'Sua performance e carteira' }
+    : currentView === 'cart' && (profile === 'rep' || profile === 'admin') && selectedClient
+    ? { title: 'Carrinho', subtitle: `Revise e finalize seu pedido — ${selectedClient.name}` }
     : viewTitles[currentView];
 
   if (!authenticated) {
@@ -117,8 +119,10 @@ export default function App() {
   const isRepHistory = profile === 'rep' && currentView === 'history';
   const isRepMarketing = profile === 'rep' && currentView === 'marketing';
   const isRepCart = profile === 'rep' && currentView === 'cart';
+  const isAdminCart = profile === 'admin' && currentView === 'cart';
+  const isLojistCart = profile === 'lojista' && currentView === 'cart';
   const isProfile = currentView === 'profile';
-  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isProfile;
+  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminCart || isLojistCart || isProfile;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
