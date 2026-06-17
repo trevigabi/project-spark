@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, Users, Store, X, BarChart3, Sparkles, ArrowUpDown } from "lucide-react";
+import { Search, MapPin, Users, Store, X, BarChart3, Sparkles } from "lucide-react";
 import { clients, Client, formatCurrency } from "../data/mockData";
 import { DashboardRep } from "./DashboardRep";
 
