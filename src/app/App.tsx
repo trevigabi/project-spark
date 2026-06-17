@@ -40,6 +40,7 @@ export default function App() {
   const [profile, setProfile] = useState<Profile>('admin');
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [activeCart, setActiveCart] = useState<CartContext | null>(null);
   const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>(defaultFilters);
 
   const handleLogin = (selectedProfile: Profile) => {
