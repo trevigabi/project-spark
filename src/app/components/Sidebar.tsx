@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  LayoutDashboard, Package2, ShoppingBag, ShoppingCart, Clock,
+  LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
   Footprints, Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
   UserCheck, Tag,
@@ -9,7 +9,7 @@ import {
 import type { Client } from "../data/mockData";
 
 export type View =
-  | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history'
+  | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history'
   | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile';
 
 type Profile = 'admin' | 'rep' | 'lojista';
