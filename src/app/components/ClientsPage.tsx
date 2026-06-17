@@ -175,48 +175,65 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
         </div>
       </div>
 
-      {/* Client grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {filtered.map(client => {
-          const isSelected = selectedClient?.id === client.id;
-          return (
-            <div
-              key={client.id}
-              className={`bg-card border rounded-xl p-4 cursor-pointer transition-all hover:border-primary/40 ${isSelected ? 'border-primary/50 bg-primary/5' : 'border-border'}`}
-              onClick={() => handleSelectClient(client)}
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-11 h-11 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary" style={{ fontSize: '0.75rem', fontWeight: 700 }}>{client.avatar}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-foreground truncate" style={{ fontSize: '0.9rem', fontWeight: 600 }}>{client.name}</p>
-                    <span className={`px-1.5 py-0.5 rounded-full flex-shrink-0 ${statusColors[client.status]}`} style={{ fontSize: '0.62rem', fontWeight: 600 }}>
+      {/* Client table */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <table className="w-full text-left" style={{ fontSize: '0.82rem' }}>
+          <thead>
+            <tr className="border-b border-border bg-muted/30">
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground" style={{ width: '40%' }}>Cliente</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground">Região</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground">Status</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground">Último pedido</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground text-right">Volume histórico</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(client => {
+              const isSelected = selectedClient?.id === client.id;
+              return (
+                <tr
+                  key={client.id}
+                  className={`border-b border-border cursor-pointer transition-colors hover:bg-primary/5 ${isSelected ? 'bg-primary/5' : ''}`}
+                  onClick={() => handleSelectClient(client)}
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-primary" style={{ fontSize: '0.7rem', fontWeight: 700 }}>{client.avatar}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-foreground truncate" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{client.name}</p>
+                          {isSelected && (
+                            <span className="px-1.5 py-0.5 rounded-full flex-shrink-0 bg-primary/15 text-primary" style={{ fontSize: '0.62rem', fontWeight: 600 }}>
+                              selecionado
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-muted-foreground flex items-center gap-1" style={{ fontSize: '0.72rem' }}>
+                          <MapPin className="w-3 h-3" /> {client.city}, {client.state}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.8rem' }}>{client.region}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full ${statusColors[client.status]}`} style={{ fontSize: '0.72rem', fontWeight: 600 }}>
                       {client.status}
                     </span>
-                    {isSelected && (
-                      <span className="px-1.5 py-0.5 rounded-full flex-shrink-0 bg-primary/15 text-primary" style={{ fontSize: '0.62rem', fontWeight: 600 }}>
-                        selecionado
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-muted-foreground flex items-center gap-1 mt-0.5" style={{ fontSize: '0.75rem' }}>
-                    <MapPin className="w-3 h-3" /> {client.city}, {client.state} · {client.region}
-                  </p>
-                  <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Rep: {client.rep}</p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(client.totalPurchased)}</p>
-                  <p className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>histórico</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.8rem' }}>{client.lastOrder}</td>
+                  <td className="px-4 py-3 text-right">
+                    <p className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(client.totalPurchased)}</p>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
         {filtered.length === 0 && (
-          <div className="col-span-2 flex flex-col items-center justify-center py-16 text-center">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
             <Users className="w-10 h-10 text-muted-foreground/30 mb-3" />
             <p className="text-foreground" style={{ fontWeight: 600 }}>Nenhum cliente encontrado</p>
             <p className="text-muted-foreground mt-1" style={{ fontSize: '0.85rem' }}>Tente ajustar os filtros</p>

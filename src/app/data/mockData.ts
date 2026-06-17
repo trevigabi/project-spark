@@ -252,6 +252,14 @@ export const clients: Client[] = [
   { id: 'CLI-006', name: 'Fashion Feet SP', cnpj: '67.890.123/0001-45', city: 'Campinas', state: 'SP', region: 'Sudeste', rep: 'Fernanda Lima', lastOrder: '2026-06-04', totalPurchased: 246000, status: 'ativo', avatar: 'FF', policyId: 'TAB-A' },
   { id: 'CLI-007', name: 'Step Up Calçados', cnpj: '78.901.234/0001-56', city: 'Curitiba', state: 'PR', region: 'Sul', rep: 'Carlos Mendes', lastOrder: '2026-06-03', totalPurchased: 123500, status: 'ativo', avatar: 'SU', policyId: 'TAB-B' },
   { id: 'CLI-008', name: 'Andar Bem Gaúcha', cnpj: '89.012.345/0001-67', city: 'Porto Alegre', state: 'RS', region: 'Sul', rep: 'Ana Santos', lastOrder: '2026-06-02', totalPurchased: 70400, status: 'ativo', avatar: 'AB', policyId: 'TAB-B' },
+  { id: 'CLI-009', name: 'Passo Certo Campinas', cnpj: '98.765.432/0001-11', city: 'Campinas', state: 'SP', region: 'Sudeste', rep: 'Marcos Andrade', lastOrder: '2026-06-01', totalPurchased: 87000, status: 'ativo', avatar: 'PC', policyId: 'TAB-A' },
+  { id: 'CLI-010', name: 'Péquenos do Sul', cnpj: '11.222.333/0001-22', city: 'Florianópolis', state: 'SC', region: 'Sul', rep: 'Marcos Andrade', lastOrder: '2026-05-28', totalPurchased: 45200, status: 'ativo', avatar: 'PS', policyId: 'TAB-B' },
+  { id: 'CLI-011', name: 'Caminhos Infantis RJ', cnpj: '22.333.444/0001-33', city: 'Niterói', state: 'RJ', region: 'Sudeste', rep: 'Marcos Andrade', lastOrder: '2026-05-25', totalPurchased: 67800, status: 'em aberto', avatar: 'CI', policyId: 'TAB-A' },
+  { id: 'CLI-012', name: 'Pé de Anjo Brasília', cnpj: '33.444.555/0001-44', city: 'Brasília', state: 'DF', region: 'Centro-Oeste', rep: 'Marcos Andrade', lastOrder: '2026-05-20', totalPurchased: 115000, status: 'ativo', avatar: 'PA', policyId: 'TAB-B' },
+  { id: 'CLI-013', name: 'Estilo Kids SP', cnpj: '44.555.666/0001-55', city: 'Guarulhos', state: 'SP', region: 'Sudeste', rep: 'Marcos Andrade', lastOrder: '2026-05-18', totalPurchased: 92000, status: 'ativo', avatar: 'EK', policyId: 'TAB-A' },
+  { id: 'CLI-014', name: 'Sapatinho de Ouro BH', cnpj: '55.666.777/0001-66', city: 'Contagem', state: 'MG', region: 'Sudeste', rep: 'Marcos Andrade', lastOrder: '2026-05-15', totalPurchased: 38100, status: 'inativo', avatar: 'SO', policyId: 'TAB-C' },
+  { id: 'CLI-015', name: 'Mundo Infantil Vitória', cnpj: '66.777.888/0001-77', city: 'Vitória', state: 'ES', region: 'Sudeste', rep: 'Marcos Andrade', lastOrder: '2026-05-10', totalPurchased: 56400, status: 'ativo', avatar: 'MV', policyId: 'TAB-B' },
+  { id: 'CLI-016', name: 'Alegria nos Pés PR', cnpj: '77.888.999/0001-88', city: 'Londrina', state: 'PR', region: 'Sul', rep: 'Marcos Andrade', lastOrder: '2026-05-08', totalPurchased: 72300, status: 'ativo', avatar: 'AP', policyId: 'TAB-A' },
 ];
 
 export const selloutData: SelloutRecord[] = [
