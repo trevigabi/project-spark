@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Sparkles, Check, ChevronRight, ChevronLeft, Download, Share2, Instagram, MessageCircle, Printer, Wand2, Image, Palette, Target, Zap, RefreshCw } from "lucide-react";
+import { Sparkles, Check, ChevronRight, ChevronLeft, Download, Share2, Instagram, MessageCircle, Printer, Wand2, Image, Palette, Target, Zap, RefreshCw, Rocket, Tag, Trophy } from "lucide-react";
 import { products, formatCurrency } from "../data/mockData";
 
 const OBJECTIVES = [
-  { id: 'lancamento', label: 'Lançamento de coleção', icon: '🚀', description: 'Apresente novidades com destaque' },
-  { id: 'promocao', label: 'Promoção / Liquidação', icon: '🏷️', description: 'Ofertas e descontos especiais' },
-  { id: 'reposicao', label: 'Reposição rápida', icon: '⚡', description: 'Destaque produtos disponíveis' },
-  { id: 'institucional', label: 'Institucional de marca', icon: '🏆', description: 'Fortalecimento de brand' },
+  { id: 'lancamento', label: 'Lançamento de coleção', icon: Rocket, description: 'Apresente novidades com destaque' },
+  { id: 'promocao', label: 'Promoção / Liquidação', icon: Tag, description: 'Ofertas e descontos especiais' },
+  { id: 'reposicao', label: 'Reposição rápida', icon: Zap, description: 'Destaque produtos disponíveis' },
+  { id: 'institucional', label: 'Institucional de marca', icon: Trophy, description: 'Fortalecimento de brand' },
 ];
 
 const THEMES = [
@@ -150,7 +150,9 @@ export function MarketingStudio() {
                   onClick={() => setObjective(obj.id)}
                   className={`rounded-xl border p-4 text-left transition-all ${objective === obj.id ? 'border-primary bg-primary/10' : 'border-border hover:border-border/60'}`}
                 >
-                  <span style={{ fontSize: '1.5rem' }}>{obj.icon}</span>
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <obj.icon className="w-5 h-5 text-primary" />
+                  </div>
                   <p className="text-foreground mt-2" style={{ fontWeight: 600, fontSize: '0.85rem' }}>{obj.label}</p>
                   <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{obj.description}</p>
                   {objective === obj.id && <Check className="w-4 h-4 text-primary mt-2" />}
