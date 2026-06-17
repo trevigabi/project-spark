@@ -3,7 +3,6 @@ import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, Ch
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
 
 const tabs = [
-  { id: 'users', label: 'Usuários', icon: Users },
   { id: 'catalog', label: 'Catálogo', icon: Package2 },
   { id: 'pricing', label: 'Preços', icon: Tag },
   { id: 'policies', label: 'Políticas', icon: Shield },
@@ -26,7 +25,7 @@ const pricePolicies = [
 ];
 
 export function AdminPage() {
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState('catalog');
   const [search, setSearch] = useState('');
   const [showAddUser, setShowAddUser] = useState(false);
 
@@ -49,134 +48,6 @@ export function AdminPage() {
           );
         })}
       </div>
-
-      {/* Users Tab */}
-      {activeTab === 'users' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Buscar usuário..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-card text-foreground outline-none focus:border-primary"
-                style={{ fontSize: '0.82rem' }}
-              />
-            </div>
-            <button
-              onClick={() => setShowAddUser(!showAddUser)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              style={{ fontSize: '0.82rem', fontWeight: 600 }}
-            >
-              <Plus className="w-3.5 h-3.5" /> Novo usuário
-            </button>
-          </div>
-
-          {showAddUser && (
-            <div className="bg-card border border-primary/30 rounded-xl p-5 space-y-3">
-              <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Adicionar usuário</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: 'Nome completo', placeholder: 'Nome do usuário' },
-                  { label: 'E-mail', placeholder: 'email@tesla.com.br' },
-                ].map(field => (
-                  <div key={field.label}>
-                    <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>{field.label}</label>
-                    <input
-                      type="text"
-                      placeholder={field.placeholder}
-                      className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground placeholder-muted-foreground outline-none focus:border-primary"
-                      style={{ fontSize: '0.82rem' }}
-                    />
-                  </div>
-                ))}
-                <div>
-                  <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>Perfil</label>
-                  <select className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary" style={{ fontSize: '0.82rem' }}>
-                    <option>Representante</option>
-                    <option>Lojista</option>
-                    <option>Admin</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>Região</label>
-                  <select className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary" style={{ fontSize: '0.82rem' }}>
-                    <option>Sudeste</option>
-                    <option>Sul</option>
-                    <option>Nordeste</option>
-                    <option>Centro-Oeste</option>
-                    <option>Norte</option>
-                    <option>Nacional</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex gap-2 justify-end">
-                <button onClick={() => setShowAddUser(false)} className="px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground transition-colors" style={{ fontSize: '0.82rem' }}>
-                  Cancelar
-                </button>
-                <button onClick={() => setShowAddUser(false)} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-                  Criar usuário
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="bg-card border border-border rounded-xl overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border bg-secondary/20">
-                  {['Nome', 'E-mail', 'Perfil', 'Região', 'Status', 'Último acesso', ''].map(col => (
-                    <th key={col} className="text-left px-4 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {mockUsers
-                  .filter(u => u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()))
-                  .map(user => (
-                    <tr key={user.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                            <span className="text-primary" style={{ fontSize: '0.62rem', fontWeight: 700 }}>
-                              {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                            </span>
-                          </div>
-                          <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{user.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.email}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full ${user.role === 'Admin' ? 'bg-purple-400/10 text-purple-400' : 'bg-blue-400/10 text-blue-400'}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.region}</td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400" style={{ fontSize: '0.65rem', fontWeight: 600 }}>
-                          {user.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{formatDate(user.lastLogin)}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1">
-                          <button className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                          <button className="p-1.5 rounded text-muted-foreground hover:text-red-400 transition-colors">
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* Catalog Tab */}
       {activeTab === 'catalog' && (
@@ -315,6 +186,105 @@ export function AdminPage() {
       {/* Settings Tab */}
       {activeTab === 'settings' && (
         <div className="space-y-4">
+          {/* Usuários */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4 gap-3">
+              <h3 className="text-foreground" style={{ fontWeight: 600 }}>Usuários</h3>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Buscar usuário..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="pl-9 pr-3 py-1.5 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary"
+                    style={{ fontSize: '0.82rem' }}
+                  />
+                </div>
+                <button
+                  onClick={() => setShowAddUser(!showAddUser)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  style={{ fontSize: '0.82rem', fontWeight: 600 }}
+                >
+                  <Plus className="w-3.5 h-3.5" /> Novo usuário
+                </button>
+              </div>
+            </div>
+            {showAddUser && (
+              <div className="bg-secondary/20 border border-primary/30 rounded-xl p-4 mb-4 space-y-3">
+                <h4 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.88rem' }}>Adicionar usuário</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: 'Nome completo', placeholder: 'Nome do usuário' },
+                    { label: 'E-mail', placeholder: 'email@tesla.com.br' },
+                  ].map(field => (
+                    <div key={field.label}>
+                      <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>{field.label}</label>
+                      <input type="text" placeholder={field.placeholder} className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground placeholder-muted-foreground outline-none focus:border-primary" style={{ fontSize: '0.82rem' }} />
+                    </div>
+                  ))}
+                  <div>
+                    <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>Perfil</label>
+                    <select className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary" style={{ fontSize: '0.82rem' }}>
+                      <option>Representante</option><option>Lojista</option><option>Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>Região</label>
+                    <select className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary" style={{ fontSize: '0.82rem' }}>
+                      <option>Sudeste</option><option>Sul</option><option>Nordeste</option><option>Centro-Oeste</option><option>Norte</option><option>Nacional</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <button onClick={() => setShowAddUser(false)} className="px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground transition-colors" style={{ fontSize: '0.82rem' }}>Cancelar</button>
+                  <button onClick={() => setShowAddUser(false)} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>Criar usuário</button>
+                </div>
+              </div>
+            )}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/20">
+                    {['Nome', 'E-mail', 'Perfil', 'Região', 'Status', 'Último acesso', ''].map(col => (
+                      <th key={col} className="text-left px-4 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockUsers.filter(u => u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase())).map(user => (
+                    <tr key={user.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                            <span className="text-primary" style={{ fontSize: '0.62rem', fontWeight: 700 }}>{user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</span>
+                          </div>
+                          <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{user.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.email}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full ${user.role === 'Admin' ? 'bg-purple-400/10 text-purple-400' : 'bg-blue-400/10 text-blue-400'}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{user.role}</span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.region}</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400" style={{ fontSize: '0.65rem', fontWeight: 600 }}>{user.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{formatDate(user.lastLogin)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1">
+                          <button className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"><Edit3 className="w-3.5 h-3.5" /></button>
+                          <button className="p-1.5 rounded text-muted-foreground hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="text-foreground mb-4" style={{ fontWeight: 600 }}>Informações da empresa</h3>
             <div className="grid grid-cols-2 gap-4">
