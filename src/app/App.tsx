@@ -9,7 +9,7 @@ import { DashboardRep } from "./components/DashboardRep";
 import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
-import { CartPage } from "./components/CartPage";
+import { CartPage, initialCartCount } from "./components/CartPage";
 import { CartsListPage, mockCarts, type CartContext } from "./components/CartsListPage";
 import { OrderHistory } from "./components/OrderHistory";
 import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
@@ -46,6 +46,7 @@ export default function App() {
     mockCarts.map(({ id, clientId, clientName, cartName }) => ({ id, clientId, clientName, cartName }))
   );
   const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>(defaultFilters);
+  const [lojistaCartCount, setLojistaCartCount] = useState(initialCartCount);
 
   const multiCart = profile === 'admin' || profile === 'rep';
   const clientCarts = selectedClient ? carts.filter(c => c.clientId === selectedClient.id) : [];
@@ -141,6 +142,7 @@ export default function App() {
                 setCurrentView('catalog');
               }
             }}
+            onCartCountChange={profile === 'lojista' ? setLojistaCartCount : undefined}
           />
         );
       case 'carts':
@@ -236,7 +238,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
-          cartCount={multiCart ? (selectedClient ? clientCarts.length : carts.length) : undefined}
+          cartCount={multiCart ? (selectedClient ? clientCarts.length : carts.length) : (profile === 'lojista' ? lojistaCartCount : undefined)}
           selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isProfile || (isAdminNoSidebar && currentView !== 'cart' && currentView !== 'carts') ? null : selectedClient}
         />
         <main className="flex-1 overflow-y-auto">

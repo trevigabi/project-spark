@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft, FolderPlus, List } from "lucide-react";
 import { products, formatCurrency, commercialPolicies } from "../data/mockData";
 import type { CartContext } from "./CartsListPage";
@@ -7,11 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
+export const initialCartCount = initialCart.length;
+
 interface CartPageProps {
   onNavigate: (view: View) => void;
   cartContext?: CartContext | null;
   multiCart?: boolean;
   onCreateNewCart?: (name: string) => void;
+  onCartCountChange?: (count: number) => void;
 }
 
 interface CartItem {
@@ -67,8 +70,9 @@ const campaignsByTable: Record<string, { id: string; name: string; description: 
   ],
 };
 
-export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart }: CartPageProps) {
+export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, onCartCountChange }: CartPageProps) {
   const [cart, setCart] = useState<CartItem[]>(initialCart);
+  useEffect(() => { onCartCountChange?.(cart.length); }, [cart.length]);
   const [tableId, setTableId] = useState<string>('TAB-A');
   const policy = useMemo(() => commercialPolicies.find(p => p.id === tableId)!, [tableId]);
   const paymentOptions = paymentOptionsByTable[tableId] ?? [];
