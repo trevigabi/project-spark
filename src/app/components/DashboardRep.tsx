@@ -134,28 +134,6 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { label: 'Novo Pedido', sub: 'Por grade', icon: ShoppingBag, view: 'order-grade' as View, color: 'bg-primary/15 text-primary border-primary/30' },
-          { label: 'Ver Catálogo', sub: 'Coleção Inverno', icon: Target, view: 'catalog' as View, color: 'bg-amber-400/10 text-amber-400 border-amber-400/30' },
-          { label: 'Meus Clientes', sub: `${myClients.length} na carteira`, icon: Users, view: 'clients' as View, color: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/30' },
-          { label: 'Marketing IA', sub: 'Criar campanha', icon: Star, view: 'marketing' as View, color: 'bg-purple-400/10 text-purple-400 border-purple-400/30' },
-        ].map(item => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.label}
-              onClick={() => onNavigate(item.view)}
-              className={`rounded-xl border p-4 text-left transition-all hover:scale-[1.02] ${item.color}`}
-            >
-              <Icon className="w-5 h-5 mb-2" />
-              <p style={{ fontWeight: 600, fontSize: '0.85rem' }}>{item.label}</p>
-              <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{item.sub}</p>
-            </button>
-          );
-        })}
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Clientes da carteira */}
