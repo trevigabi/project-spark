@@ -55,9 +55,11 @@ interface Props {
   filters: CatalogFilters;
   onChange: (f: CatalogFilters) => void;
   onLogout: () => void;
+  profile?: 'lojista' | 'rep';
+  selectedClient?: Client | null;
 }
 
-export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
+export function LojistaFiltersSidebar({ filters, onChange, onLogout, profile = 'lojista', selectedClient }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
