@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Footprints, Filter, Tag, Layers, Palette, DollarSign,
   Menu, X, LogOut, ChevronLeft, ChevronRight, Store, Search,
+  ChevronUp, ChevronDown,
 } from "lucide-react";
 import { products, formatCurrency } from "../data/mockData";
 
@@ -58,12 +59,22 @@ interface Props {
 export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   const toggleColor = (c: string) => {
     const next = filters.colors.includes(c)
       ? filters.colors.filter(x => x !== c)
       : [...filters.colors, c];
     onChange({ ...filters, colors: next });
+  };
+
+  const toggleSection = (label: string) => {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
   };
 
   const reset = () => onChange(defaultFilters);
@@ -162,7 +173,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
 
           <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-5">
             {/* Modelo / Linha */}
-            <FilterSection icon={Tag} label="Modelo / Linha">
+            <FilterSection
+              icon={Tag}
+              label="Modelo / Linha"
+              isOpen={openSections.has('Modelo / Linha')}
+              onToggle={() => toggleSection('Modelo / Linha')}
+            >
               <div className="flex flex-wrap gap-1.5">
                 {lines.map(l => (
                   <button
@@ -178,7 +194,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             </FilterSection>
 
             {/* Categoria */}
-            <FilterSection icon={Layers} label="Categoria">
+            <FilterSection
+              icon={Layers}
+              label="Categoria"
+              isOpen={openSections.has('Categoria')}
+              onToggle={() => toggleSection('Categoria')}
+            >
               <div className="flex flex-wrap gap-1.5">
                 {categories.map(c => (
                   <button
@@ -194,7 +215,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             </FilterSection>
 
             {/* Cores */}
-            <FilterSection icon={Palette} label="Cores">
+            <FilterSection
+              icon={Palette}
+              label="Cores"
+              isOpen={openSections.has('Cores')}
+              onToggle={() => toggleSection('Cores')}
+            >
               <div className="grid grid-cols-6 gap-1.5">
                 {allColors.map(c => {
                   const active = filters.colors.includes(c);
@@ -222,7 +248,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             </FilterSection>
 
             {/* Preço */}
-            <FilterSection icon={DollarSign} label="Faixa de preço">
+            <FilterSection
+              icon={DollarSign}
+              label="Faixa de preço"
+              isOpen={openSections.has('Faixa de preço')}
+              onToggle={() => toggleSection('Faixa de preço')}
+            >
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-muted-foreground" style={{ fontSize: '0.72rem' }}>
                   <span>{formatCurrency(priceMin)}</span>
@@ -297,14 +328,36 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
   );
 }
 
-function FilterSection({ icon: Icon, label, children }: { icon: React.ComponentType<{ className?: string }>; label: string; children: React.ReactNode }) {
+function FilterSection({
+  icon: Icon,
+  label,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <div className="flex items-center gap-1.5 mb-2">
-        <Icon className="w-3 h-3 text-muted-foreground" />
-        <span className="text-muted-foreground" style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
-      </div>
-      {children}
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between mb-2 group"
+      >
+        <div className="flex items-center gap-1.5">
+          <Icon className="w-3 h-3 text-muted-foreground" />
+          <span className="text-muted-foreground" style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
+        </div>
+        {isOpen ? (
+          <ChevronUp className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+        ) : (
+          <ChevronDown className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+        )}
+      </button>
+      {isOpen && <div className="animate-in fade-in slide-in-from-top-1 duration-200">{children}</div>}
     </div>
   );
 }
