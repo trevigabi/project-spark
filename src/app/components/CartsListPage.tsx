@@ -35,7 +35,7 @@ interface CartsListPageProps {
   onGoToCatalog?: (ctx: CartContext) => void;
 }
 
-export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, selectedClient, onSelectClient }: CartsListPageProps) {
+export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, selectedClient, onSelectClient, onGoToCatalog }: CartsListPageProps) {
   const [q, setQ] = useState('');
   const [newOpen, setNewOpen] = useState(false);
   const [newName, setNewName] = useState('');
