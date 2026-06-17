@@ -148,6 +148,7 @@ export default function App() {
           title={viewInfo.title}
           subtitle={viewInfo.subtitle}
           profile={profile}
+          currentView={currentView}
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
