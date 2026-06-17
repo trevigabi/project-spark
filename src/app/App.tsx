@@ -117,7 +117,7 @@ export default function App() {
   };
 
   const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
-  const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'profile'];
+  const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'carts', 'profile'];
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
   const isRepHistory = profile === 'rep' && currentView === 'history';
