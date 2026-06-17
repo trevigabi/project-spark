@@ -195,8 +195,6 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
           </div>
         )}
       </div>
-        </>
-      )}
     </div>
   );
 }
