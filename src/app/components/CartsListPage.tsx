@@ -32,6 +32,7 @@ interface CartsListPageProps {
   onNavigateClients?: () => void;
   selectedClient?: Client | null;
   onSelectClient?: (client: Client) => void;
+  onGoToCatalog?: (ctx: CartContext) => void;
 }
 
 export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, selectedClient, onSelectClient }: CartsListPageProps) {
