@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
