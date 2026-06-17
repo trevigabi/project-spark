@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
@@ -228,6 +229,8 @@ interface TopBarProps {
 
 export function TopBar({ title, subtitle, profile, notifications = 4, actions, onNavigate, onLogout, cartCount = 3, selectedClient }: TopBarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
+  const avatarRef = useRef<HTMLButtonElement>(null);
   const profileInfo = profileLabels[profile];
   const ProfileIcon = profileInfo.icon;
 
@@ -313,16 +316,23 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
         {/* Avatar + dropdown */}
         <div className="relative pl-2 border-l border-border ml-1">
           <button
-            onClick={() => setProfileOpen(o => !o)}
+            ref={avatarRef}
+            onClick={() => {
+              if (avatarRef.current) {
+                const rect = avatarRef.current.getBoundingClientRect();
+                setDropdownPos({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+              }
+              setProfileOpen(o => !o);
+            }}
             className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors"
           >
             <ProfileIcon className={`w-3.5 h-3.5 ${profileInfo.color}`} />
           </button>
 
-          {profileOpen && (
+          {profileOpen && createPortal(
             <>
-              <div className="fixed inset-0 z-[100]" onClick={() => setProfileOpen(false)} />
-              <div className="fixed right-6 mt-2 w-48 bg-card border border-border rounded-xl shadow-lg z-[9999] py-1.5 overflow-hidden" style={{ top: '3.5rem' }}>
+              <div className="fixed inset-0 z-[9998]" onClick={() => setProfileOpen(false)} />
+              <div className="fixed w-48 bg-card border border-border rounded-xl shadow-lg z-[9999] py-1.5 overflow-hidden" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
                 <p className="px-3 pb-1.5 pt-0.5 text-muted-foreground border-b border-border mb-1" style={{ fontSize: '0.7rem' }}>
                   {profileInfo.label}
                 </p>
@@ -341,7 +351,8 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
                   );
                 })}
               </div>
-            </>
+            </>,
+            document.body
           )}
         </div>
       </div>
