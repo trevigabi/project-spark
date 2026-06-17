@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check, ArrowLeft, X, Info, MapPin, UserCircle2, Layers, Package } from "lucide-react";
+
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
 
 const tabs = [
