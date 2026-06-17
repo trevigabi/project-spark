@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ShoppingCart, Plus, Search, Store, Package2, Calendar, User, Users, ArrowLeftRight } from "lucide-react";
+import { ShoppingCart, Plus, Search, Store, Package2, Calendar, User, Users, ArrowLeftRight, ShoppingBag, Eye } from "lucide-react";
 import { clients, formatCurrency, type Client } from "../data/mockData";
 
 export interface CartContext {
