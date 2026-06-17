@@ -166,6 +166,14 @@ export default function App() {
               setActiveCart(ctx);
               setCurrentView('catalog');
             }}
+            onGoToCatalog={(ctx) => {
+              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+                const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
+                if (c) setSelectedClient(c);
+              }
+              setActiveCart(ctx);
+              setCurrentView('catalog');
+            }}
           />
         );
       case 'history':
