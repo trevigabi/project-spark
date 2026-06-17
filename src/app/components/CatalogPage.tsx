@@ -752,12 +752,14 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
               <button
                 onClick={() => {
                   setConfirmAdd(null);
-                  onNavigate('carts');
+                  setPendingAdd({ product: confirmAdd.product, qtys: confirmAdd.qtys });
+                  setCreatingMode(true);
+                  setCreatingNewName('');
                 }}
-                className="flex-1 px-3 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                className="flex-1 px-3 py-2 rounded-lg border border-dashed border-primary/40 text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-1.5"
                 style={{ fontSize: '0.82rem', fontWeight: 500 }}
               >
-                Selecionar outro
+                <Plus className="w-3.5 h-3.5" /> Criar novo carrinho
               </button>
               <button
                 onClick={() => {
