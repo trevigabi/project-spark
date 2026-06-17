@@ -41,8 +41,10 @@ export default function App() {
   const handleLogin = (selectedProfile: Profile) => {
     setProfile(selectedProfile);
     setAuthenticated(true);
-    // Lojista entra direto no catálogo
-    setCurrentView(selectedProfile === 'lojista' ? 'catalog' : 'dashboard');
+    // Lojista entra direto no catálogo; Rep entra direto na lista de clientes
+    if (selectedProfile === 'lojista') setCurrentView('catalog');
+    else if (selectedProfile === 'rep') setCurrentView('clients');
+    else setCurrentView('dashboard');
     setSelectedClient(null);
     setCatalogFilters(defaultFilters);
   };
