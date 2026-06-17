@@ -434,6 +434,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   // Multi-cart picker
   const multiCartEnabled = Array.isArray(clientCarts);
   const [pendingAdd, setPendingAdd] = useState<{ product: Product; qtys: Record<string, number> } | null>(null);
+  const [confirmAdd, setConfirmAdd] = useState<{ product: Product; qtys: Record<string, number>; cartName: string } | null>(null);
   const [creatingNewName, setCreatingNewName] = useState('');
   const [creatingMode, setCreatingMode] = useState(false);
 
@@ -450,10 +451,11 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
     const total = Object.values(qtys).reduce((a, b) => a + b, 0);
     if (total === 0) return;
     if (multiCartEnabled) {
-      // Se já tem carrinho ativo, adiciona direto
+      // Se já tem carrinho ativo, confirma antes de adicionar
       if (activeCartId) {
         const activeCart = clientCarts?.find(c => c.id === activeCartId);
-        commitAdd(p, qtys, activeCart?.cartName);
+        setConfirmAdd({ product: p, qtys, cartName: activeCart?.cartName ?? 'Carrinho atual' });
+        setGradeOpenId(null);
         return;
       }
       // Se não tem nenhum carrinho pro cliente, cria um automaticamente
@@ -716,6 +718,49 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
         />
       )}
 
+
+      {confirmAdd && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setConfirmAdd(null)}>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="px-5 py-4 border-b border-border">
+              <p className="text-foreground" style={{ fontWeight: 700, fontSize: '0.95rem' }}>Adicionar ao carrinho</p>
+              <p className="text-muted-foreground mt-1" style={{ fontSize: '0.78rem' }}>
+                {Object.values(confirmAdd.qtys).reduce((a, b) => a + b, 0)} pares de <span className="text-foreground font-medium">{confirmAdd.product.name}</span>
+              </p>
+            </div>
+            <div className="px-5 py-4">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 mb-4">
+                <ShoppingCart className="w-4 h-4 text-primary flex-shrink-0" />
+                <p className="text-primary truncate" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{confirmAdd.cartName}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setPendingAdd({ product: confirmAdd.product, qtys: confirmAdd.qtys });
+                    setConfirmAdd(null);
+                    setCreatingMode(false);
+                    setCreatingNewName('');
+                  }}
+                  className="flex-1 px-3 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                  style={{ fontSize: '0.82rem', fontWeight: 500 }}
+                >
+                  Selecionar outro
+                </button>
+                <button
+                  onClick={() => {
+                    commitAdd(confirmAdd.product, confirmAdd.qtys, confirmAdd.cartName);
+                    setConfirmAdd(null);
+                  }}
+                  className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  style={{ fontSize: '0.82rem', fontWeight: 600 }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {pendingAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setPendingAdd(null)}>
