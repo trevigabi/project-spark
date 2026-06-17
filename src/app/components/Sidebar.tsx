@@ -10,7 +10,7 @@ import type { Client } from "../data/mockData";
 
 export type View =
   | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history'
-  | 'marketing' | 'sellout' | 'admin' | 'clients';
+  | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile';
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
@@ -244,6 +244,7 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
           { icon: BarChart3, label: 'Sell-out', view: 'sellout' },
           { icon: Settings, label: 'Gestão', view: 'admin' },
+          { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ]
       : profile === 'rep'
@@ -253,14 +254,14 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
           { icon: Store, label: 'Carteira de Clientes', view: 'clients' },
           { icon: Clock, label: 'Pedidos', view: 'history' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
-          { icon: Users, label: 'Meu Perfil' },
+          { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ]
       : [
           { icon: ShoppingBag, label: 'Meus Pedidos', view: 'history' },
           { icon: Clock, label: 'Histórico de compras', view: 'history' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
-          { icon: Users, label: 'Meu Perfil' },
+          { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ];
 
