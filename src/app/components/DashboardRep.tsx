@@ -22,7 +22,6 @@ const monthlyData = [
 ];
 
 export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
-  const [showDashboard, setShowDashboard] = useState(false);
   const [activeTab, setActiveTab] = useState<'indicadores' | 'sellout'>('indicadores');
 
   const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
@@ -42,35 +41,6 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
     'cancelado': 'bg-red-400/20 text-red-400',
     'entregue': 'bg-purple-400/20 text-purple-400',
   };
-
-  if (!embedded && !selectedClient && !showDashboard) {
-    return (
-      <div className="p-6 flex items-center justify-center min-h-[60vh]">
-        <div className="text-center max-w-md">
-          <h2 className="text-foreground mb-2" style={{ fontWeight: 700, fontSize: '1.3rem', letterSpacing: '-0.02em' }}>Olá, Marcos</h2>
-          <p className="text-muted-foreground mb-8" style={{ fontSize: '0.9rem' }}>O que você quer fazer agora?</p>
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => setShowDashboard(true)}
-              className="rounded-xl border border-border bg-card p-6 text-left hover:border-primary/40 hover:bg-primary/5 transition-all group"
-            >
-              <BarChart3 className="w-7 h-7 text-muted-foreground group-hover:text-primary mb-3 transition-colors" />
-              <p className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Ver indicadores</p>
-              <p className="text-muted-foreground mt-1" style={{ fontSize: '0.78rem' }}>Sua performance e carteira</p>
-            </button>
-            <button
-              onClick={() => onNavigate('clients')}
-              className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-left hover:bg-primary/10 transition-all"
-            >
-              <Store className="w-7 h-7 text-primary mb-3" />
-              <p className="text-primary" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Selecionar cliente</p>
-              <p className="text-muted-foreground mt-1" style={{ fontSize: '0.78rem' }}>Escolha uma loja para pedir</p>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 space-y-6 max-w-[1200px]">

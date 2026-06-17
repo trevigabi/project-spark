@@ -57,7 +57,9 @@ export default function App() {
 
   const navigate = (view: View) => setCurrentView(view);
 
-  const viewInfo = viewTitles[currentView];
+  const viewInfo = currentView === 'dashboard' && profile === 'rep'
+    ? { title: 'Indicadores', subtitle: 'Sua performance e carteira' }
+    : viewTitles[currentView];
 
   if (!authenticated) {
     return (
@@ -107,7 +109,8 @@ export default function App() {
 
   const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
   const isRepClients = profile === 'rep' && currentView === 'clients';
-  const hideSidebar = isRepClients;
+  const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
+  const hideSidebar = isRepClients || isRepDashboard;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
