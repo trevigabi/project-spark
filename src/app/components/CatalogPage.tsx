@@ -450,7 +450,19 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
     const total = Object.values(qtys).reduce((a, b) => a + b, 0);
     if (total === 0) return;
     if (multiCartEnabled) {
-      // pergunta em qual carrinho adicionar
+      // Se já tem carrinho ativo, adiciona direto
+      if (activeCartId) {
+        const activeCart = clientCarts?.find(c => c.id === activeCartId);
+        commitAdd(p, qtys, activeCart?.cartName);
+        return;
+      }
+      // Se não tem nenhum carrinho pro cliente, cria um automaticamente
+      if (!clientCarts || clientCarts.length === 0) {
+        const ctx = onCreateCart?.('Novo carrinho');
+        commitAdd(p, qtys, ctx?.cartName);
+        return;
+      }
+      // Se tem carrinhos mas nenhum ativo, mostra o picker
       setPendingAdd({ product: p, qtys });
       setCreatingMode(false);
       setCreatingNewName('');

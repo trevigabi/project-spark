@@ -149,13 +149,21 @@ export default function App() {
             onNavigateClients={() => setCurrentView('clients')}
             onSelectClient={(c) => setSelectedClient(c)}
             onOpenCart={(ctx) => {
-              // Se o carrinho pertence a outro cliente, troca automaticamente o cliente ativo
               if (!selectedClient || selectedClient.id !== ctx.clientId) {
-                const c = (clientsList.find(x => x.id === ctx.clientId)) ?? null;
+                const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
                 if (c) setSelectedClient(c);
               }
               setActiveCart(ctx);
               setCurrentView('cart');
+            }}
+            onCreateCart={(ctx) => {
+              setCarts(prev => [ctx, ...prev]);
+              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+                const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
+                if (c) setSelectedClient(c);
+              }
+              setActiveCart(ctx);
+              setCurrentView('catalog');
             }}
           />
         );

@@ -28,12 +28,13 @@ export const mockCarts: MockCart[] = [
 
 interface CartsListPageProps {
   onOpenCart: (ctx: CartContext) => void;
+  onCreateCart?: (ctx: CartContext) => void;
   onNavigateClients?: () => void;
   selectedClient?: Client | null;
   onSelectClient?: (client: Client) => void;
 }
 
-export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, onSelectClient }: CartsListPageProps) {
+export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, selectedClient, onSelectClient }: CartsListPageProps) {
   const [q, setQ] = useState('');
   const [newOpen, setNewOpen] = useState(false);
   const [newName, setNewName] = useState('');
@@ -66,12 +67,13 @@ export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, o
 
   const handleCreate = () => {
     if (!selectedClient) return;
-    onOpenCart({
+    const ctx: CartContext = {
       id: `CART-NEW-${Date.now()}`,
       clientId: selectedClient.id,
       clientName: selectedClient.name,
       cartName: newName || 'Novo carrinho',
-    });
+    };
+    (onCreateCart ?? onOpenCart)(ctx);
   };
 
   return (
