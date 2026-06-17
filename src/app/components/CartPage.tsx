@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft, FolderPlus, List } from "lucide-react";
 import { products, formatCurrency, commercialPolicies } from "../data/mockData";
 import type { CartContext } from "./CartsListPage";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "./ui/dialog";
 
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
