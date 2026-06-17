@@ -9,6 +9,7 @@ import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
 import { CartPage } from "./components/CartPage";
+import { CartsListPage, type CartContext } from "./components/CartsListPage";
 import { OrderHistory } from "./components/OrderHistory";
 import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
 import { MarketingStudio } from "./components/MarketingStudio";
@@ -25,6 +26,7 @@ const viewTitles: Record<View, { title: string; subtitle?: string }> = {
   catalog: { title: 'Catálogo' },
   'order-grade': { title: 'Pedido por Grade', subtitle: 'Monte pedidos em menos de 2 minutos' },
   cart: { title: 'Carrinho', subtitle: 'Revise e finalize seu pedido' },
+  carts: { title: 'Carrinhos', subtitle: 'Selecione um carrinho ou crie um novo' },
   history: { title: 'Histórico de Pedidos', subtitle: 'Todos os seus pedidos' },
   marketing: { title: 'Estúdio de Marketing IA', subtitle: 'Crie campanhas profissionais automaticamente' },
   sellout: { title: 'Sell-out Intelligence', subtitle: 'Análise de performance comercial' },
