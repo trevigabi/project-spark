@@ -39,6 +39,13 @@ export function Sidebar({ currentView, onNavigate, profile, onLogout, notificati
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Auto-collapse sidebar when lojista enters the cart
+  useEffect(() => {
+    if (profile === 'lojista' && currentView === 'cart') {
+      setCollapsed(true);
+    }
+  }, [profile, currentView]);
+
   const profileInfo = profileLabels[profile];
   const ProfileIcon = profileInfo.icon;
 
