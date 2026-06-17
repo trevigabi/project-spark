@@ -434,7 +434,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   // Multi-cart picker
   const multiCartEnabled = Array.isArray(clientCarts);
   const [pendingAdd, setPendingAdd] = useState<{ product: Product; qtys: Record<string, number> } | null>(null);
-  const [confirmAdd, setConfirmAdd] = useState<{ product: Product; qtys: Record<string, number>; cartName: string } | null>(null);
+  const [confirmAdd, setConfirmAdd] = useState<{ product: Product; qtys: Record<string, number>; selectedCartId: string } | null>(null);
   const [creatingNewName, setCreatingNewName] = useState('');
   const [creatingMode, setCreatingMode] = useState(false);
 
