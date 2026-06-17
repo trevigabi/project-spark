@@ -140,7 +140,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
-          selectedClient={selectedClient}
+          selectedClient={isRepDashboard ? null : selectedClient}
         />
         <main className="flex-1 overflow-y-auto">
           {renderView()}
