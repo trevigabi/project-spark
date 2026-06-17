@@ -244,54 +244,68 @@ export function MarketingStudio() {
               </button>
             </div>
 
-            {/* Generated "lâmina" mockup */}
-            <div className="rounded-2xl overflow-hidden border border-border mb-5" style={{ background: selectedTheme.colors[0] }}>
-              <div
-                className="relative min-h-[360px] p-8 flex flex-col"
-                style={{
-                  background: `linear-gradient(135deg, ${selectedTheme.colors[0]} 0%, ${selectedTheme.colors[1]} 100%)`,
-                }}
-              >
-                {/* Brand */}
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <p style={{ color: selectedTheme.colors[2], fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>Tesla Footwear</p>
-                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem', letterSpacing: '0.08em' }}>Coleção {selectedObj.label}</p>
-                  </div>
-                  <div className="px-2.5 py-1 rounded-full" style={{ background: selectedTheme.colors[2] + '20', border: `1px solid ${selectedTheme.colors[2]}40` }}>
-                    <span style={{ color: selectedTheme.colors[2], fontSize: '0.65rem', fontWeight: 700 }}>{selectedObj.icon} {selectedObj.label}</span>
-                  </div>
+            {/* Generated banner mockup — vertical promo style */}
+            <div className="rounded-2xl overflow-hidden border border-border mb-5 mx-auto" style={{ maxWidth: 340, background: selectedTheme.colors[0] }}>
+              {/* Top: brand + objective tag */}
+              <div className="px-5 pt-5 pb-3 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${selectedTheme.colors[0]} 0%, ${selectedTheme.colors[1]} 60%)` }}>
+                <div>
+                  <p style={{ color: selectedTheme.colors[2], fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase' }}>Tesla Footwear</p>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>Footwear</p>
                 </div>
-
-                {/* Headline */}
-                <div className="flex-1 flex flex-col justify-center">
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', fontWeight: 500, marginBottom: 8 }}>INVERNO 2026</p>
-                  <h2 style={{ color: 'white', fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', marginBottom: 12 }}>
-                    {prompt.split(' ').slice(0, 8).join(' ')}
-                  </h2>
-                  <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.82rem', lineHeight: 1.6, maxWidth: '60%' }}>
-                    {prompt}
-                  </p>
+                <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{ background: selectedTheme.colors[2] + '25', border: `1px solid ${selectedTheme.colors[2]}50` }}>
+                  <selectedObj.icon className="w-3 h-3" style={{ color: selectedTheme.colors[2] } as React.CSSProperties} />
+                  <span style={{ color: selectedTheme.colors[2], fontSize: '0.58rem', fontWeight: 700 }}>{selectedObj.label}</span>
                 </div>
+              </div>
 
-                {/* Products row */}
-                <div className="flex gap-3 mt-6">
-                  {selectedList.slice(0, 3).map(p => (
-                    <div key={p.id} className="flex-1 min-w-0">
-                      <div className="rounded-xl overflow-hidden mb-2" style={{ height: 90, background: 'rgba(255,255,255,0.1)' }}>
-                        <img src={p.image} alt={p.name} className="w-full h-full object-cover opacity-80" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                      </div>
-                      <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.68rem', fontWeight: 600, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{p.name}</p>
-                      <p style={{ color: selectedTheme.colors[2], fontSize: '0.72rem', fontWeight: 700, fontFamily: 'monospace' }}>{formatCurrency(p.price)}</p>
+              {/* Headline banner */}
+              <div className="px-5 py-4" style={{ background: `linear-gradient(180deg, ${selectedTheme.colors[1]} 0%, ${selectedTheme.colors[0]} 100%)` }}>
+                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6 }}>COMBO</p>
+                <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.02em', textTransform: 'uppercase', marginBottom: 4 }}>
+                  TESLA<br />
+                  <span style={{ color: selectedTheme.colors[2] }}>STREET</span>
+                </h2>
+              </div>
+
+              {/* Products */}
+              <div className="px-5 py-3 space-y-3" style={{ background: selectedTheme.colors[0] }}>
+                {selectedList.slice(0, 2).map(p => (
+                  <div key={p.id} className="flex items-center gap-3">
+                    <div className="rounded-xl overflow-hidden flex-shrink-0" style={{ width: 80, height: 60, background: 'rgba(255,255,255,0.08)' }}>
+                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                     </div>
-                  ))}
-                </div>
+                    <div className="min-w-0">
+                      <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.72rem', fontWeight: 700, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{p.name}</p>
+                      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem' }}>34 ao 44</p>
+                      <p style={{ color: selectedTheme.colors[2], fontSize: '0.68rem', fontWeight: 700, fontFamily: 'monospace', marginTop: 2 }}>{formatCurrency(p.price)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.62rem' }}>tesla.com.br · (11) 9999-0000</p>
-                  <div style={{ width: 60, height: 4, borderRadius: 2, background: selectedTheme.colors[2] + '60' }} />
+              {/* Price block */}
+              <div className="mx-4 my-3 rounded-xl px-4 py-3 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${selectedTheme.colors[2]}30` }}>
+                <div>
+                  <p style={{ color: 'white', fontSize: '1.4rem', fontWeight: 900, lineHeight: 1 }}>{selectedList.length * 30}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pares</p>
                 </div>
+                <div className="text-right">
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.58rem' }}>5x de</p>
+                  <p style={{ color: selectedTheme.colors[2], fontSize: '1.1rem', fontWeight: 900, fontFamily: 'monospace', lineHeight: 1 }}>
+                    {formatCurrency(selectedList.reduce((a, p) => a + p.price * 30, 0) / 5)}
+                  </p>
+                  <div className="flex gap-1 mt-1 justify-end">
+                    {[30, 60, 90, 120].map(n => (
+                      <span key={n} style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.52rem' }}>{n}{n < 120 ? ' •' : ''}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-5 py-3 flex items-center justify-between" style={{ borderTop: `1px solid rgba(255,255,255,0.08)` }}>
+                <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.58rem' }}>tesla.com.br · (11) 9999-0000</p>
+                <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.58rem' }}>@teslaskate</p>
               </div>
             </div>
 
