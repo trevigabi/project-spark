@@ -10,6 +10,7 @@ import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
 import { CartPage } from "./components/CartPage";
 import { OrderHistory } from "./components/OrderHistory";
+import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
 import { MarketingStudio } from "./components/MarketingStudio";
 import { SelloutDashboard } from "./components/SelloutDashboard";
 import { AdminPage } from "./components/AdminPage";
@@ -85,6 +86,7 @@ export default function App() {
       case 'cart':
         return <CartPage onNavigate={navigate} />;
       case 'history':
+        if (profile === 'lojista') return <LojistaHistoryDashboard onNavigate={navigate} />;
         return <OrderHistory onNavigate={navigate} profile={profile} />;
       case 'marketing':
         return <MarketingStudio />;
