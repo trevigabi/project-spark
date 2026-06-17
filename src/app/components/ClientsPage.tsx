@@ -50,17 +50,6 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
   return (
     <div className="p-6 max-w-[1200px] mx-auto space-y-5">
 
-      {/* Indicadores CTA */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => onNavigate('dashboard')}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-primary bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-          style={{ fontSize: '0.82rem', fontWeight: 600 }}
-        >
-          <BarChart3 className="w-4 h-4" /> Meus indicadores
-        </button>
-      </div>
-
 
 
       {/* Mode toggle: Carteira do dia / Todos */}
