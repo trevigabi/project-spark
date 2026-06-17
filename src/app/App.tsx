@@ -104,6 +104,8 @@ export default function App() {
   };
 
   const isLojistaCatalog = profile === 'lojista' && currentView === 'catalog';
+  const isRepClients = profile === 'rep' && currentView === 'clients';
+  const hideSidebar = isRepClients;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
@@ -113,7 +115,7 @@ export default function App() {
           onChange={setCatalogFilters}
           onLogout={handleLogout}
         />
-      ) : (
+      ) : hideSidebar ? null : (
         <Sidebar
           currentView={currentView}
           onNavigate={navigate}
