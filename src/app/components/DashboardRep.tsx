@@ -8,6 +8,7 @@ type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'mark
 interface DashboardRepProps {
   onNavigate: (view: View) => void;
   selectedClient: Client | null;
+  embedded?: boolean;
 }
 
 const monthlyData = [
@@ -19,7 +20,7 @@ const monthlyData = [
   { month: 'Jun', valor: 524000 },
 ];
 
-export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) {
+export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
   const [showDashboard, setShowDashboard] = useState(false);
 
   const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
@@ -40,7 +41,7 @@ export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) 
     'entregue': 'bg-purple-400/20 text-purple-400',
   };
 
-  if (!selectedClient && !showDashboard) {
+  if (!embedded && !selectedClient && !showDashboard) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[60vh]">
         <div className="text-center max-w-md">

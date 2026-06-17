@@ -41,8 +41,10 @@ export default function App() {
   const handleLogin = (selectedProfile: Profile) => {
     setProfile(selectedProfile);
     setAuthenticated(true);
-    // Lojista entra direto no catálogo
-    setCurrentView(selectedProfile === 'lojista' ? 'catalog' : 'dashboard');
+    // Lojista entra direto no catálogo; Rep entra direto na lista de clientes
+    if (selectedProfile === 'lojista') setCurrentView('catalog');
+    else if (selectedProfile === 'rep') setCurrentView('clients');
+    else setCurrentView('dashboard');
     setSelectedClient(null);
     setCatalogFilters(defaultFilters);
   };
@@ -102,6 +104,8 @@ export default function App() {
   };
 
   const isLojistaCatalog = profile === 'lojista' && currentView === 'catalog';
+  const isRepClients = profile === 'rep' && currentView === 'clients';
+  const hideSidebar = isRepClients;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
@@ -111,7 +115,7 @@ export default function App() {
           onChange={setCatalogFilters}
           onLogout={handleLogout}
         />
-      ) : (
+      ) : hideSidebar ? null : (
         <Sidebar
           currentView={currentView}
           onNavigate={navigate}

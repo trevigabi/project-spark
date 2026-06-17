@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Search, MapPin, ShoppingBag, TrendingUp, Users, Store, X } from "lucide-react";
-import { clients, Client, formatCurrency, formatDate } from "../data/mockData";
+import { Search, MapPin, Users, Store, X, BarChart3, Sparkles } from "lucide-react";
+import { clients, Client, formatCurrency } from "../data/mockData";
+import { DashboardRep } from "./DashboardRep";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -16,13 +17,22 @@ const statusColors: Record<string, string> = {
   'em aberto': 'text-amber-400 bg-amber-400/10',
 };
 
+// Carteira sugerida do dia: clientes do rep "Marcos Andrade" priorizados (ativos + maior volume)
+const SUGGESTED_REP = 'Marcos Andrade';
+
 export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: ClientsPageProps) {
+  const [tab, setTab] = useState<'carteira' | 'indicadores'>('carteira');
+  const [mode, setMode] = useState<'sugerida' | 'todos'>('sugerida');
   const [search, setSearch] = useState('');
   const [regionFilter, setRegionFilter] = useState('Todos');
 
   const regions = ['Todos', 'Sudeste', 'Sul', 'Nordeste', 'Centro-Oeste', 'Norte'];
 
-  const filtered = clients.filter(c => {
+  const baseList = mode === 'sugerida'
+    ? clients.filter(c => c.rep === SUGGESTED_REP)
+    : clients;
+
+  const filtered = baseList.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.city.toLowerCase().includes(search.toLowerCase()) ||
       c.rep.toLowerCase().includes(search.toLowerCase());
@@ -39,7 +49,72 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
   };
 
   return (
-    <div className="p-6 max-w-[1100px] space-y-5">
+    <div className="p-6 max-w-[1200px] space-y-5">
+      {/* Tabs */}
+      <div className="flex items-center gap-1 border-b border-border">
+        <button
+          onClick={() => setTab('carteira')}
+          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors ${tab === 'carteira' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+          style={{ fontSize: '0.85rem', fontWeight: 600 }}
+        >
+          <Store className="w-4 h-4" /> Sua carteira de clientes
+        </button>
+        <button
+          onClick={() => setTab('indicadores')}
+          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors ${tab === 'indicadores' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+          style={{ fontSize: '0.85rem', fontWeight: 600 }}
+        >
+          <BarChart3 className="w-4 h-4" /> Meus indicadores
+        </button>
+      </div>
+
+      {tab === 'indicadores' ? (
+        <div className="-mx-6 -mb-5">
+          <DashboardRep onNavigate={onNavigate} selectedClient={selectedClient} embedded />
+        </div>
+      ) : (
+        <>
+      {/* Banner — client selected */}
+      {selectedClient && (
+        <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
+          <Store className="w-4 h-4 text-primary flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-primary truncate" style={{ fontSize: '0.88rem', fontWeight: 600 }}>{selectedClient.name}</p>
+            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Cliente selecionado — clique em outro para trocar</p>
+          </div>
+          <button
+            onClick={() => setSelectedClient(null)}
+            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
+            title="Remover seleção"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Mode toggle: Carteira do dia / Todos */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <button
+          onClick={() => setMode('sugerida')}
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg border transition-colors ${mode === 'sugerida' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
+          style={{ fontSize: '0.8rem', fontWeight: 600 }}
+        >
+          <Sparkles className="w-3.5 h-3.5" /> Carteira sugerida do dia
+        </button>
+        <button
+          onClick={() => setMode('todos')}
+          className={`px-3.5 py-2 rounded-lg border transition-colors ${mode === 'todos' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
+          style={{ fontSize: '0.8rem', fontWeight: 600 }}
+        >
+          Todos os clientes
+        </button>
+        {mode === 'sugerida' && (
+          <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>
+            Selecionados com base em prioridade comercial e visitas do dia
+          </span>
+        )}
+      </div>
+
       {/* Banner — client selected */}
       {selectedClient && (
         <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
@@ -148,6 +223,8 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }
