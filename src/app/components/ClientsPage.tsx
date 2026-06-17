@@ -49,7 +49,8 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
   };
 
   return (
-    <div className="p-6 max-w-[1200px] space-y-5">
+    <div className="p-6 max-w-[1200px] mx-auto space-y-5">
+
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-border">
         <button
