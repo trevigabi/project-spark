@@ -143,6 +143,7 @@ export default function App() {
               }
             }}
             onCartCountChange={profile === 'lojista' ? setLojistaCartCount : undefined}
+            selectedPriceTable={catalogFilters.priceTable}
           />
         );
       case 'carts':

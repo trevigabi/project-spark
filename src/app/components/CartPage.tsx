@@ -1,13 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft, FolderPlus, List } from "lucide-react";
-import { products, formatCurrency, commercialPolicies } from "../data/mockData";
+import { products, formatCurrency } from "../data/mockData";
+import { priceTables } from "./LojistaFiltersSidebar";
 import type { CartContext } from "./CartsListPage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "./ui/dialog";
 
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
-
-export const initialCartCount = initialCart.length;
 
 interface CartPageProps {
   onNavigate: (view: View) => void;
@@ -15,6 +14,7 @@ interface CartPageProps {
   multiCart?: boolean;
   onCreateNewCart?: (name: string) => void;
   onCartCountChange?: (count: number) => void;
+  selectedPriceTable?: string;
 }
 
 interface CartItem {
@@ -37,44 +37,61 @@ const initialCart: CartItem[] = [
   },
 ];
 
+export const initialCartCount = initialCart.length;
+
 // Condições de pagamento disponíveis por tabela de preço
 const paymentOptionsByTable: Record<string, { id: string; label: string; surcharge: number; description?: string }[]> = {
-  'TAB-A': [
-    { id: 'avista', label: 'À vista (PIX/Boleto)', surcharge: -3, description: '3% de desconto adicional' },
-    { id: '30',    label: '30 DDL',               surcharge: 0 },
-    { id: '30-60', label: '30/60 DDL',            surcharge: 0 },
-    { id: '5x',    label: '5x sem juros',         surcharge: 0, description: 'Condição padrão da Tabela A' },
+  'padrao': [
+    { id: '30-60-90', label: '30/60/90 DDL', surcharge: 0, description: 'Condição padrão' },
+    { id: '30-60',    label: '30/60 DDL',    surcharge: 0 },
+    { id: '30',       label: '30 DDL',       surcharge: 0 },
+    { id: 'avista',   label: 'À vista (PIX/Boleto)', surcharge: -3, description: '3% de desconto adicional' },
   ],
-  'TAB-B': [
-    { id: 'avista', label: 'À vista (PIX/Boleto)', surcharge: -2 },
-    { id: '30-60', label: '30/60 DDL',            surcharge: 0 },
-    { id: '5x',    label: '5x sem juros',         surcharge: 0, description: 'Condição padrão da Tabela B' },
+  'avista': [
+    { id: 'avista-pix', label: 'PIX',    surcharge: -5, description: '5% de desconto' },
+    { id: 'avista-bol', label: 'Boleto', surcharge: -5, description: '5% de desconto' },
   ],
-  'TAB-C': [
-    { id: 'avista', label: 'À vista (PIX/Boleto)', surcharge: -2 },
-    { id: '30',    label: '30 DDL',               surcharge: 0 },
-    { id: '3x',    label: '3x sem juros',         surcharge: 0, description: 'Condição padrão da Tabela C' },
+  'promo': [
+    { id: '30-60-90', label: '30/60/90 DDL', surcharge: 0 },
+    { id: '30-60',    label: '30/60 DDL',    surcharge: 0 },
+    { id: 'avista',   label: 'À vista (PIX/Boleto)', surcharge: -3 },
   ],
+  'atacado': [
+    { id: '30-60-90', label: '30/60/90 DDL', surcharge: 0, description: 'Mín. 50 pares' },
+    { id: '60-90',    label: '60/90 DDL',    surcharge: 0 },
+    { id: 'avista',   label: 'À vista (PIX/Boleto)', surcharge: -4, description: '4% de desconto' },
+  ],
+};
+
+// Detalhes comerciais por tabela
+const priceTableDetails: Record<string, { discount: number; minOrderValue: number; paymentCondition: string }> = {
+  padrao:  { discount: 0,  minOrderValue: 1500, paymentCondition: '30/60/90 DDL' },
+  avista:  { discount: 5,  minOrderValue: 500,  paymentCondition: 'PIX ou Boleto' },
+  promo:   { discount: 8,  minOrderValue: 1000, paymentCondition: '30/60/90 DDL' },
+  atacado: { discount: 12, minOrderValue: 5000, paymentCondition: '60/90 DDL' },
 };
 
 // Campanhas ativas por tabela de preço
 const campaignsByTable: Record<string, { id: string; name: string; description: string; discount: number }[]> = {
-  'TAB-A': [
+  'padrao': [
     { id: 'mid-year', name: 'Mid Year Boost', description: 'Coleção 2026 · 5% extra em pedidos acima de R$ 5.000', discount: 5 },
   ],
-  'TAB-B': [
+  'avista': [
     { id: 'fidelidade', name: 'Fidelidade Tesla', description: 'Clientes recorrentes · 4% adicional', discount: 4 },
   ],
-  'TAB-C': [
-    { id: 'parceiro', name: 'Parceiro Regional', description: '3% de desconto em coleção atual', discount: 3 },
+  'promo': [
+    { id: 'lancamento', name: 'Lançamento Coleção', description: 'Desconto especial na coleção atual', discount: 3 },
+  ],
+  'atacado': [
+    { id: 'parceiro', name: 'Parceiro Regional', description: '3% de desconto em grandes volumes', discount: 3 },
   ],
 };
 
-export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, onCartCountChange }: CartPageProps) {
+export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, onCartCountChange, selectedPriceTable }: CartPageProps) {
   const [cart, setCart] = useState<CartItem[]>(initialCart);
   useEffect(() => { onCartCountChange?.(cart.length); }, [cart.length]);
-  const [tableId, setTableId] = useState<string>('TAB-A');
-  const policy = useMemo(() => commercialPolicies.find(p => p.id === tableId)!, [tableId]);
+  const [tableId, setTableId] = useState<string>(selectedPriceTable ?? 'padrao');
+  const policy = useMemo(() => priceTables.find(p => p.id === tableId) ?? priceTables[0], [tableId]);
   const paymentOptions = paymentOptionsByTable[tableId] ?? [];
   const campaigns = campaignsByTable[tableId] ?? [];
   const [paymentId, setPaymentId] = useState<string>(paymentOptions[0]?.id ?? '');
@@ -108,14 +125,15 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
   const grandTotal = cart.reduce((acc, item) => acc + getItemTotal(item).value, 0);
   const grandPairs = cart.reduce((acc, item) => acc + getItemTotal(item).pairs, 0);
 
-  const tableDiscount = (grandTotal * policy.discount) / 100;
+  const policyDetails = priceTableDetails[tableId] ?? priceTableDetails['padrao'];
+  const tableDiscount = (grandTotal * policyDetails.discount) / 100;
   const paymentAdj = (grandTotal * (selectedPayment?.surcharge ?? 0)) / 100;
   const campaignDiscount = campaigns
     .filter(c => campaignIds.includes(c.id))
     .reduce((acc, c) => acc + (grandTotal * c.discount) / 100, 0);
   const discount = tableDiscount + campaignDiscount + Math.max(0, -paymentAdj);
   const finalTotal = grandTotal - tableDiscount - campaignDiscount + paymentAdj;
-  const belowMin = finalTotal < policy.minOrderValue;
+  const belowMin = finalTotal < policyDetails.minOrderValue;
 
 
 
@@ -325,21 +343,21 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
                       className="px-2.5 py-1.5 rounded-md border border-border bg-surface text-foreground outline-none focus:border-primary"
                       style={{ fontSize: '0.78rem' }}
                     >
-                      {commercialPolicies.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      {priceTables.map(p => <option key={p.id} value={p.id}>{p.label} — {p.desc}</option>)}
                     </select>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
                       <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Desconto da tabela</p>
-                      <p className="text-foreground mono mt-0.5" style={{ fontSize: '0.9rem', fontWeight: 600 }}>{policy.discount === 0 ? 'sem desconto' : `${policy.discount}%`}</p>
+                      <p className="text-foreground mono mt-0.5" style={{ fontSize: '0.9rem', fontWeight: 600 }}>{policyDetails.discount === 0 ? 'sem desconto' : `${policyDetails.discount}%`}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Pagamento padrão</p>
-                      <p className="text-foreground mt-0.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{policy.paymentCondition}</p>
+                      <p className="text-foreground mt-0.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{policyDetails.paymentCondition}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Pedido mínimo</p>
-                      <p className="text-foreground mono mt-0.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{formatCurrency(policy.minOrderValue)}</p>
+                      <p className="text-foreground mono mt-0.5" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{formatCurrency(policyDetails.minOrderValue)}</p>
                     </div>
                   </div>
                 </div>
@@ -350,7 +368,7 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
                     <CreditCard className="w-4 h-4 text-primary" /> Condições de pagamento disponíveis
                   </h3>
                   <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>
-                    Opções habilitadas para a <span className="text-foreground" style={{ fontWeight: 600 }}>{policy.name}</span>.
+                    Opções habilitadas para a <span className="text-foreground" style={{ fontWeight: 600 }}>{policy.label}</span>.
                   </p>
                   <div className="space-y-2">
                     {paymentOptions.map(opt => {
@@ -452,7 +470,7 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
                 </div>
                 {tableDiscount > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-emerald-400" style={{ fontSize: '0.82rem' }}>Desconto {policy.name} ({policy.discount}%)</span>
+                    <span className="text-emerald-400" style={{ fontSize: '0.82rem' }}>Desconto {policy.label} ({policyDetails.discount}%)</span>
                     <span className="text-emerald-400 mono" style={{ fontSize: '0.82rem' }}>-{formatCurrency(tableDiscount)}</span>
                   </div>
                 )}
@@ -484,7 +502,7 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
                 )}
                 {belowMin && step === 'checkout' && (
                   <div className="mt-2 rounded-md bg-amber-400/10 border border-amber-400/30 px-2.5 py-2 text-amber-400" style={{ fontSize: '0.72rem' }}>
-                    Pedido mínimo da {policy.name}: {formatCurrency(policy.minOrderValue)}
+                    Pedido mínimo da {policy.label}: {formatCurrency(policyDetails.minOrderValue)}
                   </div>
                 )}
               </div>
