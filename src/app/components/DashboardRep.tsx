@@ -50,7 +50,7 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
           onClick={() => setActiveTab('indicadores')}
           className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
             activeTab === 'indicadores'
-              ? 'border-primary text-foreground'
+              ? 'border-primary text-primary'
               : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
           style={{ fontSize: '0.85rem' }}
@@ -61,7 +61,7 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
           onClick={() => setActiveTab('sellout')}
           className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
             activeTab === 'sellout'
-              ? 'border-primary text-foreground'
+              ? 'border-primary text-primary'
               : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
           style={{ fontSize: '0.85rem' }}
