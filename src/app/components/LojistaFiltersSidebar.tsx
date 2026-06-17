@@ -2,8 +2,9 @@ import { useState } from "react";
 import {
   Footprints, Filter, Tag, Layers, Palette, DollarSign,
   Menu, X, LogOut, ChevronLeft, ChevronRight, Store, Search,
-  ChevronUp, ChevronDown,
+  ChevronUp, ChevronDown, Users, Building2,
 } from "lucide-react";
+import type { Client } from "../data/mockData";
 import { products, formatCurrency } from "../data/mockData";
 
 export type CatalogFilters = {
