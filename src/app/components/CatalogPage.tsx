@@ -416,7 +416,7 @@ function ProductDetailModal({ product, onClose, onAddGrade, onToggleFav, isFavor
   );
 }
 
-export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChange }: CatalogPageProps) {
+export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChange, clientCarts, activeCartId, onPickCart, onCreateCart }: CatalogPageProps) {
   const usingExternal = !!externalFilters;
   const [internalSearch, setInternalSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -431,16 +431,32 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   const [gradeOpenId, setGradeOpenId] = useState<string | null>(null);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  // Multi-cart picker
+  const multiCartEnabled = Array.isArray(clientCarts);
+  const [pendingAdd, setPendingAdd] = useState<{ product: Product; qtys: Record<string, number> } | null>(null);
+  const [creatingNewName, setCreatingNewName] = useState('');
+  const [creatingMode, setCreatingMode] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2200);
   };
+  const commitAdd = (p: Product, qtys: Record<string, number>, cartName?: string) => {
+    const total = Object.values(qtys).reduce((a, b) => a + b, 0);
+    setGradeOpenId(null);
+    showToast(`${total} ${total === 1 ? 'par' : 'pares'} de ${p.name} adicionados${cartName ? ` em "${cartName}"` : ''}`);
+  };
   const addGrade = (p: Product, qtys: Record<string, number>) => {
     const total = Object.values(qtys).reduce((a, b) => a + b, 0);
     if (total === 0) return;
-    setGradeOpenId(null);
-    showToast(`${total} ${total === 1 ? 'par' : 'pares'} de ${p.name} adicionados`);
+    if (multiCartEnabled) {
+      // pergunta em qual carrinho adicionar
+      setPendingAdd({ product: p, qtys });
+      setCreatingMode(false);
+      setCreatingNewName('');
+      return;
+    }
+    commitAdd(p, qtys);
   };
   const goGrade = () => {
     setGradeOpenId(null);
