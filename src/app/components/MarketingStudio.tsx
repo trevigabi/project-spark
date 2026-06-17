@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Sparkles, Check, ChevronRight, ChevronLeft, Download, Share2, Instagram, MessageCircle, Printer, Wand2, Image, Palette, Target, Zap, RefreshCw, Rocket, Tag, Trophy } from "lucide-react";
 import { products, formatCurrency } from "../data/mockData";
+import campaignPreviewMock from "@/assets/campaign-preview-mock.png";
 
 const OBJECTIVES = [
   { id: 'lancamento', label: 'Lançamento de coleção', icon: Rocket, description: 'Apresente novidades com destaque' },
@@ -248,69 +249,9 @@ export function MarketingStudio() {
               </button>
             </div>
 
-            {/* Generated banner mockup — vertical promo style */}
-            <div className="rounded-2xl overflow-hidden border border-border mb-5 mx-auto" style={{ maxWidth: 340, background: selectedTheme.colors[0] }}>
-              {/* Top: brand + objective tag */}
-              <div className="px-5 pt-5 pb-3 flex items-center justify-between" style={{ background: `linear-gradient(135deg, ${selectedTheme.colors[0]} 0%, ${selectedTheme.colors[1]} 60%)` }}>
-                <div>
-                  <p style={{ color: selectedTheme.colors[2], fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase' }}>Tesla Footwear</p>
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>Footwear</p>
-                </div>
-                <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{ background: selectedTheme.colors[2] + '25', border: `1px solid ${selectedTheme.colors[2]}50` }}>
-                  <ObjIcon className="w-3 h-3" style={{ color: selectedTheme.colors[2] }} />
-                  <span style={{ color: selectedTheme.colors[2], fontSize: '0.58rem', fontWeight: 700 }}>{selectedObj.label}</span>
-                </div>
-              </div>
-
-              {/* Headline banner */}
-              <div className="px-5 py-4" style={{ background: `linear-gradient(180deg, ${selectedTheme.colors[1]} 0%, ${selectedTheme.colors[0]} 100%)` }}>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6 }}>COMBO</p>
-                <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.02em', textTransform: 'uppercase', marginBottom: 4 }}>
-                  TESLA<br />
-                  <span style={{ color: selectedTheme.colors[2] }}>STREET</span>
-                </h2>
-              </div>
-
-              {/* Products */}
-              <div className="px-5 py-3 space-y-3" style={{ background: selectedTheme.colors[0] }}>
-                {selectedList.slice(0, 2).map(p => (
-                  <div key={p.id} className="flex items-center gap-3">
-                    <div className="rounded-xl overflow-hidden flex-shrink-0" style={{ width: 80, height: 60, background: 'rgba(255,255,255,0.08)' }}>
-                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    </div>
-                    <div className="min-w-0">
-                      <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.72rem', fontWeight: 700, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{p.name}</p>
-                      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem' }}>34 ao 44</p>
-                      <p style={{ color: selectedTheme.colors[2], fontSize: '0.68rem', fontWeight: 700, fontFamily: 'monospace', marginTop: 2 }}>{formatCurrency(p.price)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Price block */}
-              <div className="mx-4 my-3 rounded-xl px-4 py-3 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${selectedTheme.colors[2]}30` }}>
-                <div>
-                  <p style={{ color: 'white', fontSize: '1.4rem', fontWeight: 900, lineHeight: 1 }}>{selectedList.length * 30}</p>
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pares</p>
-                </div>
-                <div className="text-right">
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.58rem' }}>5x de</p>
-                  <p style={{ color: selectedTheme.colors[2], fontSize: '1.1rem', fontWeight: 900, fontFamily: 'monospace', lineHeight: 1 }}>
-                    {formatCurrency(selectedList.reduce((a, p) => a + p.price * 30, 0) / 5)}
-                  </p>
-                  <div className="flex gap-1 mt-1 justify-end">
-                    {[30, 60, 90, 120].map(n => (
-                      <span key={n} style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.52rem' }}>{n}{n < 120 ? ' •' : ''}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="px-5 py-3 flex items-center justify-between" style={{ borderTop: `1px solid rgba(255,255,255,0.08)` }}>
-                <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.58rem' }}>tesla.com.br · (11) 9999-0000</p>
-                <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.58rem' }}>@teslaskate</p>
-              </div>
+            {/* Generated banner mockup — imagem mocada */}
+            <div className="rounded-2xl overflow-hidden border border-border mb-5 mx-auto" style={{ maxWidth: 340 }}>
+              <img src={campaignPreviewMock} alt="Preview da campanha" className="w-full h-auto block" />
             </div>
 
             {/* Export options */}
