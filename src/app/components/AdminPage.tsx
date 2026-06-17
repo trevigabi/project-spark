@@ -25,12 +25,47 @@ const pricePolicies = [
   { id: 'P004', name: 'Novos Clientes', discount: '5%', minOrder: 'R$ 500', payment: '30 DDL', clients: 17 },
 ];
 
+type PolicyCriteria = {
+  clients: string[];
+  regions: string[];
+  reps: string[];
+  lines: string[];
+  products: string[];
+};
+
+const initialCriteria: Record<string, PolicyCriteria> = {
+  P001: { clients: [], regions: ['Norte', 'Centro-Oeste', 'Nordeste'], reps: [], lines: ['Coil', 'Hertz'], products: [] },
+  P002: {
+    clients: ['Calçados Beira Rio', 'Sapataria Central', 'Loja Modelo SP'],
+    regions: ['Sul', 'Sudeste'],
+    reps: ['Carlos Mendes', 'Ana Souza'],
+    lines: ['Flow XL', 'Flow', 'Hertz Art'],
+    products: [],
+  },
+  P003: { clients: [], regions: [], reps: ['Rafael Costa'], lines: ['Flow XL'], products: [] },
+  P004: { clients: [], regions: [], reps: [], lines: ['Coil'], products: [] },
+};
+
+const coveredClientsMock = [
+  { name: 'Calçados Beira Rio', city: 'Porto Alegre, RS', rep: 'Carlos Mendes' },
+  { name: 'Sapataria Central', city: 'Florianópolis, SC', rep: 'Carlos Mendes' },
+  { name: 'Loja Modelo SP', city: 'São Paulo, SP', rep: 'Ana Souza' },
+  { name: 'Calçados Estrela', city: 'Curitiba, PR', rep: 'Carlos Mendes' },
+];
+
+const REGION_OPTIONS = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
+const LINE_OPTIONS = ['Coil', 'Hertz', 'Hertz Art', 'Flow', 'Flow XL'];
+const REP_OPTIONS = ['Carlos Mendes', 'Ana Souza', 'Marcos Andrade', 'Fernanda Lima', 'Rafael Costa'];
+
 export function AdminPage() {
   const [activeTab, setActiveTab] = useState('catalog');
   const [search, setSearch] = useState('');
   const [showAddUser, setShowAddUser] = useState(false);
   const [productSearch, setProductSearch] = useState('');
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const [criteriaState, setCriteriaState] = useState<Record<string, PolicyCriteria>>(initialCriteria);
+
 
   return (
     <div className="p-6 max-w-[1200px] space-y-5">
