@@ -78,6 +78,8 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart }
   const [obs, setObs] = useState('');
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [approvalRequired] = useState(true);
+  const [showNewCartDialog, setShowNewCartDialog] = useState(false);
+  const [newCartName, setNewCartName] = useState('');
 
   const selectedPayment = paymentOptions.find(p => p.id === paymentId) ?? paymentOptions[0];
 
