@@ -37,6 +37,7 @@ export function MarketingStudio() {
   const selectedList = products.filter(p => selectedProducts.has(p.id));
   const selectedTheme = THEMES.find(t => t.id === theme)!;
   const selectedObj = OBJECTIVES.find(o => o.id === objective)!;
+  const ObjIcon = selectedObj.icon;
 
   const toggleProduct = (id: string) => {
     setSelectedProducts(prev => {
@@ -146,20 +147,23 @@ export function MarketingStudio() {
             <h3 className="text-foreground mb-1" style={{ fontWeight: 600 }}>Objetivo da campanha</h3>
             <p className="text-muted-foreground mb-4" style={{ fontSize: '0.78rem' }}>Qual é o propósito desta peça?</p>
             <div className="grid grid-cols-2 gap-3">
-              {OBJECTIVES.map(obj => (
+              {OBJECTIVES.map(obj => {
+                const Icon = obj.icon;
+                return (
                 <button
                   key={obj.id}
                   onClick={() => setObjective(obj.id)}
                   className={`rounded-xl border p-4 text-left transition-all ${objective === obj.id ? 'border-primary bg-primary/10' : 'border-border hover:border-border/60'}`}
                 >
                   <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <obj.icon className="w-5 h-5 text-primary" />
+                    <Icon className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-foreground mt-2" style={{ fontWeight: 600, fontSize: '0.85rem' }}>{obj.label}</p>
                   <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{obj.description}</p>
                   {objective === obj.id && <Check className="w-4 h-4 text-primary mt-2" />}
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -253,7 +257,7 @@ export function MarketingStudio() {
                   <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>Footwear</p>
                 </div>
                 <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{ background: selectedTheme.colors[2] + '25', border: `1px solid ${selectedTheme.colors[2]}50` }}>
-                  <selectedObj.icon className="w-3 h-3" style={{ color: selectedTheme.colors[2] } as React.CSSProperties} />
+                  <ObjIcon className="w-3 h-3" style={{ color: selectedTheme.colors[2] }} />
                   <span style={{ color: selectedTheme.colors[2], fontSize: '0.58rem', fontWeight: 700 }}>{selectedObj.label}</span>
                 </div>
               </div>
