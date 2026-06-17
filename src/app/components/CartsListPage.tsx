@@ -30,15 +30,15 @@ interface CartsListPageProps {
   onOpenCart: (ctx: CartContext) => void;
   onNavigateClients?: () => void;
   selectedClient?: Client | null;
+  onSelectClient?: (client: Client) => void;
 }
 
-export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient }: CartsListPageProps) {
+export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, onSelectClient }: CartsListPageProps) {
   const [q, setQ] = useState('');
   const [newOpen, setNewOpen] = useState(false);
-  const [newClientId, setNewClientId] = useState<string>(selectedClient?.id ?? clients[0].id);
   const [newName, setNewName] = useState('');
-  // Quando há cliente selecionado, mostramos apenas os carrinhos dele por padrão.
-  // O usuário pode expandir para ver carrinhos de outros clientes.
+  // Busca rápida de cliente quando nenhum está selecionado
+  const [clientQuery, setClientQuery] = useState('');
   const [showAll, setShowAll] = useState(!selectedClient);
 
   const scopedCarts = useMemo(() => {
@@ -56,12 +56,20 @@ export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient }:
     c.cartName.toLowerCase().includes(q.toLowerCase())
   );
 
+  const clientMatches = useMemo(() => {
+    const t = clientQuery.trim().toLowerCase();
+    if (!t) return [];
+    return clients.filter(c => c.name.toLowerCase().includes(t) || c.id.toLowerCase().includes(t)).slice(0, 6);
+  }, [clientQuery]);
+
+  const canCreate = !!selectedClient;
+
   const handleCreate = () => {
-    const client = clients.find(c => c.id === newClientId)!;
+    if (!selectedClient) return;
     onOpenCart({
       id: `CART-NEW-${Date.now()}`,
-      clientId: client.id,
-      clientName: client.name,
+      clientId: selectedClient.id,
+      clientName: selectedClient.name,
       cartName: newName || 'Novo carrinho',
     });
   };
