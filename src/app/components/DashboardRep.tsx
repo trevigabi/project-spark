@@ -23,6 +23,7 @@ const monthlyData = [
 
 export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
   const [showDashboard, setShowDashboard] = useState(false);
+  const [activeTab, setActiveTab] = useState<'indicadores' | 'sellout'>('indicadores');
 
   const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
   const myOrders = orders.filter(o => o.rep === 'Marcos Andrade');
