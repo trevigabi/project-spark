@@ -21,7 +21,7 @@ const statusColors: Record<string, string> = {
 const SUGGESTED_REP = 'Marcos Andrade';
 
 export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: ClientsPageProps) {
-  const [tab, setTab] = useState<'carteira' | 'indicadores'>('carteira');
+  
   const [mode, setMode] = useState<'sugerida' | 'todos'>('sugerida');
   const [search, setSearch] = useState('');
   const [regionFilter, setRegionFilter] = useState('Todos');
