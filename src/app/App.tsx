@@ -205,8 +205,9 @@ export default function App() {
   const isAdminNoSidebar = profile === 'admin' && noSidebarViews.includes(currentView);
   const isLojistCart = profile === 'lojista' && currentView === 'cart';
   const isLojistHistory = profile === 'lojista' && currentView === 'history';
+  const isLojistMarketing = profile === 'lojista' && currentView === 'marketing';
   const isProfile = currentView === 'profile';
-  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminNoSidebar || isLojistCart || isLojistHistory || isProfile;
+  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminNoSidebar || isLojistCart || isLojistHistory || isLojistMarketing || isProfile;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
