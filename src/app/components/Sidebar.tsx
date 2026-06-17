@@ -241,9 +241,10 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
   const headerItems: HeaderItem[] =
     profile === 'admin'
       ? [
-          { icon: Users, label: 'Clientes', view: 'clients' },
-          { icon: Package2, label: 'Catálogo', view: 'catalog' },
-          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
+          { icon: BarChart3, label: 'Indicadores', view: 'dashboard' as View },
+          { icon: Users, label: 'Clientes', view: 'clients' as View },
+          { icon: Package2, label: 'Catálogo', view: 'catalog' as View },
+          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
         ]
       : profile === 'rep'
       ? [
@@ -260,7 +261,6 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
   const dropdownItems: DropdownItem[] =
     profile === 'admin'
       ? [
-          { icon: BarChart3, label: 'Indicadores', view: 'dashboard' },
           { icon: Clock, label: 'Pedidos', view: 'history' },
           { icon: UserCheck, label: 'Representantes', view: 'admin' },
           { icon: Tag, label: 'Política Comercial', view: 'admin' },
