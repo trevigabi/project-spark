@@ -108,9 +108,15 @@ export default function App() {
             selectedClient={selectedClient}
             externalFilters={useFilters ? catalogFilters : undefined}
             onExternalFiltersChange={useFilters ? setCatalogFilters : undefined}
-            clientCarts={multiCart && selectedClient ? clientCarts : undefined}
+            clientCarts={multiCart ? (selectedClient ? clientCarts : carts) : undefined}
             activeCartId={activeCart?.id ?? null}
-            onPickCart={(ctx) => setActiveCart(ctx)}
+            onPickCart={(ctx) => {
+              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+                const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
+                if (c) setSelectedClient(c);
+              }
+              setActiveCart(ctx);
+            }}
             onCreateCart={(name) => {
               const ctx = createCart(name);
               if (ctx) setActiveCart(ctx);
