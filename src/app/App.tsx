@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster } from "./components/ui/sonner";
 import { LoginPage } from "./components/LoginPage";
 import { Sidebar, TopBar } from "./components/Sidebar";
 import type { View } from "./components/Sidebar";
