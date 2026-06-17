@@ -110,7 +110,9 @@ export default function App() {
   const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
-  const hideSidebar = isRepClients || isRepDashboard;
+  const isRepHistory = profile === 'rep' && currentView === 'history';
+  const isRepMarketing = profile === 'rep' && currentView === 'marketing';
+  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
