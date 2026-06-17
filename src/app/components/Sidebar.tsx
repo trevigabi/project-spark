@@ -348,13 +348,9 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
 
         {/* Client chip — before avatar */}
         {selectedClient && (
-          <div
-            onClick={() => onNavigate('clients')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg cursor-pointer hover:bg-primary/15 transition-colors flex-shrink-0"
-          >
-            <Store className="w-3.5 h-3.5 text-primary" />
-            <span className="text-primary" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
-            <ChevronDown className="w-3 h-3 text-primary" />
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 border border-border/60 rounded-lg flex-shrink-0">
+            <Store className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-muted-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
           </div>
         )}
 
