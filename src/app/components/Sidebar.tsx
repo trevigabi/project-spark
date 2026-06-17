@@ -291,28 +291,9 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
   return (
     <header className="h-14 border-b border-border bg-background/80 backdrop-blur flex items-center px-6 gap-3 flex-shrink-0">
       <div className="flex-1 min-w-0 flex items-center gap-3">
-        <h1 className="text-foreground truncate" style={{ fontSize: '0.95rem', fontWeight: 600, letterSpacing: '-0.01em' }}>{title}</h1>
-        {subtitle && <p className="text-muted-foreground truncate hidden sm:block" style={{ fontSize: '0.75rem' }}>{subtitle}</p>}
-
-        {/* Client chip — rep only */}
-        {profile === 'rep' && selectedClient && (
-          <div
-            onClick={() => onNavigate('clients')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg cursor-pointer hover:bg-primary/15 transition-colors flex-shrink-0"
-          >
-            <Store className="w-3.5 h-3.5 text-primary" />
-            <span className="text-primary" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
-            <ChevronDown className="w-3 h-3 text-primary" />
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center gap-1 flex-shrink-0">
-        {actions}
-
-        {/* Header nav items */}
-        {headerItems.length > 0 && (
-          <div className="flex items-center gap-1 mr-3">
+        {/* Nav items à esquerda quando existem, caso contrário título */}
+        {headerItems.length > 0 ? (
+          <div className="flex items-center gap-1">
             {headerItems.map(item => {
           const Icon = item.icon;
           const active = currentView === item.view;
@@ -334,7 +315,28 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           );
             })}
           </div>
+        ) : (
+          <>
+            <h1 className="text-foreground truncate" style={{ fontSize: '0.95rem', fontWeight: 600, letterSpacing: '-0.01em' }}>{title}</h1>
+            {subtitle && <p className="text-muted-foreground truncate hidden sm:block" style={{ fontSize: '0.75rem' }}>{subtitle}</p>}
+          </>
         )}
+
+        {/* Client chip — rep only */}
+        {profile === 'rep' && selectedClient && (
+          <div
+            onClick={() => onNavigate('clients')}
+            className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg cursor-pointer hover:bg-primary/15 transition-colors flex-shrink-0"
+          >
+            <Store className="w-3.5 h-3.5 text-primary" />
+            <span className="text-primary" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
+            <ChevronDown className="w-3 h-3 text-primary" />
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-1 flex-shrink-0">
+        {actions}
 
         {/* Cart — hidden for admin */}
         {profile !== 'admin' && (
