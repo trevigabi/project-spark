@@ -52,6 +52,21 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
 
 
 
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: 'Total de clientes', value: String(filtered.length), sub: 'na carteira filtrada' },
+          { label: 'Clientes ativos', value: String(activeCount), sub: `de ${filtered.length} total` },
+          { label: 'Volume total', value: formatCurrency(totalPortfolio), sub: 'compras históricas', mono: true },
+        ].map(stat => (
+          <div key={stat.label} className="bg-card border border-border rounded-xl p-4">
+            <p className="text-muted-foreground mb-1" style={{ fontSize: '0.75rem', fontWeight: 500 }}>{stat.label}</p>
+            <p className={`text-foreground ${stat.mono ? 'mono' : ''}`} style={{ fontSize: '1.15rem', fontWeight: 700 }}>{stat.value}</p>
+            <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{stat.sub}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Mode toggle: Carteira do dia / Todos */}
       <div className="flex items-center gap-2 flex-wrap">
         <button
@@ -73,22 +88,6 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
             Selecionados com base em prioridade comercial e visitas do dia
           </span>
         )}
-      </div>
-
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { label: 'Total de clientes', value: String(filtered.length), sub: 'na carteira filtrada' },
-          { label: 'Clientes ativos', value: String(activeCount), sub: `de ${filtered.length} total` },
-          { label: 'Volume total', value: formatCurrency(totalPortfolio), sub: 'compras históricas', mono: true },
-        ].map(stat => (
-          <div key={stat.label} className="bg-card border border-border rounded-xl p-4">
-            <p className="text-muted-foreground mb-1" style={{ fontSize: '0.75rem', fontWeight: 500 }}>{stat.label}</p>
-            <p className={`text-foreground ${stat.mono ? 'mono' : ''}`} style={{ fontSize: '1.15rem', fontWeight: 700 }}>{stat.value}</p>
-            <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{stat.sub}</p>
-          </div>
-        ))}
       </div>
 
       {/* Filters */}
