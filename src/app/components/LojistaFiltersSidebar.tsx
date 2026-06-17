@@ -2,8 +2,9 @@ import { useState } from "react";
 import {
   Footprints, Filter, Tag, Layers, Palette, DollarSign,
   Menu, X, LogOut, ChevronLeft, ChevronRight, Store, Search,
-  ChevronUp, ChevronDown,
+  ChevronUp, ChevronDown, Users, Building2,
 } from "lucide-react";
+import type { Client } from "../data/mockData";
 import { products, formatCurrency } from "../data/mockData";
 
 export type CatalogFilters = {
@@ -54,9 +55,11 @@ interface Props {
   filters: CatalogFilters;
   onChange: (f: CatalogFilters) => void;
   onLogout: () => void;
+  profile?: 'lojista' | 'rep';
+  selectedClient?: Client | null;
 }
 
-export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
+export function LojistaFiltersSidebar({ filters, onChange, onLogout, profile = 'lojista', selectedClient }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
@@ -118,6 +121,19 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
         </div>
       ) : (
         <>
+          {/* Cliente selecionado (rep) */}
+          {profile === 'rep' && selectedClient && (
+            <div className="mx-3 mt-3 rounded-md border border-primary/30 bg-primary/5 px-2.5 py-2 flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-primary/15 flex items-center justify-center flex-shrink-0">
+                <Building2 className="w-3 h-3 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-muted-foreground" style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Pedido para</div>
+                <div className="text-foreground truncate" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{selectedClient.name}</div>
+              </div>
+            </div>
+          )}
+
           {/* Tabela de Preço */}
           <div className="px-3 pt-3 pb-3 border-b border-sidebar-border">
             <div className="flex items-center gap-1.5 mb-1.5">
@@ -277,12 +293,18 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
       <div className="border-t border-sidebar-border p-2">
         {!collapsed ? (
           <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-7 h-7 rounded-full bg-emerald-400/20 flex items-center justify-center flex-shrink-0">
-              <Store className="w-3.5 h-3.5 text-emerald-400" />
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${profile === 'rep' ? 'bg-amber-400/20' : 'bg-emerald-400/20'}`}>
+              {profile === 'rep'
+                ? <Users className="w-3.5 h-3.5 text-amber-400" />
+                : <Store className="w-3.5 h-3.5 text-emerald-400" />}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-foreground truncate" style={{ fontSize: '0.78rem', fontWeight: 500 }}>Lojista</div>
-              <div className="text-muted-foreground truncate" style={{ fontSize: '0.7rem' }}>loja@tesla.com.br</div>
+              <div className="text-foreground truncate" style={{ fontSize: '0.78rem', fontWeight: 500 }}>
+                {profile === 'rep' ? 'Representante' : 'Lojista'}
+              </div>
+              <div className="text-muted-foreground truncate" style={{ fontSize: '0.7rem' }}>
+                {profile === 'rep' ? 'marcos@tesla.com.br' : 'loja@tesla.com.br'}
+              </div>
             </div>
             <button onClick={onLogout} className="text-muted-foreground hover:text-destructive p-1 rounded" title="Sair">
               <LogOut className="w-3.5 h-3.5" />

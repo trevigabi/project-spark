@@ -116,6 +116,8 @@ export default function App() {
           filters={catalogFilters}
           onChange={setCatalogFilters}
           onLogout={handleLogout}
+          profile={profile as 'lojista' | 'rep'}
+          selectedClient={selectedClient}
         />
       ) : hideSidebar ? null : (
         <Sidebar
