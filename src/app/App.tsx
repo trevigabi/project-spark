@@ -15,6 +15,7 @@ import { MarketingStudio } from "./components/MarketingStudio";
 import { SelloutDashboard } from "./components/SelloutDashboard";
 import { AdminPage } from "./components/AdminPage";
 import { ClientsPage } from "./components/ClientsPage";
+import { ProfilePage } from "./components/ProfilePage";
 import { LojistaFiltersSidebar, defaultFilters, type CatalogFilters } from "./components/LojistaFiltersSidebar";
 
 type Profile = 'admin' | 'rep' | 'lojista';
@@ -29,6 +30,7 @@ const viewTitles: Record<View, { title: string; subtitle?: string }> = {
   sellout: { title: 'Sell-out Intelligence', subtitle: 'Análise de performance comercial' },
   admin: { title: 'Gestão', subtitle: 'Usuários, produtos, políticas e configurações' },
   clients: { title: 'Clientes', subtitle: 'Sua carteira de clientes' },
+  profile: { title: 'Meu Perfil', subtitle: 'Seus dados, preferências e acesso' },
 };
 
 export default function App() {
@@ -102,6 +104,8 @@ export default function App() {
         return <AdminPage />;
       case 'clients':
         return <ClientsPage onNavigate={navigate} selectedClient={selectedClient} setSelectedClient={setSelectedClient} />;
+      case 'profile':
+        return <ProfilePage profile={profile} />;
       default:
         return <DashboardAdmin onNavigate={navigate} />;
     }
@@ -112,7 +116,8 @@ export default function App() {
   const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
   const isRepHistory = profile === 'rep' && currentView === 'history';
   const isRepMarketing = profile === 'rep' && currentView === 'marketing';
-  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing;
+  const isProfile = currentView === 'profile';
+  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isProfile;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
@@ -142,7 +147,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
-          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing ? null : selectedClient}
+          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isProfile ? null : selectedClient}
         />
         <main className="flex-1 overflow-y-auto">
           {renderView()}
