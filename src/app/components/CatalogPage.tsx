@@ -434,7 +434,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   // Multi-cart picker
   const multiCartEnabled = Array.isArray(clientCarts);
   const [pendingAdd, setPendingAdd] = useState<{ product: Product; qtys: Record<string, number> } | null>(null);
-  const [confirmAdd, setConfirmAdd] = useState<{ product: Product; qtys: Record<string, number>; cartName: string } | null>(null);
+  const [confirmAdd, setConfirmAdd] = useState<{ product: Product; qtys: Record<string, number>; selectedCartId: string } | null>(null);
   const [creatingNewName, setCreatingNewName] = useState('');
   const [creatingMode, setCreatingMode] = useState(false);
 
@@ -449,8 +449,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
     if (multiCartEnabled) {
       // Se já tem carrinho ativo, confirma antes de adicionar
       if (activeCartId) {
-        const activeCart = clientCarts?.find(c => c.id === activeCartId);
-        setConfirmAdd({ product: p, qtys, cartName: activeCart?.cartName ?? 'Carrinho atual' });
+        setConfirmAdd({ product: p, qtys, selectedCartId: activeCartId });
         setGradeOpenId(null);
         return;
       }
@@ -724,33 +723,56 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
                 {Object.values(confirmAdd.qtys).reduce((a, b) => a + b, 0)} pares de <span className="text-foreground font-medium">{confirmAdd.product.name}</span>
               </p>
             </div>
-            <div className="px-5 py-4">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 mb-4">
-                <ShoppingCart className="w-4 h-4 text-primary flex-shrink-0" />
-                <p className="text-primary truncate" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{confirmAdd.cartName}</p>
-              </div>
-              <div className="flex gap-2">
+            <div className="px-5 py-4 space-y-2 max-h-[40vh] overflow-y-auto">
+              {(clientCarts ?? []).map(c => (
                 <button
-                  onClick={() => {
-                    setConfirmAdd(null);
-                    onNavigate('carts');
-                  }}
-                  className="flex-1 px-3 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                  style={{ fontSize: '0.82rem', fontWeight: 500 }}
+                  key={c.id}
+                  onClick={() => setConfirmAdd(prev => prev ? { ...prev, selectedCartId: c.id } : prev)}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors flex items-center gap-3 ${confirmAdd.selectedCartId === c.id ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/50'}`}
                 >
-                  Selecionar outro
+                  <div className="w-8 h-8 rounded-md bg-primary/15 flex items-center justify-center flex-shrink-0">
+                    <ShoppingCart className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-foreground truncate" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{c.cartName}</p>
+                    <p className="text-muted-foreground flex items-center gap-1" style={{ fontSize: '0.7rem' }}>
+                      <Store className="w-2.5 h-2.5" /> {c.clientName}
+                    </p>
+                  </div>
+                  {confirmAdd.selectedCartId === c.id && (
+                    <span className="text-primary" style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Atual</span>
+                  )}
                 </button>
-                <button
-                  onClick={() => {
-                    commitAdd(confirmAdd.product, confirmAdd.qtys, confirmAdd.cartName);
-                    setConfirmAdd(null);
-                  }}
-                  className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                  style={{ fontSize: '0.82rem', fontWeight: 600 }}
-                >
-                  OK
-                </button>
-              </div>
+              ))}
+              {(clientCarts ?? []).length === 0 && (
+                <p className="text-muted-foreground text-center py-3" style={{ fontSize: '0.8rem' }}>Nenhum carrinho disponível.</p>
+              )}
+            </div>
+            <div className="px-5 py-4 border-t border-border flex gap-2">
+              <button
+                onClick={() => {
+                  setConfirmAdd(null);
+                  onNavigate('carts');
+                }}
+                className="flex-1 px-3 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                style={{ fontSize: '0.82rem', fontWeight: 500 }}
+              >
+                Selecionar outro
+              </button>
+              <button
+                onClick={() => {
+                  const chosen = clientCarts?.find(c => c.id === confirmAdd.selectedCartId);
+                  if (chosen) {
+                    onPickCart?.(chosen);
+                    commitAdd(confirmAdd.product, confirmAdd.qtys, chosen.cartName);
+                  }
+                  setConfirmAdd(null);
+                }}
+                className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                style={{ fontSize: '0.82rem', fontWeight: 600 }}
+              >
+                OK
+              </button>
             </div>
           </div>
         </div>
