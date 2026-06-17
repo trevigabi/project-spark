@@ -178,6 +178,7 @@ export default function App() {
         );
       case 'history':
         if (profile === 'lojista') return <LojistaHistoryDashboard onNavigate={navigate} />;
+        if (selectedClient) return <LojistaHistoryDashboard onNavigate={navigate} />;
         return <OrderHistory onNavigate={navigate} profile={profile} />;
       case 'marketing':
         return <MarketingStudio />;
