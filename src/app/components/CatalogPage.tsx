@@ -449,8 +449,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
     if (multiCartEnabled) {
       // Se já tem carrinho ativo, confirma antes de adicionar
       if (activeCartId) {
-        const activeCart = clientCarts?.find(c => c.id === activeCartId);
-        setConfirmAdd({ product: p, qtys, cartName: activeCart?.cartName ?? 'Carrinho atual' });
+        setConfirmAdd({ product: p, qtys, selectedCartId: activeCartId });
         setGradeOpenId(null);
         return;
       }
