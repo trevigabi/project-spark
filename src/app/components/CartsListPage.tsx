@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { ShoppingCart, Plus, Search, Store, Package2, Calendar, User } from "lucide-react";
-import { clients, formatCurrency } from "../data/mockData";
+import { useMemo, useState } from "react";
+import { ShoppingCart, Plus, Search, Store, Package2, Calendar, User, Users, ArrowLeftRight } from "lucide-react";
+import { clients, formatCurrency, type Client } from "../data/mockData";
 
 export interface CartContext {
   id: string;
@@ -28,15 +28,30 @@ const mockCarts: MockCart[] = [
 
 interface CartsListPageProps {
   onOpenCart: (ctx: CartContext) => void;
+  onNavigateClients?: () => void;
+  selectedClient?: Client | null;
 }
 
-export function CartsListPage({ onOpenCart }: CartsListPageProps) {
+export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient }: CartsListPageProps) {
   const [q, setQ] = useState('');
   const [newOpen, setNewOpen] = useState(false);
-  const [newClientId, setNewClientId] = useState<string>(clients[0].id);
+  const [newClientId, setNewClientId] = useState<string>(selectedClient?.id ?? clients[0].id);
   const [newName, setNewName] = useState('');
+  // Quando há cliente selecionado, mostramos apenas os carrinhos dele por padrão.
+  // O usuário pode expandir para ver carrinhos de outros clientes.
+  const [showAll, setShowAll] = useState(!selectedClient);
 
-  const filtered = mockCarts.filter(c =>
+  const scopedCarts = useMemo(() => {
+    if (selectedClient && !showAll) return mockCarts.filter(c => c.clientId === selectedClient.id);
+    return mockCarts;
+  }, [selectedClient, showAll]);
+
+  const otherCarts = useMemo(
+    () => selectedClient ? mockCarts.filter(c => c.clientId !== selectedClient.id) : [],
+    [selectedClient]
+  );
+
+  const filtered = scopedCarts.filter(c =>
     c.clientName.toLowerCase().includes(q.toLowerCase()) ||
     c.cartName.toLowerCase().includes(q.toLowerCase())
   );
@@ -55,9 +70,13 @@ export function CartsListPage({ onOpenCart }: CartsListPageProps) {
     <div className="p-6 max-w-[1200px] mx-auto w-full">
       <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
         <div>
-          <h2 className="text-foreground" style={{ fontWeight: 700, fontSize: '1.15rem' }}>Carrinhos em construção</h2>
+          <h2 className="text-foreground" style={{ fontWeight: 700, fontSize: '1.15rem' }}>
+            {selectedClient && !showAll ? `Carrinhos de ${selectedClient.name}` : 'Carrinhos em construção'}
+          </h2>
           <p className="text-muted-foreground" style={{ fontSize: '0.82rem' }}>
-            Cada carrinho está vinculado a um cliente. Você pode manter mais de um por cliente.
+            {selectedClient && !showAll
+              ? 'Carrinhos vinculados ao cliente atual. Você pode manter mais de um.'
+              : 'Cada carrinho está vinculado a um cliente. Abrir um carrinho de outro cliente troca o cliente ativo.'}
           </p>
         </div>
         <button
@@ -68,6 +87,54 @@ export function CartsListPage({ onOpenCart }: CartsListPageProps) {
           <Plus className="w-4 h-4" /> Novo carrinho
         </button>
       </div>
+
+      {/* Banner sem cliente selecionado */}
+      {!selectedClient && onNavigateClients && (
+        <div className="flex items-center justify-between gap-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
+              <Users className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-foreground" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Nenhum cliente selecionado</p>
+              <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Escolha um carrinho existente abaixo ou selecione um cliente para começar.</p>
+            </div>
+          </div>
+          <button
+            onClick={onNavigateClients}
+            className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+            style={{ fontSize: '0.78rem', fontWeight: 600 }}
+          >
+            Selecionar cliente
+          </button>
+        </div>
+      )}
+
+      {/* Toggle para ver carrinhos de outros clientes */}
+      {selectedClient && (
+        <div className="flex items-center gap-2 mb-4">
+          <button
+            onClick={() => setShowAll(false)}
+            className={`px-3 py-1.5 rounded-md border transition-colors ${!showAll ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+            style={{ fontSize: '0.78rem', fontWeight: 600 }}
+          >
+            Deste cliente
+          </button>
+          <button
+            onClick={() => setShowAll(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border transition-colors ${showAll ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+            style={{ fontSize: '0.78rem', fontWeight: 600 }}
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5" />
+            Todos os clientes
+            {otherCarts.length > 0 && (
+              <span className={`ml-1 px-1.5 rounded ${showAll ? 'bg-primary-foreground/20' : 'bg-muted'}`} style={{ fontSize: '0.7rem' }}>
+                +{otherCarts.length}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       {newOpen && (
         <div className="bg-card border border-border rounded-xl p-4 mb-5">
@@ -114,48 +181,60 @@ export function CartsListPage({ onOpenCart }: CartsListPageProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(c => (
-          <button
-            key={c.id}
-            onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
-            className="text-left bg-card border border-border rounded-xl p-4 hover:border-primary/50 hover:bg-secondary/30 transition-all group"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
-                <ShoppingCart className="w-4 h-4 text-primary" />
+        {filtered.map(c => {
+          const isOther = selectedClient && c.clientId !== selectedClient.id;
+          return (
+            <button
+              key={c.id}
+              onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+              className="text-left bg-card border border-border rounded-xl p-4 hover:border-primary/50 hover:bg-secondary/30 transition-all group relative"
+            >
+              {isOther && (
+                <span className="absolute top-3 right-3 flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400" style={{ fontSize: '0.65rem', fontWeight: 600 }}>
+                  <ArrowLeftRight className="w-2.5 h-2.5" /> troca cliente
+                </span>
+              )}
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
+                  <ShoppingCart className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-foreground mono" style={{ fontSize: '0.95rem', fontWeight: 700 }}>{formatCurrency(c.total)}</span>
               </div>
-              <span className="text-foreground mono" style={{ fontSize: '0.95rem', fontWeight: 700 }}>{formatCurrency(c.total)}</span>
-            </div>
-            <p className="text-foreground group-hover:text-primary transition-colors truncate" style={{ fontWeight: 600, fontSize: '0.92rem' }}>{c.cartName}</p>
-            <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
-              <Store className="w-3 h-3" />
-              <span className="truncate" style={{ fontSize: '0.76rem' }}>{c.clientName}</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border">
-              <div className="flex items-center gap-1 text-muted-foreground" title="Itens">
-                <Package2 className="w-3 h-3" />
-                <span style={{ fontSize: '0.72rem' }}>{c.items} itens</span>
+              <p className="text-foreground group-hover:text-primary transition-colors truncate" style={{ fontWeight: 600, fontSize: '0.92rem' }}>{c.cartName}</p>
+              <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
+                <Store className="w-3 h-3" />
+                <span className="truncate" style={{ fontSize: '0.76rem' }}>{c.clientName}</span>
               </div>
-              <div className="flex items-center gap-1 text-muted-foreground" title="Pares">
-                <span className="mono" style={{ fontSize: '0.72rem' }}>{c.pairs} pares</span>
+              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border">
+                <div className="flex items-center gap-1 text-muted-foreground" title="Itens">
+                  <Package2 className="w-3 h-3" />
+                  <span style={{ fontSize: '0.72rem' }}>{c.items} itens</span>
+                </div>
+                <div className="flex items-center gap-1 text-muted-foreground" title="Pares">
+                  <span className="mono" style={{ fontSize: '0.72rem' }}>{c.pairs} pares</span>
+                </div>
+                <div className="flex items-center gap-1 text-muted-foreground justify-end" title="Atualizado">
+                  <Calendar className="w-3 h-3" />
+                  <span style={{ fontSize: '0.72rem' }}>{new Date(c.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-muted-foreground justify-end" title="Atualizado">
-                <Calendar className="w-3 h-3" />
-                <span style={{ fontSize: '0.72rem' }}>{new Date(c.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+              <div className="flex items-center gap-1 mt-2 text-muted-foreground">
+                <User className="w-3 h-3" />
+                <span className="truncate" style={{ fontSize: '0.7rem' }}>Rep: {c.rep}</span>
               </div>
-            </div>
-            <div className="flex items-center gap-1 mt-2 text-muted-foreground">
-              <User className="w-3 h-3" />
-              <span className="truncate" style={{ fontSize: '0.7rem' }}>Rep: {c.rep}</span>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
           <ShoppingCart className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p style={{ fontSize: '0.88rem' }}>Nenhum carrinho encontrado.</p>
+          <p style={{ fontSize: '0.88rem' }}>
+            {selectedClient && !showAll
+              ? `Nenhum carrinho para ${selectedClient.name} ainda. Crie um novo ou veja carrinhos de outros clientes.`
+              : 'Nenhum carrinho encontrado.'}
+          </p>
         </div>
       )}
     </div>

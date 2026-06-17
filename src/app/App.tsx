@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LoginPage } from "./components/LoginPage";
 import { Sidebar, TopBar } from "./components/Sidebar";
 import type { View } from "./components/Sidebar";
-import type { Client } from "./data/mockData";
+import { clients as clientsList, type Client } from "./data/mockData";
 import { DashboardAdmin } from "./components/DashboardAdmin";
 import { DashboardRep } from "./components/DashboardRep";
 import { DashboardLojista } from "./components/DashboardLojista";
@@ -97,7 +97,21 @@ export default function App() {
       case 'cart':
         return <CartPage onNavigate={navigate} cartContext={activeCart} />;
       case 'carts':
-        return <CartsListPage onOpenCart={(ctx) => { setActiveCart(ctx); setCurrentView('cart'); }} />;
+        return (
+          <CartsListPage
+            selectedClient={selectedClient}
+            onNavigateClients={() => setCurrentView('clients')}
+            onOpenCart={(ctx) => {
+              // Se o carrinho pertence a outro cliente, troca automaticamente o cliente ativo
+              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+                const c = (clientsList.find(x => x.id === ctx.clientId)) ?? null;
+                if (c) setSelectedClient(c);
+              }
+              setActiveCart(ctx);
+              setCurrentView('cart');
+            }}
+          />
+        );
       case 'history':
         if (profile === 'lojista') return <LojistaHistoryDashboard onNavigate={navigate} />;
         return <OrderHistory onNavigate={navigate} profile={profile} />;
