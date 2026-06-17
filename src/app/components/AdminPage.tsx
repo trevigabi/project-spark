@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check, ArrowLeft, X, Info, MapPin, UserCircle2, Layers, Package } from "lucide-react";
+
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
 
 const tabs = [
@@ -24,12 +25,47 @@ const pricePolicies = [
   { id: 'P004', name: 'Novos Clientes', discount: '5%', minOrder: 'R$ 500', payment: '30 DDL', clients: 17 },
 ];
 
+type PolicyCriteria = {
+  clients: string[];
+  regions: string[];
+  reps: string[];
+  lines: string[];
+  products: string[];
+};
+
+const initialCriteria: Record<string, PolicyCriteria> = {
+  P001: { clients: [], regions: ['Norte', 'Centro-Oeste', 'Nordeste'], reps: [], lines: ['Coil', 'Hertz'], products: [] },
+  P002: {
+    clients: ['Calçados Beira Rio', 'Sapataria Central', 'Loja Modelo SP'],
+    regions: ['Sul', 'Sudeste'],
+    reps: ['Carlos Mendes', 'Ana Souza'],
+    lines: ['Flow XL', 'Flow', 'Hertz Art'],
+    products: [],
+  },
+  P003: { clients: [], regions: [], reps: ['Rafael Costa'], lines: ['Flow XL'], products: [] },
+  P004: { clients: [], regions: [], reps: [], lines: ['Coil'], products: [] },
+};
+
+const coveredClientsMock = [
+  { name: 'Calçados Beira Rio', city: 'Porto Alegre, RS', rep: 'Carlos Mendes' },
+  { name: 'Sapataria Central', city: 'Florianópolis, SC', rep: 'Carlos Mendes' },
+  { name: 'Loja Modelo SP', city: 'São Paulo, SP', rep: 'Ana Souza' },
+  { name: 'Calçados Estrela', city: 'Curitiba, PR', rep: 'Carlos Mendes' },
+];
+
+const REGION_OPTIONS = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
+const LINE_OPTIONS = ['Coil', 'Hertz', 'Hertz Art', 'Flow', 'Flow XL'];
+const REP_OPTIONS = ['Carlos Mendes', 'Ana Souza', 'Marcos Andrade', 'Fernanda Lima', 'Rafael Costa'];
+
 export function AdminPage() {
   const [activeTab, setActiveTab] = useState('catalog');
   const [search, setSearch] = useState('');
   const [showAddUser, setShowAddUser] = useState(false);
   const [productSearch, setProductSearch] = useState('');
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const [criteriaState, setCriteriaState] = useState<Record<string, PolicyCriteria>>(initialCriteria);
+
 
   return (
     <div className="p-6 max-w-[1200px] space-y-5">
@@ -175,7 +211,7 @@ export function AdminPage() {
       )}
 
       {/* Pricing Tab */}
-      {activeTab === 'pricing' && (
+      {activeTab === 'pricing' && !selectedPolicyId && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground" style={{ fontSize: '0.85rem' }}>Políticas de preço ativas</p>
@@ -185,12 +221,14 @@ export function AdminPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {pricePolicies.map(policy => (
-              <div key={policy.id} className="bg-card border border-border rounded-xl p-5 hover:border-border/60 transition-colors">
+              <button
+                key={policy.id}
+                onClick={() => setSelectedPolicyId(policy.id)}
+                className="text-left bg-card border border-border rounded-xl p-5 hover:border-primary/60 hover:shadow-sm transition-all"
+              >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>{policy.name}</h3>
-                  <button className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </button>
+                  <Edit3 className="w-3.5 h-3.5 text-muted-foreground" />
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   {[
@@ -209,11 +247,185 @@ export function AdminPage() {
                 <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>
                   <span className="text-foreground font-semibold">{policy.clients}</span> clientes nesta política
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
       )}
+
+      {activeTab === 'pricing' && selectedPolicyId && (() => {
+        const policy = pricePolicies.find(p => p.id === selectedPolicyId)!;
+        const criteria = criteriaState[selectedPolicyId] ?? { clients: [], regions: [], reps: [], lines: [], products: [] };
+        const update = (patch: Partial<PolicyCriteria>) =>
+          setCriteriaState(s => ({ ...s, [selectedPolicyId]: { ...criteria, ...patch } }));
+        const covered = selectedPolicyId === 'P002' ? coveredClientsMock : coveredClientsMock.slice(0, Math.min(policy.clients, coveredClientsMock.length));
+
+        const Section = ({ icon: Icon, title, hint, children }: any) => (
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Icon className="w-3.5 h-3.5 text-primary" />
+              <h4 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.85rem' }}>{title}</h4>
+            </div>
+            {hint && <p className="text-muted-foreground mb-3" style={{ fontSize: '0.72rem' }}>{hint}</p>}
+            <div className="mt-3">{children}</div>
+          </div>
+        );
+
+        const Chips = ({ items, onRemove }: { items: string[]; onRemove: (v: string) => void }) => (
+          <div className="flex flex-wrap gap-1.5">
+            {items.length === 0 && <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Nenhum item adicionado</span>}
+            {items.map(v => (
+              <span key={v} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20" style={{ fontSize: '0.75rem', fontWeight: 500 }}>
+                {v}
+                <button onClick={() => onRemove(v)} className="hover:bg-primary/20 rounded-full p-0.5">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        );
+
+        const AddInput = ({ placeholder, options, current, onAdd }: { placeholder: string; options?: string[]; current: string[]; onAdd: (v: string) => void }) => {
+          const [val, setVal] = useState('');
+          const available = options?.filter(o => !current.includes(o)) ?? [];
+          return (
+            <div className="mt-3 space-y-2">
+              <div className="flex gap-2">
+                <input
+                  value={val}
+                  onChange={e => setVal(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && val.trim()) { onAdd(val.trim()); setVal(''); } }}
+                  placeholder={placeholder}
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-foreground outline-none focus:border-primary"
+                  style={{ fontSize: '0.8rem' }}
+                />
+                <button
+                  onClick={() => { if (val.trim()) { onAdd(val.trim()); setVal(''); } }}
+                  className="px-3 py-2 rounded-lg bg-secondary text-foreground hover:bg-secondary/70 transition-colors"
+                  style={{ fontSize: '0.78rem', fontWeight: 500 }}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              {available.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {available.map(o => (
+                    <button key={o} onClick={() => onAdd(o)} className="px-2 py-1 rounded-md border border-dashed border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors" style={{ fontSize: '0.72rem' }}>
+                      + {o}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        return (
+          <div className="space-y-5">
+            <button onClick={() => setSelectedPolicyId(null)} className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors" style={{ fontSize: '0.78rem' }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> Voltar para políticas
+            </button>
+
+            {/* Identidade */}
+            <div className="bg-card border border-border rounded-xl p-5">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-foreground mb-1" style={{ fontWeight: 700, fontSize: '1.15rem' }}>{policy.name}</h2>
+                  <p className="text-muted-foreground" style={{ fontSize: '0.78rem' }}>Configuração da política comercial</p>
+                </div>
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontSize: '0.78rem' }}>
+                  <Edit3 className="w-3.5 h-3.5" /> Editar identidade
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  { label: 'Desconto', value: policy.discount, highlight: true },
+                  { label: 'Pedido mínimo', value: policy.minOrder, mono: true },
+                  { label: 'Pagamento', value: policy.payment },
+                  { label: 'Clientes cobertos', value: String(policy.clients) },
+                ].map(d => (
+                  <div key={d.label} className="rounded-lg bg-secondary/30 p-3">
+                    <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d.label}</p>
+                    <p className={`${d.highlight ? 'text-primary' : 'text-foreground'} ${d.mono ? 'mono' : ''}`} style={{ fontSize: '1rem', fontWeight: d.highlight ? 700 : 600 }}>{d.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Aviso precedência */}
+            <div className="flex items-start gap-2.5 rounded-xl border border-amber-400/30 bg-amber-400/5 p-3.5">
+              <Info className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+              <p className="text-foreground" style={{ fontSize: '0.78rem', lineHeight: 1.55 }}>
+                <span style={{ fontWeight: 600 }}>Precedência:</span> critérios mais específicos sobrepõem os mais amplos.
+                Clientes específicos &gt; Representantes &gt; Regiões. Produtos específicos &gt; Linhas de produto.
+              </p>
+            </div>
+
+            {/* Critérios */}
+            <div>
+              <h3 className="text-foreground mb-3" style={{ fontWeight: 600, fontSize: '0.95rem' }}>Critérios de aplicação</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Section icon={UserCircle2} title="Clientes específicos" hint="Lojistas vinculados diretamente. Sobrepõe qualquer outro critério.">
+                  <Chips items={criteria.clients} onRemove={v => update({ clients: criteria.clients.filter(x => x !== v) })} />
+                  <AddInput placeholder="Buscar lojista..." current={criteria.clients} onAdd={v => update({ clients: [...criteria.clients, v] })} />
+                </Section>
+
+                <Section icon={MapPin} title="Regiões" hint="Vale para todos os clientes da região.">
+                  <Chips items={criteria.regions} onRemove={v => update({ regions: criteria.regions.filter(x => x !== v) })} />
+                  <AddInput placeholder="Adicionar região..." options={REGION_OPTIONS} current={criteria.regions} onAdd={v => update({ regions: [...criteria.regions, v] })} />
+                </Section>
+
+                <Section icon={Users} title="Representantes" hint="Aplica a toda a carteira do rep.">
+                  <Chips items={criteria.reps} onRemove={v => update({ reps: criteria.reps.filter(x => x !== v) })} />
+                  <AddInput placeholder="Adicionar representante..." options={REP_OPTIONS} current={criteria.reps} onAdd={v => update({ reps: [...criteria.reps, v] })} />
+                </Section>
+
+                <Section icon={Layers} title="Linhas de produto" hint="A política se aplica apenas a estas linhas.">
+                  <Chips items={criteria.lines} onRemove={v => update({ lines: criteria.lines.filter(x => x !== v) })} />
+                  <AddInput placeholder="Adicionar linha..." options={LINE_OPTIONS} current={criteria.lines} onAdd={v => update({ lines: [...criteria.lines, v] })} />
+                </Section>
+
+                <div className="lg:col-span-2">
+                  <Section icon={Package} title="Produtos específicos (SKU)" hint="Granularidade por SKU. Se vazio, vale para todas as linhas marcadas acima.">
+                    <Chips items={criteria.products} onRemove={v => update({ products: criteria.products.filter(x => x !== v) })} />
+                    <AddInput placeholder="Buscar SKU ou referência..." current={criteria.products} onAdd={v => update({ products: [...criteria.products, v] })} />
+                  </Section>
+                </div>
+              </div>
+            </div>
+
+            {/* Clientes cobertos */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="p-5 border-b border-border">
+                <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.95rem' }}>Clientes cobertos</h3>
+                <p className="text-muted-foreground mt-1" style={{ fontSize: '0.75rem' }}>
+                  Resultado consolidado dos critérios acima · {policy.clients} lojistas · somente leitura
+                </p>
+              </div>
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/20">
+                    {['Lojista', 'Cidade/UF', 'Representante'].map(c => (
+                      <th key={c} className="text-left px-4 py-2.5 text-muted-foreground" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {covered.map(c => (
+                    <tr key={c.name} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                      <td className="px-4 py-3 text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{c.name}</td>
+                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{c.city}</td>
+                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{c.rep}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })()}
+
+
 
       {/* Policies Tab */}
       {activeTab === 'policies' && (
