@@ -247,9 +247,10 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
         ]
       : profile === 'rep'
       ? [
-          { icon: Store, label: 'Carteira de Clientes', view: 'clients' },
-          { icon: Package2, label: 'Catálogo', view: 'catalog' },
-          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
+          { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' as View },
+          { icon: Store, label: 'Carteira de Clientes', view: 'clients' as View },
+          { icon: Package2, label: 'Catálogo', view: 'catalog' as View },
+          { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
         ]
       : [
           { icon: Package2, label: 'Catálogo', view: 'catalog' },
@@ -310,7 +311,9 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
         {actions}
 
         {/* Header nav items */}
-        {headerItems.map(item => {
+        {headerItems.length > 0 && (
+          <div className="flex items-center gap-1 mr-3">
+            {headerItems.map(item => {
           const Icon = item.icon;
           const active = currentView === item.view;
           return (
@@ -329,7 +332,9 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
               <span className="hidden md:inline">{item.label}</span>
             </button>
           );
-        })}
+            })}
+          </div>
+        )}
 
         {/* Cart — hidden for admin */}
         {profile !== 'admin' && (
