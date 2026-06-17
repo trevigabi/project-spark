@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Search, MapPin, Users, Store, X, BarChart3, Sparkles } from "lucide-react";
+import { Search, MapPin, Users, BarChart3, Sparkles } from "lucide-react";
 import { clients, Client, formatCurrency } from "../data/mockData";
-import { DashboardRep } from "./DashboardRep";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
