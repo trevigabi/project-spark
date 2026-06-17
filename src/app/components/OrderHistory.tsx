@@ -92,80 +92,97 @@ export function OrderHistory({ onNavigate, profile = 'admin' }: OrderHistoryProp
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="relative space-y-0">
-        <div className="absolute left-[18px] top-0 bottom-0 w-px bg-border" />
-        {filtered.map((order, i) => (
-          <div key={order.id} className="relative pl-10 pb-4">
-            <div className={`absolute left-[13px] top-4 w-2.5 h-2.5 rounded-full border-2 border-background ${statusDot[order.status]}`} />
-
-            <div
-              className={`bg-card border rounded-xl overflow-hidden transition-all cursor-pointer hover:border-border/60 ${expandedId === order.id ? 'border-primary/30' : 'border-border'}`}
-              onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-            >
-              <div className="p-4 flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{order.id}</span>
-                    <span className={`px-2 py-0.5 rounded-full ${statusColors[order.status]}`} style={{ fontSize: '0.65rem', fontWeight: 700 }}>
+      {/* Orders table */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <table className="w-full text-left" style={{ fontSize: '0.82rem' }}>
+          <thead>
+            <tr className="border-b border-border bg-muted/30">
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground" style={{ width: '30%' }}>Pedido</th>
+              {profile !== 'rep' && <th className="px-4 py-2.5 font-semibold text-muted-foreground">Representante</th>}
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground">Status</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground">Data</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground">Pares</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground text-right">Total</th>
+              <th className="px-4 py-2.5 font-semibold text-muted-foreground text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(order => (
+              <>
+                <tr
+                  key={order.id}
+                  className={`border-b border-border cursor-pointer transition-colors hover:bg-primary/5 ${expandedId === order.id ? 'bg-primary/5' : ''}`}
+                  onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-foreground mono truncate" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{order.id}</p>
+                        <p className="text-muted-foreground truncate" style={{ fontSize: '0.72rem' }}>{order.client}</p>
+                      </div>
+                    </div>
+                  </td>
+                  {profile !== 'rep' && (
+                    <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.8rem' }}>{order.rep}</td>
+                  )}
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full ${statusColors[order.status]}`} style={{ fontSize: '0.72rem', fontWeight: 600 }}>
                       {order.status}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                    <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{order.client}</span>
-                    <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>·</span>
-                    <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{order.rep}</span>
-                    <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>·</span>
-                    <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{formatDate(order.date)}</span>
-                  </div>
-                </div>
-
-                <div className="text-right flex-shrink-0">
-                  <p className="text-foreground mono" style={{ fontSize: '0.92rem', fontWeight: 700 }}>{formatCurrency(order.total)}</p>
-                  <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{order.items} pares</p>
-                </div>
-
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform flex-shrink-0 ${expandedId === order.id ? 'rotate-180' : ''}`} />
-              </div>
-
-              {expandedId === order.id && (
-                <div className="border-t border-border p-4 bg-secondary/20">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                    {[
-                      { label: 'Coleção', value: order.collection },
-                      { label: 'Pagamento', value: order.paymentCondition },
-                      { label: 'Total de pares', value: `${order.items} pares` },
-                      { label: 'Ticket médio/par', value: formatCurrency(order.total / order.items) },
-                    ].map(detail => (
-                      <div key={detail.label}>
-                        <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{detail.label}</p>
-                        <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{detail.value}</p>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.8rem' }}>{formatDate(order.date)}</td>
+                  <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.8rem' }}>{order.items}</td>
+                  <td className="px-4 py-3 text-right">
+                    <p className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(order.total)}</p>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform inline-block ${expandedId === order.id ? 'rotate-180' : ''}`} />
+                  </td>
+                </tr>
+                {expandedId === order.id && (
+                  <tr key={`${order.id}-expanded`} className="border-b border-border bg-secondary/20">
+                    <td colSpan={profile !== 'rep' ? 7 : 6} className="px-4 py-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                        {[
+                          { label: 'Coleção', value: order.collection },
+                          { label: 'Pagamento', value: order.paymentCondition },
+                          { label: 'Total de pares', value: `${order.items} pares` },
+                          { label: 'Ticket médio/par', value: formatCurrency(order.total / order.items) },
+                        ].map(detail => (
+                          <div key={detail.label}>
+                            <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{detail.label}</p>
+                            <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{detail.value}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontSize: '0.78rem', fontWeight: 500 }}>
-                      <Eye className="w-3.5 h-3.5" /> Ver detalhes
-                    </button>
-                    <button
-                      onClick={e => { e.stopPropagation(); onNavigate('cart'); }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                      style={{ fontSize: '0.78rem', fontWeight: 600 }}
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" /> Repetir pedido
-                    </button>
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontSize: '0.78rem', fontWeight: 500 }}>
-                      <Download className="w-3.5 h-3.5" /> PDF
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontSize: '0.78rem', fontWeight: 500 }}>
+                          <Eye className="w-3.5 h-3.5" /> Ver detalhes
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); onNavigate('cart'); }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                          style={{ fontSize: '0.78rem', fontWeight: 600 }}
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" /> Repetir pedido
+                        </button>
+                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontSize: '0.78rem', fontWeight: 500 }}>
+                          <Download className="w-3.5 h-3.5" /> PDF
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </>
+            ))}
+          </tbody>
+        </table>
 
         {filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center pl-0">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
             <Clock className="w-10 h-10 text-muted-foreground/30 mb-3" />
             <p className="text-foreground" style={{ fontWeight: 600 }}>Nenhum pedido encontrado</p>
             <p className="text-muted-foreground mt-1" style={{ fontSize: '0.85rem' }}>Tente ajustar os filtros de busca</p>
