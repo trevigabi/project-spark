@@ -327,12 +327,13 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
       <div className="flex items-center gap-1 flex-shrink-0">
         {actions}
 
-        {/* Cart */}
+        {/* Cart(s) — admin uses multi-cart icon and view */}
         <button
-          onClick={() => onNavigate('cart')}
+          onClick={() => onNavigate(profile === 'admin' ? 'carts' : 'cart')}
           className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+          title={profile === 'admin' ? 'Carrinhos' : 'Carrinho'}
         >
-          <ShoppingCart className="w-4 h-4" />
+          {profile === 'admin' ? <ShoppingBasket className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
           {cartCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground rounded-full flex items-center justify-center" style={{ fontSize: '0.6rem', fontWeight: 700 }}>
               {cartCount}
