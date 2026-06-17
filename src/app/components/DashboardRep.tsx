@@ -20,7 +20,7 @@ const monthlyData = [
   { month: 'Jun', valor: 524000 },
 ];
 
-export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) {
+export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
   const [showDashboard, setShowDashboard] = useState(false);
 
   const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
