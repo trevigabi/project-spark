@@ -108,13 +108,34 @@ export default function App() {
             selectedClient={selectedClient}
             externalFilters={useFilters ? catalogFilters : undefined}
             onExternalFiltersChange={useFilters ? setCatalogFilters : undefined}
+            clientCarts={multiCart && selectedClient ? clientCarts : undefined}
+            activeCartId={activeCart?.id ?? null}
+            onPickCart={(ctx) => setActiveCart(ctx)}
+            onCreateCart={(name) => {
+              const ctx = createCart(name);
+              if (ctx) setActiveCart(ctx);
+              return ctx;
+            }}
           />
         );
       }
       case 'order-grade':
         return <OrderGrade onNavigate={navigate} selectedClient={selectedClient} />;
       case 'cart':
-        return <CartPage onNavigate={navigate} cartContext={activeCart} />;
+        return (
+          <CartPage
+            onNavigate={navigate}
+            cartContext={activeCart}
+            multiCart={multiCart}
+            onCreateNewCart={(name) => {
+              const ctx = createCart(name);
+              if (ctx) {
+                setActiveCart(ctx);
+                setCurrentView('catalog');
+              }
+            }}
+          />
+        );
       case 'carts':
         return (
           <CartsListPage
