@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Search, Filter, Grid3X3, List, Heart, Star, ShoppingCart,
   X, Package2, Eye, Zap, Check, Plus, Store,
@@ -430,7 +431,6 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   );
   const [gradeOpenId, setGradeOpenId] = useState<string | null>(null);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
   // Multi-cart picker
   const multiCartEnabled = Array.isArray(clientCarts);
   const [pendingAdd, setPendingAdd] = useState<{ product: Product; qtys: Record<string, number> } | null>(null);
@@ -438,14 +438,10 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   const [creatingNewName, setCreatingNewName] = useState('');
   const [creatingMode, setCreatingMode] = useState(false);
 
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2200);
-  };
   const commitAdd = (p: Product, qtys: Record<string, number>, cartName?: string) => {
     const total = Object.values(qtys).reduce((a, b) => a + b, 0);
     setGradeOpenId(null);
-    showToast(`${total} ${total === 1 ? 'par' : 'pares'} de ${p.name} adicionados${cartName ? ` em "${cartName}"` : ''}`);
+    toast.success(`${total} ${total === 1 ? 'par' : 'pares'} de ${p.name} adicionados${cartName ? ` em "${cartName}"` : ''}`);
   };
   const addGrade = (p: Product, qtys: Record<string, number>) => {
     const total = Object.values(qtys).reduce((a, b) => a + b, 0);
@@ -846,12 +842,6 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
         </div>
       )}
 
-      {toast && (
-        <div className="fixed bottom-6 right-6 z-[60] bg-foreground text-background px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 animate-in slide-in-from-bottom-2">
-          <Check className="w-4 h-4 text-emerald-400" />
-          <span style={{ fontSize: '0.82rem', fontWeight: 500 }}>{toast}</span>
-        </div>
-      )}
     </div>
   );
 }
