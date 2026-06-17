@@ -246,6 +246,8 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
       : profile === 'rep'
       ? [
           { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' },
+          { icon: Package2, label: 'Catálogo', view: 'catalog' },
+          { icon: Store, label: 'Carteira de Clientes', view: 'clients' },
           { icon: Clock, label: 'Pedidos', view: 'history' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
           { icon: Users, label: 'Meu Perfil' },
