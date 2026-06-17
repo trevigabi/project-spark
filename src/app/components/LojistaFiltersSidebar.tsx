@@ -173,7 +173,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
 
           <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-5">
             {/* Modelo / Linha */}
-            <FilterSection icon={Tag} label="Modelo / Linha">
+            <FilterSection
+              icon={Tag}
+              label="Modelo / Linha"
+              isOpen={openSections.has('Modelo / Linha')}
+              onToggle={() => toggleSection('Modelo / Linha')}
+            >
               <div className="flex flex-wrap gap-1.5">
                 {lines.map(l => (
                   <button
@@ -189,7 +194,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             </FilterSection>
 
             {/* Categoria */}
-            <FilterSection icon={Layers} label="Categoria">
+            <FilterSection
+              icon={Layers}
+              label="Categoria"
+              isOpen={openSections.has('Categoria')}
+              onToggle={() => toggleSection('Categoria')}
+            >
               <div className="flex flex-wrap gap-1.5">
                 {categories.map(c => (
                   <button
@@ -205,7 +215,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             </FilterSection>
 
             {/* Cores */}
-            <FilterSection icon={Palette} label="Cores">
+            <FilterSection
+              icon={Palette}
+              label="Cores"
+              isOpen={openSections.has('Cores')}
+              onToggle={() => toggleSection('Cores')}
+            >
               <div className="grid grid-cols-6 gap-1.5">
                 {allColors.map(c => {
                   const active = filters.colors.includes(c);
@@ -233,7 +248,12 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
             </FilterSection>
 
             {/* Preço */}
-            <FilterSection icon={DollarSign} label="Faixa de preço">
+            <FilterSection
+              icon={DollarSign}
+              label="Faixa de preço"
+              isOpen={openSections.has('Faixa de preço')}
+              onToggle={() => toggleSection('Faixa de preço')}
+            >
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-muted-foreground" style={{ fontSize: '0.72rem' }}>
                   <span>{formatCurrency(priceMin)}</span>
