@@ -59,6 +59,7 @@ interface Props {
 export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   const toggleColor = (c: string) => {
     const next = filters.colors.includes(c)
