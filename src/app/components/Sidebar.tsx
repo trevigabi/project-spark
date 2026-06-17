@@ -319,8 +319,8 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
 
           {profileOpen && (
             <>
-              <div className="fixed inset-0 z-10" onClick={() => setProfileOpen(false)} />
-              <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-lg z-20 py-1.5 overflow-hidden">
+              <div className="fixed inset-0 z-[100]" onClick={() => setProfileOpen(false)} />
+              <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-lg z-[101] py-1.5 overflow-hidden">
                 <p className="px-3 pb-1.5 pt-0.5 text-muted-foreground border-b border-border mb-1" style={{ fontSize: '0.7rem' }}>
                   {profileInfo.label}
                 </p>
