@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Package2, Tag, Sparkles, Percent } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft } from "lucide-react";
 import { products, formatCurrency, commercialPolicies } from "../data/mockData";
+import type { CartContext } from "./CartsListPage";
 
 
-type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
+type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
 interface CartPageProps {
   onNavigate: (view: View) => void;
+  cartContext?: CartContext | null;
 }
 
 interface CartItem {
