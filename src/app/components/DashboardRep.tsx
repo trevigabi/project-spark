@@ -8,6 +8,7 @@ type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'mark
 interface DashboardRepProps {
   onNavigate: (view: View) => void;
   selectedClient: Client | null;
+  embedded?: boolean;
 }
 
 const monthlyData = [
