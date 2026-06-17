@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TrendingUp, Users, ShoppingBag, Target, Star, ChevronRight, MapPin, Phone, Clock, BarChart3, Store } from "lucide-react";
 import { clients, orders, formatCurrency, formatDate, products, Client } from "../data/mockData";
 import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { SelloutDashboard } from "./SelloutDashboard";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
