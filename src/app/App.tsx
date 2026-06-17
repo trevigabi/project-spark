@@ -171,7 +171,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
-          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isAdminNoSidebar || isProfile ? null : selectedClient}
+          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isProfile || (isAdminNoSidebar && currentView !== 'cart' && currentView !== 'carts') ? null : selectedClient}
         />
         <main className="flex-1 overflow-y-auto">
           {renderView()}
