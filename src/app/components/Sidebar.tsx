@@ -268,7 +268,6 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
         ]
       : profile === 'rep'
       ? [
-          { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' },
           { icon: Clock, label: 'Pedidos', view: 'history' },
           { icon: Users, label: 'Meu Perfil', view: 'profile' },
           { icon: LogOut, label: 'Sair', action: onLogout },
