@@ -43,7 +43,7 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-[1200px]">
+    <div className="p-6 space-y-6 max-w-[1200px] mx-auto w-full">
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-border">
         <button

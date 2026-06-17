@@ -21,7 +21,7 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-[1200px]">
+    <div className="p-6 space-y-6 max-w-[1200px] mx-auto w-full">
       {/* Header banner */}
       <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/10 to-transparent p-5">
         <div className="flex items-center justify-between flex-wrap gap-4">
