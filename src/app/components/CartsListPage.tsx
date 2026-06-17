@@ -230,45 +230,67 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
         {filtered.map(c => {
           const isOther = selectedClient && c.clientId !== selectedClient.id;
           return (
-            <button
+            <div
               key={c.id}
-              onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
-              className="text-left bg-card border border-border rounded-xl p-4 hover:border-primary/50 hover:bg-secondary/30 transition-all group relative"
+              className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 hover:bg-secondary/30 transition-all group relative flex flex-col"
             >
               {isOther && (
                 <span className="absolute top-3 right-3 flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400" style={{ fontSize: '0.65rem', fontWeight: 600 }}>
                   <ArrowLeftRight className="w-2.5 h-2.5" /> troca cliente
                 </span>
               )}
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
-                  <ShoppingCart className="w-4 h-4 text-primary" />
+              <button
+                onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+                className="text-left flex-1"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
+                    <ShoppingCart className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-foreground mono" style={{ fontSize: '0.95rem', fontWeight: 700 }}>{formatCurrency(c.total)}</span>
                 </div>
-                <span className="text-foreground mono" style={{ fontSize: '0.95rem', fontWeight: 700 }}>{formatCurrency(c.total)}</span>
-              </div>
-              <p className="text-foreground group-hover:text-primary transition-colors truncate" style={{ fontWeight: 600, fontSize: '0.92rem' }}>{c.cartName}</p>
-              <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
-                <Store className="w-3 h-3" />
-                <span className="truncate" style={{ fontSize: '0.76rem' }}>{c.clientName}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border">
-                <div className="flex items-center gap-1 text-muted-foreground" title="Itens">
-                  <Package2 className="w-3 h-3" />
-                  <span style={{ fontSize: '0.72rem' }}>{c.items} itens</span>
+                <p className="text-foreground group-hover:text-primary transition-colors truncate" style={{ fontWeight: 600, fontSize: '0.92rem' }}>{c.cartName}</p>
+                <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
+                  <Store className="w-3 h-3" />
+                  <span className="truncate" style={{ fontSize: '0.76rem' }}>{c.clientName}</span>
                 </div>
-                <div className="flex items-center gap-1 text-muted-foreground" title="Pares">
-                  <span className="mono" style={{ fontSize: '0.72rem' }}>{c.pairs} pares</span>
+                <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border">
+                  <div className="flex items-center gap-1 text-muted-foreground" title="Itens">
+                    <Package2 className="w-3 h-3" />
+                    <span style={{ fontSize: '0.72rem' }}>{c.items} itens</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground" title="Pares">
+                    <span className="mono" style={{ fontSize: '0.72rem' }}>{c.pairs} pares</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground justify-end" title="Atualizado">
+                    <Calendar className="w-3 h-3" />
+                    <span style={{ fontSize: '0.72rem' }}>{new Date(c.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-muted-foreground justify-end" title="Atualizado">
-                  <Calendar className="w-3 h-3" />
-                  <span style={{ fontSize: '0.72rem' }}>{new Date(c.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                <div className="flex items-center gap-1 mt-2 text-muted-foreground">
+                  <User className="w-3 h-3" />
+                  <span className="truncate" style={{ fontSize: '0.7rem' }}>Rep: {c.rep}</span>
                 </div>
+              </button>
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+                <button
+                  onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                  style={{ fontSize: '0.75rem', fontWeight: 500 }}
+                >
+                  <Eye className="w-3.5 h-3.5" /> Detalhes
+                </button>
+                {onGoToCatalog && (
+                  <button
+                    onClick={() => onGoToCatalog({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" /> Catálogo
+                  </button>
+                )}
               </div>
-              <div className="flex items-center gap-1 mt-2 text-muted-foreground">
-                <User className="w-3 h-3" />
-                <span className="truncate" style={{ fontSize: '0.7rem' }}>Rep: {c.rep}</span>
-              </div>
-            </button>
+            </div>
           );
         })}
       </div>
