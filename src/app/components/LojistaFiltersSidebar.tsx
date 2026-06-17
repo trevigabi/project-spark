@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Footprints, Filter, Tag, Layers, Palette, DollarSign,
   Menu, X, LogOut, ChevronLeft, ChevronRight, Store, Search,
+  ChevronUp, ChevronDown,
 } from "lucide-react";
 import { products, formatCurrency } from "../data/mockData";
 
