@@ -309,6 +309,37 @@ export function AdminPage() {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-xl p-5">
+            <h3 className="text-foreground mb-4" style={{ fontWeight: 600 }}>Informações da empresa</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: 'Nome da empresa', value: 'Tesla Footwear Indústria LTDA' },
+                { label: 'CNPJ', value: '12.345.678/0001-90' },
+                { label: 'Website', value: 'teslafootwear.com.br' },
+                { label: 'Suporte', value: 'suporte@tesla.com.br' },
+              ].map(field => (
+                <div key={field.label}>
+                  <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>{field.label}</label>
+                  <input
+                    type="text"
+                    defaultValue={field.value}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary"
+                    style={{ fontSize: '0.85rem' }}
+                  />
+                </div>
+              ))}
+            </div>
+            <button className="mt-4 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
+              Salvar alterações
+            </button>
+          </div>
+
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="text-foreground mb-4" style={{ fontWeight: 600 }}>Permissões por perfil</h3>
             <div className="overflow-x-auto">
@@ -348,36 +379,6 @@ export function AdminPage() {
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Settings Tab */}
-      {activeTab === 'settings' && (
-        <div className="space-y-4">
-          <div className="bg-card border border-border rounded-xl p-5">
-            <h3 className="text-foreground mb-4" style={{ fontWeight: 600 }}>Informações da empresa</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: 'Nome da empresa', value: 'Tesla Footwear Indústria LTDA' },
-                { label: 'CNPJ', value: '12.345.678/0001-90' },
-                { label: 'Website', value: 'teslafootwear.com.br' },
-                { label: 'Suporte', value: 'suporte@tesla.com.br' },
-              ].map(field => (
-                <div key={field.label}>
-                  <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>{field.label}</label>
-                  <input
-                    type="text"
-                    defaultValue={field.value}
-                    className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary"
-                    style={{ fontSize: '0.85rem' }}
-                  />
-                </div>
-              ))}
-            </div>
-            <button className="mt-4 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-              Salvar alterações
-            </button>
           </div>
         </div>
       )}
