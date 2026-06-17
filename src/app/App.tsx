@@ -200,6 +200,7 @@ export default function App() {
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
+      <Toaster position="top-center" duration={4000} />
       {isFiltersCatalog ? (
         <LojistaFiltersSidebar
           filters={catalogFilters}
