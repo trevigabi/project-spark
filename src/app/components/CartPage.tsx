@@ -66,7 +66,7 @@ const campaignsByTable: Record<string, { id: string; name: string; description: 
   ],
 };
 
-export function CartPage({ onNavigate, cartContext }: CartPageProps) {
+export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart }: CartPageProps) {
   const [cart, setCart] = useState<CartItem[]>(initialCart);
   const [tableId, setTableId] = useState<string>('TAB-A');
   const policy = useMemo(() => commercialPolicies.find(p => p.id === tableId)!, [tableId]);
