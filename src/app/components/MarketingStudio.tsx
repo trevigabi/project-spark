@@ -14,6 +14,8 @@ const THEMES = [
   { id: 'clean', label: 'Clean Minimal', colors: ['#FAFAFA', '#F0F0F0', '#1a1a1a'], preview: 'light' },
   { id: 'bold', label: 'Bold Impact', colors: ['#1a0533', '#6B21A8', '#F59E0B'], preview: 'dark' },
   { id: 'nature', label: 'Natural & Warm', colors: ['#1C1208', '#A16207', '#FEF3C7'], preview: 'dark' },
+  { id: 'ocean', label: 'Ocean Blue', colors: ['#0C1A2E', '#0E4D8A', '#38BDF8'], preview: 'dark' },
+  { id: 'sport', label: 'Sport Energy', colors: ['#0F0F0F', '#16A34A', '#DCFCE7'], preview: 'dark' },
 ];
 
 const AI_PROMPTS = [
@@ -167,7 +169,7 @@ export function MarketingStudio() {
           <div>
             <h3 className="text-foreground mb-1" style={{ fontWeight: 600 }}>Tema visual</h3>
             <p className="text-muted-foreground mb-4" style={{ fontSize: '0.78rem' }}>Escolha a identidade visual da peça</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {THEMES.map(t => (
                 <button
                   key={t.id}
