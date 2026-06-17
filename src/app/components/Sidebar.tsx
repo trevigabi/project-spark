@@ -245,10 +245,9 @@ export function TopBar({ title, subtitle, profile, notifications = 4, actions, o
         ]
       : profile === 'rep'
       ? [
-          { icon: BarChart3, label: 'Dashboard', view: 'dashboard' },
-          { icon: Clock, label: 'Meus Pedidos', view: 'history' },
+          { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' },
+          { icon: Clock, label: 'Pedidos', view: 'history' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
-          { icon: BarChart3, label: 'Sell-out', view: 'sellout' },
           { icon: Users, label: 'Meu Perfil' },
           { icon: LogOut, label: 'Sair', action: onLogout },
         ]

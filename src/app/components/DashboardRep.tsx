@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TrendingUp, Users, ShoppingBag, Target, Star, ChevronRight, MapPin, Phone, Clock, BarChart3, Store } from "lucide-react";
 import { clients, orders, formatCurrency, formatDate, products, Client } from "../data/mockData";
 import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { SelloutDashboard } from "./SelloutDashboard";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -22,6 +23,7 @@ const monthlyData = [
 
 export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
   const [showDashboard, setShowDashboard] = useState(false);
+  const [activeTab, setActiveTab] = useState<'indicadores' | 'sellout'>('indicadores');
 
   const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
   const myOrders = orders.filter(o => o.rep === 'Marcos Andrade');
@@ -72,8 +74,41 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
 
   return (
     <div className="p-6 space-y-6 max-w-[1200px]">
+      {/* Tabs */}
+      <div className="flex items-center gap-1 border-b border-border">
+        <button
+          onClick={() => setActiveTab('indicadores')}
+          className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+            activeTab === 'indicadores'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          style={{ fontSize: '0.85rem' }}
+        >
+          Meus Indicadores
+        </button>
+        <button
+          onClick={() => setActiveTab('sellout')}
+          className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+            activeTab === 'sellout'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          style={{ fontSize: '0.85rem' }}
+        >
+          Sell-out
+        </button>
+      </div>
+
+      {activeTab === 'sellout' ? (
+        <div className="-mx-6 -mb-6">
+          <SelloutDashboard />
+        </div>
+      ) : (
+      <>
       {/* Welcome + Meta */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -241,6 +276,8 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
           ))}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
