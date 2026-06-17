@@ -176,9 +176,8 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart }
               </button>
               <button
                 onClick={() => {
-                  const name = window.prompt(`Nome do novo carrinho para ${cartContext.clientName}:`, '');
-                  if (name === null) return;
-                  onCreateNewCart?.(name || 'Novo carrinho');
+                  setNewCartName('');
+                  setShowNewCartDialog(true);
                 }}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                 style={{ fontSize: '0.75rem', fontWeight: 600 }}
@@ -190,6 +189,48 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart }
           )}
         </div>
       )}
+      {/* New cart dialog */}
+      <Dialog open={showNewCartDialog} onOpenChange={setShowNewCartDialog}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle style={{ fontSize: '0.95rem' }}>Novo carrinho</DialogTitle>
+            <DialogDescription style={{ fontSize: '0.78rem' }}>
+              Criar carrinho para {cartContext?.clientName}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <label className="block text-muted-foreground" style={{ fontSize: '0.72rem' }}>Nome do carrinho</label>
+            <input
+              autoFocus
+              value={newCartName}
+              onChange={e => setNewCartName(e.target.value)}
+              placeholder="Ex.: Reposição Inverno 26"
+              className="w-full px-3 py-2 rounded-md border border-border bg-surface text-foreground placeholder-muted-foreground outline-none focus:border-primary"
+              style={{ fontSize: '0.82rem' }}
+            />
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setShowNewCartDialog(false)}
+              className="px-3 py-2 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+              style={{ fontSize: '0.82rem', fontWeight: 500 }}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => {
+                onCreateNewCart?.(newCartName.trim() || 'Novo carrinho');
+                setShowNewCartDialog(false);
+                setNewCartName('');
+              }}
+              className="px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              style={{ fontSize: '0.82rem', fontWeight: 600 }}
+            >
+              Criar
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {/* Step indicator */}
       <div className="flex items-center gap-3 mb-6">
         <button
