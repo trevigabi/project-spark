@@ -87,15 +87,17 @@ export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, o
               : 'Cada carrinho está vinculado a um cliente. Abrir um carrinho de outro cliente troca o cliente ativo.'}
           </p>
         </div>
-        <button
-          onClick={() => canCreate && setNewOpen(o => !o)}
-          disabled={!canCreate}
-          title={canCreate ? 'Criar novo carrinho' : 'Selecione um cliente para criar um carrinho'}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition-colors ${canCreate ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'}`}
-          style={{ fontSize: '0.83rem', fontWeight: 600 }}
-        >
-          <Plus className="w-4 h-4" /> Novo carrinho
-        </button>
+        {!newOpen && (
+          <button
+            onClick={() => canCreate && setNewOpen(true)}
+            disabled={!canCreate}
+            title={canCreate ? 'Criar novo carrinho' : 'Selecione um cliente para criar um carrinho'}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition-colors ${canCreate ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'}`}
+            style={{ fontSize: '0.83rem', fontWeight: 600 }}
+          >
+            <Plus className="w-4 h-4" /> Novo carrinho
+          </button>
+        )}
       </div>
 
       {/* Bloco sem cliente selecionado: busca rápida + atalho para carteira */}
