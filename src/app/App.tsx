@@ -228,6 +228,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
+          cartCount={multiCart ? carts.length : undefined}
           selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isProfile || (isAdminNoSidebar && currentView !== 'cart' && currentView !== 'carts') ? null : selectedClient}
         />
         <main className="flex-1 overflow-y-auto">
