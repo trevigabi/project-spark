@@ -322,17 +322,6 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           </>
         )}
 
-        {/* Client chip — rep only */}
-        {profile === 'rep' && selectedClient && (
-          <div
-            onClick={() => onNavigate('clients')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg cursor-pointer hover:bg-primary/15 transition-colors flex-shrink-0"
-          >
-            <Store className="w-3.5 h-3.5 text-primary" />
-            <span className="text-primary" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
-            <ChevronDown className="w-3 h-3 text-primary" />
-          </div>
-        )}
       </div>
 
       <div className="flex items-center gap-1 flex-shrink-0">
@@ -358,6 +347,18 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           <Bell className="w-4 h-4" />
           {notifications > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary" />}
         </button>
+
+        {/* Client chip — before avatar */}
+        {selectedClient && (
+          <div
+            onClick={() => onNavigate('clients')}
+            className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg cursor-pointer hover:bg-primary/15 transition-colors flex-shrink-0"
+          >
+            <Store className="w-3.5 h-3.5 text-primary" />
+            <span className="text-primary" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{selectedClient.name}</span>
+            <ChevronDown className="w-3 h-3 text-primary" />
+          </div>
+        )}
 
         {/* Avatar + dropdown */}
         <div className="relative pl-2 border-l border-border ml-1">
