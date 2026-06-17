@@ -1,11 +1,12 @@
 import { useState } from "react";
 import {
   Search, Filter, Grid3X3, List, Heart, Star, ShoppingCart,
-  X, Package2, Eye, Zap, Check,
+  X, Package2, Eye, Zap, Check, Plus, Store,
 } from "lucide-react";
 import { products, Product, formatCurrency, Client } from "../data/mockData";
+import type { CartContext } from "./CartsListPage";
 
-type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
+type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
 interface CatalogFiltersShape {
   search: string;
@@ -23,6 +24,10 @@ interface CatalogPageProps {
   selectedClient?: Client | null;
   externalFilters?: CatalogFiltersShape;
   onExternalFiltersChange?: (f: CatalogFiltersShape) => void;
+  clientCarts?: CartContext[];
+  activeCartId?: string | null;
+  onPickCart?: (ctx: CartContext) => void;
+  onCreateCart?: (name: string) => CartContext | null;
 }
 
 const lines = ['Todos', 'Premium', 'Urban', 'Sport'];
