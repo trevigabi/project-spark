@@ -328,14 +328,36 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
   );
 }
 
-function FilterSection({ icon: Icon, label, children }: { icon: React.ComponentType<{ className?: string }>; label: string; children: React.ReactNode }) {
+function FilterSection({
+  icon: Icon,
+  label,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <div className="flex items-center gap-1.5 mb-2">
-        <Icon className="w-3 h-3 text-muted-foreground" />
-        <span className="text-muted-foreground" style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
-      </div>
-      {children}
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between mb-2 group"
+      >
+        <div className="flex items-center gap-1.5">
+          <Icon className="w-3 h-3 text-muted-foreground" />
+          <span className="text-muted-foreground" style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
+        </div>
+        {isOpen ? (
+          <ChevronUp className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+        ) : (
+          <ChevronDown className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+        )}
+      </button>
+      {isOpen && <div className="animate-in fade-in slide-in-from-top-1 duration-200">{children}</div>}
     </div>
   );
 }
