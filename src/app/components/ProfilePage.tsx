@@ -256,7 +256,7 @@ function AdminProfile() {
 
 export function ProfilePage({ profile }: ProfilePageProps) {
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-[1200px] mx-auto w-full">
       {profile === 'lojista' && <LojistaProfile />}
       {profile === 'rep' && <RepProfile />}
       {profile === 'admin' && <AdminProfile />}
