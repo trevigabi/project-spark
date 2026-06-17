@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
   Footprints, Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
-  UserCheck, Tag,
+  UserCheck, Tag, Shield,
 } from "lucide-react";
 import type { Client } from "../data/mockData";
 
@@ -245,7 +245,7 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           { icon: Users, label: 'Clientes', view: 'clients' as View },
           ...(selectedClient ? [{ icon: Package2, label: 'Catálogo', view: 'catalog' as View }] : []),
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
-          { icon: Settings, label: 'Gestão', view: 'admin' as View },
+          { icon: Shield, label: 'Administração', view: 'admin' as View },
         ]
       : profile === 'rep'
       ? [
