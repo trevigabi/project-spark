@@ -95,7 +95,9 @@ export default function App() {
       case 'order-grade':
         return <OrderGrade onNavigate={navigate} selectedClient={selectedClient} />;
       case 'cart':
-        return <CartPage onNavigate={navigate} />;
+        return <CartPage onNavigate={navigate} cartContext={activeCart} />;
+      case 'carts':
+        return <CartsListPage onOpenCart={(ctx) => { setActiveCart(ctx); setCurrentView('cart'); }} />;
       case 'history':
         if (profile === 'lojista') return <LojistaHistoryDashboard onNavigate={navigate} />;
         return <OrderHistory onNavigate={navigate} profile={profile} />;
