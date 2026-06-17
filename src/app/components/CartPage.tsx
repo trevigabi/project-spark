@@ -140,6 +140,27 @@ export function CartPage({ onNavigate, cartContext }: CartPageProps) {
 
   return (
     <div className="p-6 max-w-[1200px] mx-auto w-full">
+      {cartContext && (
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => onNavigate('carts')}
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+              style={{ fontSize: '0.78rem' }}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Carrinhos
+            </button>
+            <div className="w-px h-5 bg-border" />
+            <div className="min-w-0">
+              <p className="text-foreground truncate" style={{ fontSize: '1rem', fontWeight: 700 }}>{cartContext.cartName}</p>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <Store className="w-3 h-3" />
+                <span className="truncate" style={{ fontSize: '0.75rem' }}>Cliente: <span className="text-foreground" style={{ fontWeight: 600 }}>{cartContext.clientName}</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Step indicator */}
       <div className="flex items-center gap-3 mb-6">
         <button
