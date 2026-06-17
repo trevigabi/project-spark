@@ -38,7 +38,7 @@ const profiles = [
 ];
 
 export function LoginPage({ onLogin }: LoginPageProps) {
-  const [step, setStep] = useState<'login' | 'profile'>('login');
+  const [step, setStep] = useState<'profile' | 'login'>('profile');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('admin@teslafootwear.com.br');
   const [password, setPassword] = useState('••••••••');
@@ -47,16 +47,17 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedProfile) return;
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setStep('profile');
+      onLogin(selectedProfile);
     }, 1000);
   };
 
   const handleProfileSelect = (profile: Profile) => {
     setSelectedProfile(profile);
-    setTimeout(() => onLogin(profile), 400);
+    setTimeout(() => setStep('login'), 250);
   };
 
   return (
