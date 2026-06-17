@@ -276,6 +276,8 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
           ))}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
