@@ -705,6 +705,92 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
       )}
 
 
+      {pendingAdd && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setPendingAdd(null)}>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border">
+              <div className="min-w-0">
+                <p className="text-foreground" style={{ fontWeight: 700, fontSize: '0.95rem' }}>Adicionar a qual carrinho?</p>
+                <p className="text-muted-foreground truncate" style={{ fontSize: '0.75rem' }}>
+                  {Object.values(pendingAdd.qtys).reduce((a, b) => a + b, 0)} pares · {pendingAdd.product.name}
+                </p>
+              </div>
+              <button onClick={() => setPendingAdd(null)} className="text-muted-foreground hover:text-foreground p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-4 space-y-2 max-h-[50vh] overflow-y-auto">
+              {(clientCarts ?? []).map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => {
+                    onPickCart?.(c);
+                    commitAdd(pendingAdd.product, pendingAdd.qtys, c.cartName);
+                    setPendingAdd(null);
+                  }}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors flex items-center gap-3 ${activeCartId === c.id ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/50'}`}
+                >
+                  <div className="w-8 h-8 rounded-md bg-primary/15 flex items-center justify-center flex-shrink-0">
+                    <ShoppingCart className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-foreground truncate" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{c.cartName}</p>
+                    <p className="text-muted-foreground flex items-center gap-1" style={{ fontSize: '0.7rem' }}>
+                      <Store className="w-2.5 h-2.5" /> {c.clientName}
+                    </p>
+                  </div>
+                  {activeCartId === c.id && (
+                    <span className="text-primary" style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Atual</span>
+                  )}
+                </button>
+              ))}
+              {(clientCarts ?? []).length === 0 && !creatingMode && (
+                <p className="text-muted-foreground text-center py-3" style={{ fontSize: '0.8rem' }}>
+                  Nenhum carrinho ainda para este cliente.
+                </p>
+              )}
+              {creatingMode ? (
+                <div className="p-3 rounded-lg border border-primary/40 bg-primary/5 space-y-2">
+                  <label className="block text-muted-foreground" style={{ fontSize: '0.72rem' }}>Nome do novo carrinho</label>
+                  <input
+                    autoFocus
+                    value={creatingNewName}
+                    onChange={e => setCreatingNewName(e.target.value)}
+                    placeholder="Ex.: Reposição Inverno 26"
+                    className="w-full px-2.5 py-2 rounded-md border border-border bg-surface text-foreground placeholder-muted-foreground outline-none focus:border-primary"
+                    style={{ fontSize: '0.82rem' }}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button onClick={() => { setCreatingMode(false); setCreatingNewName(''); }} className="px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground" style={{ fontSize: '0.78rem' }}>Cancelar</button>
+                    <button
+                      onClick={() => {
+                        const ctx = onCreateCart?.(creatingNewName || 'Novo carrinho');
+                        if (ctx) {
+                          commitAdd(pendingAdd.product, pendingAdd.qtys, ctx.cartName);
+                          setPendingAdd(null);
+                        }
+                      }}
+                      className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                      style={{ fontSize: '0.78rem', fontWeight: 600 }}
+                    >
+                      Criar e adicionar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setCreatingMode(true)}
+                  className="w-full p-3 rounded-lg border border-dashed border-primary/40 text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
+                  style={{ fontSize: '0.82rem', fontWeight: 600 }}
+                >
+                  <Plus className="w-3.5 h-3.5" /> Criar novo carrinho
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {toast && (
         <div className="fixed bottom-6 right-6 z-[60] bg-foreground text-background px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 animate-in slide-in-from-bottom-2">
           <Check className="w-4 h-4 text-emerald-400" />
