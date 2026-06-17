@@ -121,6 +121,19 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout, profile = '
         </div>
       ) : (
         <>
+          {/* Cliente selecionado (rep) */}
+          {profile === 'rep' && selectedClient && (
+            <div className="mx-3 mt-3 rounded-md border border-primary/30 bg-primary/5 px-2.5 py-2 flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-primary/15 flex items-center justify-center flex-shrink-0">
+                <Building2 className="w-3 h-3 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-muted-foreground" style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Pedido para</div>
+                <div className="text-foreground truncate" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{selectedClient.name}</div>
+              </div>
+            </div>
+          )}
+
           {/* Tabela de Preço */}
           <div className="px-3 pt-3 pb-3 border-b border-sidebar-border">
             <div className="flex items-center gap-1.5 mb-1.5">
