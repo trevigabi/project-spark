@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Search, Filter, Grid3X3, List, Heart, Star, ShoppingCart,
   X, Package2, Eye, Zap, Check, Plus, Store,
