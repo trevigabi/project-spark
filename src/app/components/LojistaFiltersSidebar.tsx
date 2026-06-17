@@ -68,6 +68,15 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout }: Props) {
     onChange({ ...filters, colors: next });
   };
 
+  const toggleSection = (label: string) => {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+
   const reset = () => onChange(defaultFilters);
 
   const activeCount =
