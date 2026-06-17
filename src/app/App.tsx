@@ -74,15 +74,17 @@ export default function App() {
         if (profile === 'admin') return <DashboardAdmin onNavigate={navigate} />;
         if (profile === 'rep') return <DashboardRep onNavigate={navigate} selectedClient={selectedClient} />;
         return <DashboardLojista onNavigate={navigate} />;
-      case 'catalog':
+      case 'catalog': {
+        const useFilters = profile === 'lojista' || profile === 'rep';
         return (
           <CatalogPage
             onNavigate={navigate}
             selectedClient={selectedClient}
-            externalFilters={profile === 'lojista' ? catalogFilters : undefined}
-            onExternalFiltersChange={profile === 'lojista' ? setCatalogFilters : undefined}
+            externalFilters={useFilters ? catalogFilters : undefined}
+            onExternalFiltersChange={useFilters ? setCatalogFilters : undefined}
           />
         );
+      }
       case 'order-grade':
         return <OrderGrade onNavigate={navigate} selectedClient={selectedClient} />;
       case 'cart':
@@ -103,13 +105,13 @@ export default function App() {
     }
   };
 
-  const isLojistaCatalog = profile === 'lojista' && currentView === 'catalog';
+  const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const hideSidebar = isRepClients;
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
-      {isLojistaCatalog ? (
+      {isFiltersCatalog ? (
         <LojistaFiltersSidebar
           filters={catalogFilters}
           onChange={setCatalogFilters}
