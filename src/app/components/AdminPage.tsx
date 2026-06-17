@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, Check } from "lucide-react";
+import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check } from "lucide-react";
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
 
 const tabs = [
-  { id: 'catalog', label: 'Catálogo', icon: Package2 },
+  { id: 'catalog', label: 'Produtos', icon: Package2 },
   { id: 'pricing', label: 'Preços', icon: Tag },
   { id: 'policies', label: 'Políticas', icon: Shield },
   { id: 'settings', label: 'Configurações', icon: Settings },
@@ -28,6 +28,8 @@ export function AdminPage() {
   const [activeTab, setActiveTab] = useState('catalog');
   const [search, setSearch] = useState('');
   const [showAddUser, setShowAddUser] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
+  const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
 
   return (
     <div className="p-6 max-w-[1200px] space-y-5">
@@ -52,10 +54,18 @@ export function AdminPage() {
       {/* Catalog Tab */}
       {activeTab === 'catalog' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-muted-foreground" style={{ fontSize: '0.85rem' }}>
-              <span className="text-foreground font-semibold">{products.length}</span> produtos cadastrados
-            </p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Buscar produto por nome ou referência..."
+                value={productSearch}
+                onChange={e => setProductSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-card text-foreground outline-none focus:border-primary"
+                style={{ fontSize: '0.82rem' }}
+              />
+            </div>
             <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
               <Plus className="w-3.5 h-3.5" /> Novo produto
             </button>
@@ -64,46 +74,98 @@ export function AdminPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border bg-secondary/20">
-                  {['Produto', 'Referência', 'Linha', 'Preço', 'Estoque', 'Disponibilidade', ''].map(col => (
+                  {['', 'Produto', 'Referência', 'Linha', 'Preço', 'Estoque', 'Disponibilidade', ''].map(col => (
                     <th key={col} className="text-left px-4 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{col}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {products.map(product => {
+                {products
+                  .filter(p => p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.reference.toLowerCase().includes(productSearch.toLowerCase()))
+                  .map(product => {
                   const totalStock = Object.values(product.grades).reduce((a, b) => a + b, 0);
                   const availColor = {
                     'disponível': 'bg-emerald-400/10 text-emerald-400',
                     'baixo estoque': 'bg-amber-400/10 text-amber-400',
                     'esgotado': 'bg-red-400/10 text-red-400',
                   }[product.availability];
+                  const expanded = expandedProduct === product.id;
                   return (
-                    <tr key={product.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <>
+                      <tr key={product.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                        <td className="px-3 py-3">
+                          <button
+                            onClick={() => setExpandedProduct(expanded ? null : product.id)}
+                            className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                          >
+                            <ChevronRight className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-90' : ''}`} />
+                          </button>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-9 h-9 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+                              <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            </div>
+                            <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{product.name}</span>
                           </div>
-                          <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{product.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{product.reference}</td>
-                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{product.line}</td>
-                      <td className="px-4 py-3 text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{formatCurrency(product.price)}</td>
-                      <td className="px-4 py-3 text-foreground mono" style={{ fontSize: '0.82rem' }}>{totalStock}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full ${availColor}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>
-                          {product.availability}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1">
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{product.reference}</td>
+                        <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{product.line}</td>
+                        <td className="px-4 py-3 text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{formatCurrency(product.price)}</td>
+                        <td className="px-4 py-3 text-foreground mono" style={{ fontSize: '0.82rem' }}>{totalStock}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-0.5 rounded-full ${availColor}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>
+                            {product.availability}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
                           <button className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                      </tr>
+                      {expanded && (
+                        <tr key={`${product.id}-detail`} className="border-b border-border/40 bg-secondary/10">
+                          <td colSpan={8} className="px-6 py-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                              <div>
+                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Categoria</p>
+                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.category}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Coleção</p>
+                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.collection}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avaliação</p>
+                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.rating} ★</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pedidos</p>
+                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.orders}</p>
+                              </div>
+                              <div className="col-span-2 sm:col-span-4">
+                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Grade de numeração</p>
+                                <div className="flex gap-2 flex-wrap">
+                                  {Object.entries(product.grades).map(([size, stock]) => (
+                                    <span key={size} className="px-2 py-1 rounded-md bg-background border border-border" style={{ fontSize: '0.75rem' }}>
+                                      <span className="text-foreground font-medium">Nº {size}</span>
+                                      <span className="text-muted-foreground ml-1">({stock})</span>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              {product.description && (
+                                <div className="col-span-2 sm:col-span-4">
+                                  <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Descrição</p>
+                                  <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.description}</p>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
                   );
                 })}
               </tbody>
