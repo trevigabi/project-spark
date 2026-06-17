@@ -145,8 +145,18 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           {step === 'login' ? (
             <div>
               <div className="mb-8">
-                <h2 className="text-foreground mb-1" style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Bem-vindo de volta</h2>
-                <p className="text-muted-foreground" style={{ fontSize: '0.875rem' }}>Acesse sua conta Tesla Footwear</p>
+                <button
+                  type="button"
+                  onClick={() => setStep('profile')}
+                  className="text-muted-foreground hover:text-foreground transition-colors mb-3"
+                  style={{ fontSize: '0.78rem' }}
+                >
+                  ← Trocar perfil
+                </button>
+                <h2 className="text-foreground mb-1" style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Bem-vindo</h2>
+                <p className="text-muted-foreground" style={{ fontSize: '0.875rem' }}>
+                  Acessando como <span className="text-foreground" style={{ fontWeight: 600 }}>{profiles.find(p => p.id === selectedProfile)?.label}</span>
+                </p>
               </div>
 
               <form onSubmit={handleLogin} className="space-y-4">
