@@ -9,7 +9,7 @@ import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
 import { CartPage } from "./components/CartPage";
-import { CartsListPage, type CartContext } from "./components/CartsListPage";
+import { CartsListPage, mockCarts, type CartContext } from "./components/CartsListPage";
 import { OrderHistory } from "./components/OrderHistory";
 import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
 import { MarketingStudio } from "./components/MarketingStudio";
@@ -41,7 +41,26 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [activeCart, setActiveCart] = useState<CartContext | null>(null);
+  const [carts, setCarts] = useState<CartContext[]>(() =>
+    mockCarts.map(({ id, clientId, clientName, cartName }) => ({ id, clientId, clientName, cartName }))
+  );
   const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>(defaultFilters);
+
+  const multiCart = profile === 'admin' || profile === 'rep';
+  const clientCarts = selectedClient ? carts.filter(c => c.clientId === selectedClient.id) : [];
+
+  const createCart = (name: string, client?: Client | null): CartContext | null => {
+    const c = client ?? selectedClient;
+    if (!c) return null;
+    const ctx: CartContext = {
+      id: `CART-NEW-${Date.now()}`,
+      clientId: c.id,
+      clientName: c.name,
+      cartName: name?.trim() || 'Novo carrinho',
+    };
+    setCarts(prev => [ctx, ...prev]);
+    return ctx;
+  };
 
   const handleLogin = (selectedProfile: Profile) => {
     setProfile(selectedProfile);
@@ -89,13 +108,34 @@ export default function App() {
             selectedClient={selectedClient}
             externalFilters={useFilters ? catalogFilters : undefined}
             onExternalFiltersChange={useFilters ? setCatalogFilters : undefined}
+            clientCarts={multiCart && selectedClient ? clientCarts : undefined}
+            activeCartId={activeCart?.id ?? null}
+            onPickCart={(ctx) => setActiveCart(ctx)}
+            onCreateCart={(name) => {
+              const ctx = createCart(name);
+              if (ctx) setActiveCart(ctx);
+              return ctx;
+            }}
           />
         );
       }
       case 'order-grade':
         return <OrderGrade onNavigate={navigate} selectedClient={selectedClient} />;
       case 'cart':
-        return <CartPage onNavigate={navigate} cartContext={activeCart} />;
+        return (
+          <CartPage
+            onNavigate={navigate}
+            cartContext={activeCart}
+            multiCart={multiCart}
+            onCreateNewCart={(name) => {
+              const ctx = createCart(name);
+              if (ctx) {
+                setActiveCart(ctx);
+                setCurrentView('catalog');
+              }
+            }}
+          />
+        );
       case 'carts':
         return (
           <CartsListPage

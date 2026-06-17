@@ -17,7 +17,7 @@ interface MockCart extends CartContext {
   rep: string;
 }
 
-const mockCarts: MockCart[] = [
+export const mockCarts: MockCart[] = [
   { id: 'CART-001', clientId: clients[0].id, clientName: clients[0].name, cartName: 'Reposição Inverno 26', items: 3, pairs: 44, total: 5652.97, updatedAt: '2026-06-16', rep: clients[0].rep },
   { id: 'CART-002', clientId: clients[0].id, clientName: clients[0].name, cartName: 'Lançamento Flow XL', items: 2, pairs: 28, total: 3890.40, updatedAt: '2026-06-14', rep: clients[0].rep },
   { id: 'CART-003', clientId: clients[2].id, clientName: clients[2].name, cartName: 'Pedido principal', items: 5, pairs: 72, total: 9120.00, updatedAt: '2026-06-15', rep: clients[2].rep },
@@ -87,15 +87,17 @@ export function CartsListPage({ onOpenCart, onNavigateClients, selectedClient, o
               : 'Cada carrinho está vinculado a um cliente. Abrir um carrinho de outro cliente troca o cliente ativo.'}
           </p>
         </div>
-        <button
-          onClick={() => canCreate && setNewOpen(o => !o)}
-          disabled={!canCreate}
-          title={canCreate ? 'Criar novo carrinho' : 'Selecione um cliente para criar um carrinho'}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition-colors ${canCreate ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'}`}
-          style={{ fontSize: '0.83rem', fontWeight: 600 }}
-        >
-          <Plus className="w-4 h-4" /> Novo carrinho
-        </button>
+        {!newOpen && (
+          <button
+            onClick={() => canCreate && setNewOpen(true)}
+            disabled={!canCreate}
+            title={canCreate ? 'Criar novo carrinho' : 'Selecione um cliente para criar um carrinho'}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition-colors ${canCreate ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'}`}
+            style={{ fontSize: '0.83rem', fontWeight: 600 }}
+          >
+            <Plus className="w-4 h-4" /> Novo carrinho
+          </button>
+        )}
       </div>
 
       {/* Bloco sem cliente selecionado: busca rápida + atalho para carteira */}
