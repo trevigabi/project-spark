@@ -137,7 +137,7 @@ export function CartPage({ onNavigate }: CartPageProps) {
   }
 
   return (
-    <div className="p-6 max-w-[1000px]">
+    <div className="p-6 max-w-[1000px] mx-auto w-full">
       {/* Step indicator */}
       <div className="flex items-center gap-3 mb-6">
         <button

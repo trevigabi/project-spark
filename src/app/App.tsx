@@ -61,8 +61,6 @@ export default function App() {
 
   const viewInfo = currentView === 'dashboard' && profile === 'rep'
     ? { title: 'Indicadores', subtitle: 'Sua performance e carteira' }
-    : currentView === 'cart' && (profile === 'rep' || profile === 'admin') && selectedClient
-    ? { title: 'Carrinho', subtitle: `Revise e finalize seu pedido — ${selectedClient.name}` }
     : viewTitles[currentView];
 
   if (!authenticated) {
