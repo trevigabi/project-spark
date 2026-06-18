@@ -55,7 +55,7 @@ interface Props {
   filters: CatalogFilters;
   onChange: (f: CatalogFilters) => void;
   onLogout: () => void;
-  profile?: 'lojista' | 'rep';
+  profile?: 'lojista' | 'rep' | 'admin';
   selectedClient?: Client | null;
 }
 

@@ -103,7 +103,7 @@ export default function App() {
         if (profile === 'rep') return <DashboardRep onNavigate={navigate} selectedClient={selectedClient} />;
         return <DashboardLojista onNavigate={navigate} />;
       case 'catalog': {
-        const useFilters = profile === 'lojista' || profile === 'rep';
+        const useFilters = true;
         return (
           <CatalogPage
             onNavigate={navigate}
@@ -196,7 +196,7 @@ export default function App() {
     }
   };
 
-  const isFiltersCatalog = (profile === 'lojista' || profile === 'rep') && currentView === 'catalog';
+  const isFiltersCatalog = currentView === 'catalog';
   const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'carts', 'profile', 'admin'];
   const isRepClients = profile === 'rep' && currentView === 'clients';
   const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
@@ -218,7 +218,7 @@ export default function App() {
           filters={catalogFilters}
           onChange={setCatalogFilters}
           onLogout={handleLogout}
-          profile={profile as 'lojista' | 'rep'}
+          profile={profile as 'lojista' | 'rep' | 'admin'}
           selectedClient={selectedClient}
         />
       ) : hideSidebar ? null : (
