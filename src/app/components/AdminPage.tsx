@@ -107,11 +107,11 @@ export function AdminPage() {
             </button>
           </div>
           <div className="bg-card border border-border rounded-xl overflow-hidden">
-            <table className="w-full">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-border bg-secondary/20">
+                <tr className="border-b border-border bg-muted/30">
                   {['', 'Produto', 'Referência', 'Linha', 'Preço', 'Estoque', 'Disponibilidade', ''].map(col => (
-                    <th key={col} className="text-left px-4 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{col}</th>
+                    <th key={col} className="px-4 py-2.5 font-semibold text-muted-foreground" style={{ fontSize: '0.72rem' }}>{col}</th>
                   ))}
                 </tr>
               </thead>
@@ -128,7 +128,7 @@ export function AdminPage() {
                   const expanded = expandedProduct === product.id;
                   return (
                     <>
-                      <tr key={product.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                      <tr key={product.id} className="border-b border-border hover:bg-primary/5 transition-colors cursor-pointer">
                         <td className="px-3 py-3">
                           <button
                             onClick={() => setExpandedProduct(expanded ? null : product.id)}
@@ -161,7 +161,7 @@ export function AdminPage() {
                         </td>
                       </tr>
                       {expanded && (
-                        <tr key={`${product.id}-detail`} className="border-b border-border/40 bg-secondary/10">
+                        <tr key={`${product.id}-detail`} className="border-b border-border bg-primary/5">
                           <td colSpan={8} className="px-6 py-4">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                               <div>
