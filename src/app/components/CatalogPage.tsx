@@ -516,7 +516,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
   const hasActiveFilters = selectedLine !== 'Todos' || selectedCategory !== 'Todos' || selectedCollection !== 'Todas';
 
   return (
-    <div className="p-6 space-y-5 max-w-[1400px]">
+    <div className="p-6 space-y-5 max-w-[1200px] mx-auto w-full">
       {/* Header + Controls */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
