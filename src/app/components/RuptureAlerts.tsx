@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, UserX, PackageX, TrendingDown, Settings2, ChevronRight, MapPin } from "lucide-react";
+import { AlertTriangle, UserX, PackageX, TrendingDown, Settings2, ChevronRight, MapPin, Box, AlertOctagon } from "lucide-react";
 import { formatCurrency } from "../data/mockData";
 
 type Profile = 'rep' | 'admin';
