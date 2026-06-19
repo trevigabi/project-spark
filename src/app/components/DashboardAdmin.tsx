@@ -7,6 +7,7 @@ import {
   ArrowUpRight, ArrowDownRight, BarChart3, Zap, ChevronRight,
 } from "lucide-react";
 import { kpiData, selloutData, regionData, topProducts, repTargets, formatCurrency, orders } from "../data/mockData";
+import { RuptureAlerts } from "./RuptureAlerts";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -118,6 +119,8 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
           iconColor="text-red-400"
         />
       </div>
+
+      <RuptureAlerts profile="admin" />
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
