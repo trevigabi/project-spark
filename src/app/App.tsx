@@ -230,7 +230,7 @@ export default function App() {
           onNavigate={navigate}
           onLogout={handleLogout}
           cartCount={multiCart ? (selectedClient ? clientCarts.length : carts.length) : (profile === 'lojista' ? lojistaCartCount : undefined)}
-          selectedClient={isRepDashboard || isRepClients || isRepHistory || isRepMarketing || isProfile || (isAdminNoSidebar && currentView !== 'cart' && currentView !== 'carts') ? null : selectedClient}
+          selectedClient={['catalog', 'order-grade', 'cart', 'carts'].includes(currentView) ? selectedClient : null}
         />
         <main className="flex-1 overflow-y-auto">
           {renderView()}
