@@ -5,7 +5,7 @@ import { clients, products, formatCurrency, formatDate } from "../data/mockData"
 
 const tabs = [
   { id: 'catalog', label: 'Produtos', icon: Package2 },
-  { id: 'pricing', label: 'Preços', icon: Tag },
+  { id: 'pricing', label: 'Campanhas Comerciais', icon: Tag },
   { id: 'policies', label: 'Políticas', icon: Shield },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
@@ -56,6 +56,21 @@ const coveredClientsMock = [
 const REGION_OPTIONS = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
 const LINE_OPTIONS = ['Coil', 'Hertz', 'Hertz Art', 'Flow', 'Flow XL'];
 const REP_OPTIONS = ['Carlos Mendes', 'Ana Souza', 'Marcos Andrade', 'Fernanda Lima', 'Rafael Costa'];
+
+function InadimplenciaSelect() {
+  const [value, setValue] = useState<'bloqueado' | 'avista'>('avista');
+  return (
+    <select
+      value={value}
+      onChange={e => setValue(e.target.value as 'bloqueado' | 'avista')}
+      className="px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary"
+      style={{ fontSize: '0.82rem', minWidth: 200 }}
+    >
+      <option value="avista">Apenas pagamento à vista</option>
+      <option value="bloqueado">Bloqueado</option>
+    </select>
+  );
+}
 
 export function AdminPage() {
   const [activeTab, setActiveTab] = useState('catalog');
@@ -451,6 +466,18 @@ export function AdminPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-5">
+            <h3 className="text-foreground mb-1" style={{ fontWeight: 600 }}>Inadimplência</h3>
+            <p className="text-muted-foreground mb-4" style={{ fontSize: '0.78rem' }}>Define o comportamento do sistema para clientes com pagamentos em atraso.</p>
+            <div className="flex items-center justify-between p-4 rounded-lg border border-border/60 bg-secondary/20">
+              <div>
+                <p className="text-foreground" style={{ fontSize: '0.85rem', fontWeight: 500 }}>Clientes inadimplentes</p>
+                <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Condição de pagamento aplicada automaticamente a clientes com débitos em aberto</p>
+              </div>
+              <InadimplenciaSelect />
             </div>
           </div>
 
