@@ -3,6 +3,7 @@ import { Users, ShoppingBag, Target, Star, ChevronRight, MapPin } from "lucide-r
 import { clients, orders, formatCurrency, formatDate, products, Client } from "../data/mockData";
 import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { SelloutDashboard } from "./SelloutDashboard";
+import { RuptureAlerts } from "./RuptureAlerts";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
