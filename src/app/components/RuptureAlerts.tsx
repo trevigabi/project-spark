@@ -254,6 +254,54 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
             ))}
           </div>
         ))}
+
+        {tab === 'ruptura' && (profile === 'rep' ? (
+          <div className="space-y-2">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-red-400/5 border border-red-400/20 mb-2">
+              <AlertOctagon className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 600 }}>Produtos indisponíveis para compra</p>
+                <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Notifique clientes da sua carteira para evitar vendas perdidas e frustração.</p>
+              </div>
+            </div>
+            {catalogRuptureRep.map(p => (
+              <div key={p.sku} className="flex items-center gap-3 p-3 rounded-lg border border-border/60 hover:border-red-400/30 hover:bg-red-400/5 transition-colors cursor-pointer">
+                <div className="w-9 h-9 rounded-lg bg-red-400/15 flex items-center justify-center flex-shrink-0">
+                  <Box className="w-4 h-4 text-red-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-foreground truncate" style={{ fontSize: '0.83rem', fontWeight: 500 }}>{p.name}</p>
+                    <span className="px-1.5 py-0.5 rounded-full bg-red-400/15 text-red-400" style={{ fontSize: '0.62rem', fontWeight: 700 }}>Ruptura</span>
+                  </div>
+                  <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{p.sku} · {p.line} · estoque zerado</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-red-400" style={{ fontSize: '0.8rem', fontWeight: 700 }}>{p.clientsAffected} clientes</p>
+                  <p className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>última venda há {p.lastSale}d</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <GroupBySwitch value={ruptureGroupBy} onChange={setRuptureGroupBy} options={[{v:'linha',l:'Linha'},{v:'marca',l:'Marca'},{v:'regiao',l:'Região'}]} />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {catalogRuptureAdmin.map(g => (
+                <div key={g.group} className="rounded-lg border border-red-400/20 p-3 hover:border-red-400/40 transition-colors cursor-pointer bg-red-400/5">
+                  <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{g.group}</p>
+                  <p className="text-foreground mt-1" style={{ fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{g.count}</p>
+                  <p className="text-red-400" style={{ fontSize: '0.7rem', fontWeight: 600 }}>SKUs em ruptura</p>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-red-400/10">
+                    <span className="text-foreground" style={{ fontSize: '0.72rem', fontWeight: 600 }}>{g.totalClients} clientes</span>
+                    <span className="text-muted-foreground" style={{ fontSize: '0.65rem' }}>{g.skus}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ))}
       </div>
     </div>
   );
