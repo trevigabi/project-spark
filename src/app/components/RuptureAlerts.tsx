@@ -72,7 +72,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
             <AlertTriangle className="w-4 h-4 text-red-400" />
           </div>
           <div>
-            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Alerta de Ruptura</h3>
+            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Alerta de Riscos</h3>
             <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>
               {profile === 'rep' ? 'Sinais críticos na sua carteira' : 'Sinais críticos consolidados'}
             </p>
