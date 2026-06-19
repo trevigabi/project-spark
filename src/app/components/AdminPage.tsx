@@ -193,7 +193,7 @@ export function AdminPage() {
                               </div>
                               <div>
                                 <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pedidos</p>
-                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.orders}</p>
+                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{(product as any).orders ?? '—'}</p>
                               </div>
                               <div className="col-span-2 sm:col-span-4">
                                 <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Grade de numeração</p>
