@@ -4,13 +4,13 @@ import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
   Footprints, Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
-  UserCheck, Tag, Shield,
+  UserCheck, Tag, Shield, Boxes,
 } from "lucide-react";
 import type { Client } from "../data/mockData";
 
 export type View =
   | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history'
-  | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile';
+  | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile' | 'stock';
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
@@ -256,6 +256,7 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
         ]
       : [
           { icon: Package2, label: 'Catálogo', view: 'catalog' },
+          { icon: Boxes, label: 'Meu Estoque', view: 'stock' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
         ];
 
