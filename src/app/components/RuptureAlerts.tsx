@@ -3,7 +3,7 @@ import { AlertTriangle, UserX, PackageX, TrendingDown, Settings2, ChevronRight, 
 import { formatCurrency } from "../data/mockData";
 
 type Profile = 'rep' | 'admin';
-type TabKey = 'risco' | 'encalhe' | 'meta';
+type TabKey = 'risco' | 'encalhe' | 'meta' | 'ruptura';
 
 interface RuptureAlertsProps {
   profile: Profile;
@@ -43,6 +43,20 @@ const repMonthlyRep = [
   { month: 'Jun', meta: 480, real: 421 },
 ];
 
+// Ruptura no Catálogo — produtos indisponíveis para compra
+const catalogRuptureRep = [
+  { sku: 'SKU-001', name: 'Bota Chelsea Couro Preta', line: 'Flow XL', lastStock: 0, clientsAffected: 3, lastSale: 12 },
+  { sku: 'SKU-002', name: 'Oxford Clássico Marrom', line: 'Hertz Art', lastStock: 0, clientsAffected: 2, lastSale: 8 },
+  { sku: 'SKU-003', name: 'Derby Casual Urban', line: 'Flow', lastStock: 0, clientsAffected: 5, lastSale: 5 },
+];
+
+const catalogRuptureAdmin = [
+  { group: 'Flow XL', count: 4, skus: 'SKU-001, SKU-008, SKU-015, SKU-022', totalClients: 18 },
+  { group: 'Hertz Art', count: 3, skus: 'SKU-002, SKU-009, SKU-016', totalClients: 12 },
+  { group: 'Flow', count: 2, skus: 'SKU-003, SKU-010', totalClients: 9 },
+  { group: 'Urban Series', count: 1, skus: 'SKU-004', totalClients: 4 },
+];
+
 const repsBelowAdmin = [
   { name: 'Roberto Silva', region: 'Sul', manager: 'João Lima', months: 4, gap: -18 },
   { name: 'Patrícia Mendes', region: 'Nordeste', manager: 'Marina Costa', months: 3, gap: -22 },
@@ -56,6 +70,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
   const [tab, setTab] = useState<TabKey>('risco');
   const [groupBy, setGroupBy] = useState<'regiao' | 'segmento' | 'rep'>('regiao');
   const [stalledGroupBy, setStalledGroupBy] = useState<'linha' | 'marca' | 'regiao'>('linha');
+  const [ruptureGroupBy, setRuptureGroupBy] = useState<'linha' | 'marca' | 'regiao'>('linha');
 
   const tabs: { key: TabKey; label: string; icon: any; count: number }[] = [
     { key: 'risco', label: 'Risco de Cliente', icon: UserX, count: profile === 'rep' ? riskClientsRep.length : 99 },
