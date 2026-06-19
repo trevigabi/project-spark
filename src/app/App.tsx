@@ -197,18 +197,7 @@ export default function App() {
   };
 
   const isFiltersCatalog = currentView === 'catalog';
-  const noSidebarViews: View[] = ['dashboard', 'clients', 'history', 'marketing', 'cart', 'carts', 'profile', 'admin'];
-  const isRepClients = profile === 'rep' && currentView === 'clients';
-  const isRepDashboard = profile === 'rep' && currentView === 'dashboard';
-  const isRepHistory = profile === 'rep' && currentView === 'history';
-  const isRepMarketing = profile === 'rep' && currentView === 'marketing';
-  const isRepCart = profile === 'rep' && currentView === 'cart';
-  const isAdminNoSidebar = profile === 'admin' && noSidebarViews.includes(currentView);
-  const isLojistCart = profile === 'lojista' && currentView === 'cart';
-  const isLojistHistory = profile === 'lojista' && currentView === 'history';
-  const isLojistMarketing = profile === 'lojista' && currentView === 'marketing';
-  const isProfile = currentView === 'profile';
-  const hideSidebar = isRepClients || isRepDashboard || isRepHistory || isRepMarketing || isRepCart || isAdminNoSidebar || isLojistCart || isLojistHistory || isLojistMarketing || isProfile;
+  const hideSidebar = currentView !== 'catalog';
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
