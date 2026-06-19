@@ -248,42 +248,6 @@ export function SelloutDashboard() {
           </table>
         </div>
       </div>
-
-      {/* AI Insights */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-6 h-6 rounded-lg bg-purple-500/20 flex items-center justify-center">
-            <Zap className="w-3.5 h-3.5 text-purple-400" />
-          </div>
-          <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Insights por IA</h3>
-          <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400" style={{ fontSize: '0.65rem', fontWeight: 600 }}>Gerado hoje</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            {
-              icon: '📈',
-              title: 'Oportunidade de crescimento',
-              text: 'Tênis Runner Foam apresenta demanda 23% acima da média na região Sudeste. Considere aumentar o pedido mínimo para lojistas desta região.',
-            },
-            {
-              icon: '⚠️',
-              title: 'Risco de encalhe detectado',
-              text: 'Sandália Slide Premium com 78 dias de estoque parado no Centro-Oeste. Ação imediata recomendada: campanha de desconto de 15%.',
-            },
-            {
-              icon: '🔄',
-              title: 'Sugestão de redistribuição',
-              text: 'Derby Casual Urban com excesso no Nordeste e falta no Sul. Redistribuição de 180 pares pode reduzir estoque em 42% e aumentar cobertura.',
-            },
-          ].map((insight, i) => (
-            <div key={i} className="rounded-xl bg-secondary/30 border border-border/60 p-4">
-              <span style={{ fontSize: '1.2rem' }}>{insight.icon}</span>
-              <p className="text-foreground mt-2 mb-1.5" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{insight.title}</p>
-              <p className="text-muted-foreground" style={{ fontSize: '0.75rem', lineHeight: 1.6 }}>{insight.text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
