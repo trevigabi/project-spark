@@ -167,7 +167,7 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
   }
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto w-full">
+    <div className="p-6 max-w-[1400px] mx-auto w-full">
       {cartContext && (
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
           <div className="flex items-center gap-3 min-w-0">

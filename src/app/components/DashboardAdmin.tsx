@@ -80,7 +80,7 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-[1200px] mx-auto w-full">
+    <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard

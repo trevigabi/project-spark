@@ -68,7 +68,7 @@ export function AdminPage() {
 
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto w-full space-y-5">
+    <div className="p-6 max-w-[1400px] mx-auto w-full space-y-5">
       {/* Tab bar */}
       <div className="flex items-center gap-1 bg-card border border-border rounded-xl p-1 overflow-x-auto">
         {tabs.map(tab => {

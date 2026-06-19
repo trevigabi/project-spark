@@ -158,7 +158,7 @@ export function OrderGrade({ onNavigate, selectedClient }: OrderGradeProps) {
   }
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto w-full space-y-5">
+    <div className="p-6 max-w-[1400px] mx-auto w-full space-y-5">
       {/* Client chip — shown when client was pre-selected */}
       {selectedClient && (
         <div className="bg-card border border-primary/20 rounded-xl px-4 py-3 flex items-center gap-2.5">

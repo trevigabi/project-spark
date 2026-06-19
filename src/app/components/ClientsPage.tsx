@@ -48,7 +48,7 @@ export function ClientsPage({ onNavigate, selectedClient, setSelectedClient }: C
   };
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto space-y-5">
+    <div className="p-6 max-w-[1400px] mx-auto space-y-5">
 
 
 

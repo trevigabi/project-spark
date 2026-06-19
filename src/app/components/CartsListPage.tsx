@@ -78,7 +78,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
   };
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto w-full">
+    <div className="p-6 max-w-[1400px] mx-auto w-full">
       <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
         <div>
           <h2 className="text-foreground" style={{ fontWeight: 700, fontSize: '1.15rem' }}>

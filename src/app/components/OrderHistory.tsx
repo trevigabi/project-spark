@@ -49,7 +49,7 @@ export function OrderHistory({ onNavigate, profile = 'admin' }: OrderHistoryProp
   const totalValue = filtered.reduce((acc, o) => acc + o.total, 0);
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto w-full space-y-5">
+    <div className="p-6 max-w-[1400px] mx-auto w-full space-y-5">
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
