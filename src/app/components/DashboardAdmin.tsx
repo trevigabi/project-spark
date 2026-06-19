@@ -120,6 +120,8 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
         />
       </div>
 
+      <RuptureAlerts profile="admin" />
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Sell-in vs Sell-out */}
