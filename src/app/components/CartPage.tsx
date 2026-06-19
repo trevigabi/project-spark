@@ -124,6 +124,7 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
 
   const grandTotal = cart.reduce((acc, item) => acc + getItemTotal(item).value, 0);
   const grandPairs = cart.reduce((acc, item) => acc + getItemTotal(item).pairs, 0);
+  const IVA_RATE = 0.12;
 
   const policyDetails = priceTableDetails[tableId] ?? priceTableDetails['padrao'];
   const tableDiscount = (grandTotal * policyDetails.discount) / 100;
@@ -465,7 +466,7 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
               <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Resumo do pedido</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground" style={{ fontSize: '0.82rem' }}>{grandPairs} pares</span>
+                  <span className="text-muted-foreground" style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Valor bruto · {grandPairs} pares</span>
                   <span className="text-foreground mono" style={{ fontSize: '0.82rem' }}>{formatCurrency(grandTotal)}</span>
                 </div>
                 {tableDiscount > 0 && (
@@ -490,10 +491,14 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
                     </span>
                   </div>
                 )}
+                <div className="flex justify-between">
+                  <span className="text-primary" style={{ fontSize: '0.82rem', fontWeight: 500 }}>IVA ({(IVA_RATE * 100).toFixed(0)}%)</span>
+                  <span className="text-primary mono" style={{ fontSize: '0.82rem', fontWeight: 500 }}>+{formatCurrency(finalTotal * IVA_RATE)}</span>
+                </div>
                 <div className="h-px bg-border my-2" />
                 <div className="flex justify-between">
-                  <span className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 600 }}>Total</span>
-                  <span className="text-foreground mono" style={{ fontSize: '1rem', fontWeight: 700 }}>{formatCurrency(finalTotal)}</span>
+                  <span className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 600 }}>Total c/ IVA</span>
+                  <span className="text-foreground mono" style={{ fontSize: '1rem', fontWeight: 700 }}>{formatCurrency(finalTotal * (1 + IVA_RATE))}</span>
                 </div>
                 {step === 'checkout' && selectedPayment && (
                   <div className="text-muted-foreground text-center pt-1" style={{ fontSize: '0.72rem' }}>
