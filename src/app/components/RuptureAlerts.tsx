@@ -76,6 +76,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
     { key: 'risco', label: 'Risco de Cliente', icon: UserX, count: profile === 'rep' ? riskClientsRep.length : 99 },
     { key: 'encalhe', label: 'Encalhe de Produto', icon: PackageX, count: profile === 'rep' ? stalledProductsRep.length : 35 },
     { key: 'meta', label: 'Meta Inatingível', icon: TrendingDown, count: profile === 'rep' ? 1 : repsBelowAdmin.length },
+    { key: 'ruptura', label: 'Ruptura no Catálogo', icon: AlertOctagon, count: profile === 'rep' ? catalogRuptureRep.length : 10 },
   ];
 
   return (
