@@ -1,14 +1,68 @@
-import { useState, useMemo } from "react";
-import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check, ArrowLeft, X, Info, MapPin, UserCircle2, Layers, Package } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check, ArrowLeft, X, Info, MapPin, UserCircle2, Layers, Package, Lock, Building2, Briefcase, Store } from "lucide-react";
 
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
 
 const tabs = [
   { id: 'catalog', label: 'Produtos', icon: Package2 },
   { id: 'pricing', label: 'Campanhas Comerciais', icon: Tag },
-  { id: 'policies', label: 'Políticas', icon: Shield },
+  { id: 'policies', label: 'Políticas', icon: Lock },
+  { id: 'permissions', label: 'Permissões', icon: Shield },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
+
+type VisaoKey = 'industria' | 'representante' | 'lojista';
+type PermissionsState = Record<VisaoKey, Record<string, Record<string, boolean>>>;
+
+const visoes: { id: VisaoKey; label: string; icon: React.ElementType; desc: string }[] = [
+  { id: 'industria', label: 'Indústria', icon: Building2, desc: 'Usuários internos da Tesla Footwear' },
+  { id: 'representante', label: 'Representante', icon: Briefcase, desc: 'Representantes comerciais externos' },
+  { id: 'lojista', label: 'Lojista', icon: Store, desc: 'Clientes lojistas da rede' },
+];
+
+const profileDescriptions: Record<string, string> = {
+  'Admin': 'Acesso completo a todos os módulos da plataforma',
+  'Analista': 'Acesso focado em vendas e análise de desempenho',
+  'Representante': 'Acesso completo à visão de representante',
+  'Preposto': 'Acesso restrito ao módulo de vendas, sem indicadores',
+  'Lojista': 'Acesso completo à visão de lojista',
+  'Comprador': 'Acesso restrito a catálogo e realização de pedidos',
+};
+
+const defaultPermissions: PermissionsState = {
+  industria: {
+    'Admin': {
+      'Dashboard': true, 'Catálogo (ver)': true, 'Catálogo (editar)': true,
+      'Pedidos (criar)': true, 'Pedidos (aprovar)': true, 'Marketing IA': true,
+      'Sell-out': true, 'Campanhas Comerciais': true, 'Políticas': true, 'Administração': true,
+    },
+    'Analista': {
+      'Dashboard': true, 'Catálogo (ver)': true, 'Catálogo (editar)': false,
+      'Pedidos (criar)': true, 'Pedidos (aprovar)': false, 'Marketing IA': false,
+      'Sell-out': true, 'Campanhas Comerciais': false, 'Políticas': false, 'Administração': false,
+    },
+  },
+  representante: {
+    'Representante': {
+      'Indicadores': true, 'Catálogo': true, 'Pedido por Grade': true,
+      'Sell-out': true, 'Marketing IA': true, 'Histórico de Pedidos': true,
+    },
+    'Preposto': {
+      'Indicadores': false, 'Catálogo': true, 'Pedido por Grade': true,
+      'Sell-out': false, 'Marketing IA': false, 'Histórico de Pedidos': true,
+    },
+  },
+  lojista: {
+    'Lojista': {
+      'Catálogo': true, 'Carrinho / Pedidos': true, 'Marketing IA': true,
+      'Meu Estoque': true, 'Histórico de Pedidos': true,
+    },
+    'Comprador': {
+      'Catálogo': true, 'Carrinho / Pedidos': true, 'Marketing IA': false,
+      'Meu Estoque': false, 'Histórico de Pedidos': false,
+    },
+  },
+};
 
 const mockUsers = [
   { id: 'U001', name: 'Marcos Andrade', email: 'marcos@tesla.com.br', role: 'Representante', region: 'Sudeste', status: 'ativo', lastLogin: '2026-06-11' },
@@ -80,7 +134,21 @@ export function AdminPage() {
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const [criteriaState, setCriteriaState] = useState<Record<string, PolicyCriteria>>(initialCriteria);
+  const [activeView, setActiveView] = useState<VisaoKey>('industria');
+  const [permissionsState, setPermissionsState] = useState<PermissionsState>(defaultPermissions);
 
+  const togglePermission = (visao: VisaoKey, perfil: string, modulo: string) => {
+    setPermissionsState(prev => ({
+      ...prev,
+      [visao]: {
+        ...prev[visao],
+        [perfil]: {
+          ...prev[visao][perfil],
+          [modulo]: !prev[visao][perfil][modulo],
+        },
+      },
+    }));
+  };
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto w-full space-y-5">
@@ -611,45 +679,107 @@ export function AdminPage() {
             </button>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-5">
-            <h3 className="text-foreground mb-4" style={{ fontWeight: 600 }}>Permissões por perfil</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left pb-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>Funcionalidade</th>
-                    {['Admin', 'Representante', 'Lojista'].map(p => (
-                      <th key={p} className="text-center pb-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{p}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { feature: 'Catálogo (visualizar)', admin: true, rep: true, lojista: true },
-                    { feature: 'Catálogo (editar)', admin: true, rep: false, lojista: false },
-                    { feature: 'Pedidos (criar)', admin: true, rep: true, lojista: true },
-                    { feature: 'Pedidos (aprovar)', admin: true, rep: false, lojista: false },
-                    { feature: 'Marketing IA', admin: true, rep: true, lojista: false },
-                    { feature: 'Sell-out Dashboard', admin: true, rep: true, lojista: false },
-                    { feature: 'Gestão de usuários', admin: true, rep: false, lojista: false },
-                    { feature: 'Políticas comerciais', admin: true, rep: false, lojista: false },
-                  ].map(row => (
-                    <tr key={row.feature} className="border-b border-border/40">
-                      <td className="py-2.5 text-foreground" style={{ fontSize: '0.82rem' }}>{row.feature}</td>
-                      {(['admin', 'rep', 'lojista'] as const).map(role => (
-                        <td key={role} className="py-2.5 text-center">
-                          {row[role] ? (
-                            <Check className="w-4 h-4 text-emerald-400 mx-auto" />
-                          ) : (
-                            <div className="w-4 h-px bg-border mx-auto" />
-                          )}
-                        </td>
+        </div>
+      )}
+
+      {/* Permissions Tab */}
+      {activeTab === 'permissions' && (
+        <div className="space-y-4">
+          {/* Visão selector */}
+          <div className="grid grid-cols-3 gap-3">
+            {visoes.map(v => {
+              const Icon = v.icon;
+              const active = activeView === v.id;
+              return (
+                <button
+                  key={v.id}
+                  onClick={() => setActiveView(v.id)}
+                  className={`flex items-center gap-3 p-4 rounded-xl border transition-colors text-left ${active ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-primary/40 hover:bg-secondary/30'}`}
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${active ? 'bg-primary/20' : 'bg-secondary/60'}`}>
+                    <Icon className={`w-4 h-4 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
+                  </div>
+                  <div>
+                    <p className={`${active ? 'text-primary' : 'text-foreground'}`} style={{ fontSize: '0.85rem', fontWeight: 600 }}>{v.label}</p>
+                    <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{v.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Permission matrix */}
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
+            {(() => {
+              const matrix = permissionsState[activeView];
+              const perfis = Object.keys(matrix);
+              const modulos = Object.keys(matrix[perfis[0]]);
+              return (
+                <>
+                  <div className="p-5 border-b border-border">
+                    <div className="flex items-center gap-3">
+                      {perfis.map(perfil => (
+                        <span key={perfil} className="px-2.5 py-1 rounded-full bg-primary/10 text-primary" style={{ fontSize: '0.72rem', fontWeight: 600 }}>{perfil}</span>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                    </div>
+                    <div className="mt-2 space-y-0.5">
+                      {perfis.map(perfil => (
+                        <p key={perfil} className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>
+                          <span className="text-foreground font-medium">{perfil}:</span> {profileDescriptions[perfil]}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                          <th className="text-left px-5 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>Módulo</th>
+                          {perfis.map(p => (
+                            <th key={p} className="text-center px-4 py-3 text-foreground" style={{ fontSize: '0.75rem', fontWeight: 600 }}>{p}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {modulos.map(modulo => (
+                          <tr key={modulo} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                            <td className="px-5 py-3 text-foreground" style={{ fontSize: '0.82rem' }}>{modulo}</td>
+                            {perfis.map(perfil => {
+                              const allowed = matrix[perfil][modulo];
+                              return (
+                                <td key={perfil} className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => togglePermission(activeView, perfil, modulo)}
+                                    className="mx-auto flex items-center justify-center w-6 h-6 rounded transition-colors hover:scale-110"
+                                    title={allowed ? 'Clique para revogar' : 'Clique para conceder'}
+                                  >
+                                    {allowed ? (
+                                      <Check className="w-4 h-4 text-emerald-400" />
+                                    ) : (
+                                      <div className="w-4 h-px bg-border" />
+                                    )}
+                                  </button>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="px-5 py-3 border-t border-border/40 flex items-center justify-between">
+                    <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Clique em qualquer célula para alternar a permissão</p>
+                    <button
+                      onClick={() => setPermissionsState(prev => ({ ...prev, [activeView]: defaultPermissions[activeView] }))}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      style={{ fontSize: '0.72rem' }}
+                    >
+                      Restaurar padrões
+                    </button>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
