@@ -244,6 +244,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
             <div>
               <p className="text-foreground mono" style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>{formatCurrency(product.price)}</p>
               <p className="text-muted-foreground line-through" style={{ fontSize: '0.75rem' }}>{formatCurrency(product.priceRetail)}</p>
+              <p className="text-primary" style={{ fontSize: '0.65rem', fontWeight: 600 }}>+ IVA</p>
             </div>
             <div className="flex items-center gap-2">
               <button onClick={onToggleFav} className={`p-2 rounded-lg border border-border transition-colors ${product.isFavorite ? 'text-red-400 border-red-400/30 bg-red-400/10' : 'text-muted-foreground hover:text-red-400'}`}>
@@ -323,6 +324,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
           <div>
             <p className="text-foreground mono" style={{ fontSize: '1rem', fontWeight: 700 }}>{formatCurrency(product.price)}</p>
             <p className="text-muted-foreground line-through" style={{ fontSize: '0.72rem' }}>{formatCurrency(product.priceRetail)}</p>
+            <p className="text-primary" style={{ fontSize: '0.62rem', fontWeight: 600 }}>+ IVA</p>
           </div>
           <div className="flex items-center gap-1.5">
             {product.colors.slice(0, 3).map(color => (
@@ -387,6 +389,7 @@ function ProductDetailModal({ product, onClose, onAddGrade, onToggleFav, isFavor
             <div className="flex items-baseline gap-3">
               <p className="text-foreground mono" style={{ fontSize: '1.8rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{formatCurrency(product.price)}</p>
               <p className="text-muted-foreground line-through" style={{ fontSize: '0.9rem' }}>{formatCurrency(product.priceRetail)}</p>
+              <p className="text-primary" style={{ fontSize: '0.72rem', fontWeight: 600 }}>+ IVA</p>
             </div>
             <p className="text-foreground" style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>{product.description}</p>
             <div className="grid grid-cols-2 gap-3">
