@@ -200,6 +200,8 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
         </div>
       </div>
 
+      <RuptureAlerts profile="rep" />
+
       {/* Recent Orders */}
       <div className="bg-card border border-border rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
