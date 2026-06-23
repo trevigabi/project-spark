@@ -3,10 +3,11 @@ import { createPortal } from "react-dom";
 import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
-  Footprints, Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
+  Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
   UserCheck, Tag, Shield, Boxes,
 } from "lucide-react";
 import type { Client } from "../data/mockData";
+import teslaLogo from "../../assets/tesla-footwear-logo.png.asset.json";
 
 export type View =
   | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history'
