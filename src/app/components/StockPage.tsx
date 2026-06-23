@@ -116,7 +116,7 @@ export function StockPage() {
           { label: 'Em ruptura', value: String(kpis.ruptura), sub: `${kpis.total} SKUs cadastrados`, icon: PackageX, color: 'text-red-400', bg: 'bg-red-400/10' },
           { label: 'Estoque baixo', value: String(kpis.baixo), sub: 'abaixo do limiar', icon: TrendingDown, color: 'text-amber-400', bg: 'bg-amber-400/10' },
           { label: 'Estoque OK', value: String(kpis.ok), sub: 'disponíveis para venda', icon: PackageCheck, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-          { label: 'Valor em estoque', value: formatCurrency(kpis.valor), sub: 'a preço de tabela', icon: Boxes, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+          { label: 'Valor em estoque', value: formatCurrency(kpis.valor), sub: 'a preço de tabela', icon: Boxes, color: 'text-black', bg: 'bg-black/10' },
         ].map(k => {
           const Icon = k.icon;
           return (
@@ -138,8 +138,8 @@ export function StockPage() {
       {mode === 'integration' && (
         <div className="bg-card border border-border rounded-xl p-5">
           <div className="flex items-start gap-3 mb-4">
-            <div className="w-9 h-9 rounded-lg bg-blue-400/10 flex items-center justify-center flex-shrink-0">
-              <Plug className="w-4 h-4 text-blue-400" />
+            <div className="w-9 h-9 rounded-lg bg-black/10 flex items-center justify-center flex-shrink-0">
+              <Plug className="w-4 h-4 text-black" />
             </div>
             <div className="flex-1">
               <h3 className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 600 }}>Integração com seu sistema de estoque</h3>
