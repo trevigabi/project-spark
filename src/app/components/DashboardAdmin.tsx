@@ -161,7 +161,7 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
           </ResponsiveContainer>
           <div className="flex items-center gap-4 mt-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-0.5 bg-blue-500 rounded" />
+              <div className="w-3 h-0.5 bg-black rounded" />
               <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Sell-in</span>
             </div>
             <div className="flex items-center gap-1.5">
