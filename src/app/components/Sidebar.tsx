@@ -289,6 +289,11 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
   return (
     <header className="h-14 border-b border-border bg-background/80 backdrop-blur flex items-center px-6 gap-3 flex-shrink-0">
       <div className="flex-1 min-w-0 flex items-center gap-3">
+        {currentView !== 'catalog' && (
+          <div className="flex items-center pr-3 mr-1 border-r border-border h-8 flex-shrink-0">
+            <img src={teslaLogo.url} alt="Tesla Footwear" className="h-6 w-auto object-contain" />
+          </div>
+        )}
         {/* Nav items à esquerda quando existem, caso contrário título */}
         {headerItems.length > 0 ? (
           <div className="flex items-center gap-1">
