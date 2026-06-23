@@ -22,7 +22,7 @@ interface NavItem {
 }
 
 const profileLabels: Record<Profile, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
-  admin: { label: 'Indústria Admin', icon: Building2, color: 'text-blue-400' },
+  admin: { label: 'Indústria Admin', icon: Building2, color: 'text-black' },
   rep: { label: 'Representante', icon: Users, color: 'text-amber-400' },
   lojista: { label: 'Lojista', icon: Store, color: 'text-emerald-400' },
 };

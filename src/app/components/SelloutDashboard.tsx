@@ -57,7 +57,7 @@ export function SelloutDashboard() {
           },
           {
             label: 'Giro Médio', value: `${avgDays} dias`, sub: 'da produção à venda',
-            trend: 'up', trendVal: '-3 dias', color: 'text-blue-400',
+            trend: 'up', trendVal: '-3 dias', color: 'text-black',
           },
           {
             label: 'Alertas Ativos', value: '6', sub: 'produtos em encalhe',

@@ -36,7 +36,7 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
   ];
 
   const statusColors: Record<string, string> = {
-    'aprovado': 'bg-blue-400/20 text-blue-400',
+    'aprovado': 'bg-black/20 text-black',
     'em análise': 'bg-amber-400/20 text-amber-400',
     'faturado': 'bg-emerald-400/20 text-emerald-400',
     'cancelado': 'bg-red-400/20 text-red-400',

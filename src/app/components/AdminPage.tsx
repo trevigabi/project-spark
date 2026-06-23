@@ -634,7 +634,7 @@ export function AdminPage() {
                       </td>
                       <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.email}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full ${user.role === 'Admin' ? 'bg-purple-400/10 text-purple-400' : 'bg-blue-400/10 text-blue-400'}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{user.role}</span>
+                        <span className={`px-2 py-0.5 rounded-full ${user.role === 'Admin' ? 'bg-purple-400/10 text-purple-400' : 'bg-black/10 text-black'}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{user.role}</span>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.region}</td>
                       <td className="px-4 py-3">

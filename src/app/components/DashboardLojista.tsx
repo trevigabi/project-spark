@@ -13,7 +13,7 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
   const favProducts = products.filter(p => p.isFavorite);
 
   const statusColors: Record<string, string> = {
-    'aprovado': 'bg-blue-400/20 text-blue-400',
+    'aprovado': 'bg-black/20 text-black',
     'em análise': 'bg-amber-400/20 text-amber-400',
     'faturado': 'bg-emerald-400/20 text-emerald-400',
     'cancelado': 'bg-red-400/20 text-red-400',
@@ -45,7 +45,7 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Pedidos este mês', value: '3', sub: 'R$ 42.500,00 total', icon: ShoppingBag, color: 'text-blue-400' },
+          { label: 'Pedidos este mês', value: '3', sub: 'R$ 42.500,00 total', icon: ShoppingBag, color: 'text-black' },
           { label: 'Produtos favoritos', value: String(favProducts.length), sub: 'salvo para compra', icon: Star, color: 'text-amber-400' },
           { label: 'Última compra', value: '9 Jun', sub: 'PED-2026-0412', icon: Package, color: 'text-emerald-400' },
           { label: 'Desconto negociado', value: '12%', sub: 'na coleção atual', icon: Tag, color: 'text-purple-400' },

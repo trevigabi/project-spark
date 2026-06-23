@@ -73,7 +73,7 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
   const recentOrders = orders.slice(0, 5);
 
   const statusColors: Record<string, string> = {
-    'aprovado': 'bg-blue-400/20 text-blue-400',
+    'aprovado': 'bg-black/20 text-black',
     'em análise': 'bg-amber-400/20 text-amber-400',
     'faturado': 'bg-emerald-400/20 text-emerald-400',
     'cancelado': 'bg-red-400/20 text-red-400',
@@ -91,7 +91,7 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
           trend="up"
           trendVal="+9,8%"
           icon={TrendingUp}
-          iconColor="text-blue-400"
+          iconColor="text-black"
         />
         <KPICard
           title="Clientes Ativos"
@@ -161,7 +161,7 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
           </ResponsiveContainer>
           <div className="flex items-center gap-4 mt-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-0.5 bg-blue-500 rounded" />
+              <div className="w-3 h-0.5 bg-black rounded" />
               <span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Sell-in</span>
             </div>
             <div className="flex items-center gap-1.5">
