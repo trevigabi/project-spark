@@ -5,6 +5,8 @@ import {
   X, Package2, Eye, Zap, Check, Plus, Store,
 } from "lucide-react";
 import { products, Product, formatCurrency, Client } from "../data/mockData";
+import bannerLimitedAsset from "../../assets/banner-edicao-limitada.png.asset.json";
+
 import type { CartContext } from "./CartsListPage";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
