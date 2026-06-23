@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowRight, Eye, EyeOff, Footprints, Building2, Users, Store } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Building2, Users, Store } from "lucide-react";
+import teslaLogo from "../../assets/tesla-footwear-logo.png.asset.json";
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
@@ -72,13 +73,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         />
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-              <Footprints className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <div>
-              <span className="text-foreground" style={{ fontWeight: 600, fontSize: '1rem' }}>Pace Seller</span>
-              <span className="block text-muted-foreground" style={{ fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Tesla Footwear</span>
-            </div>
+            <img src={teslaLogo.url} alt="Tesla Footwear" className="h-8 w-auto object-contain" />
           </div>
         </div>
 
@@ -136,10 +131,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2 mb-10">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Footprints className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span style={{ fontWeight: 600 }}>Pace Seller</span>
+            <img src={teslaLogo.url} alt="Tesla Footwear" className="h-7 w-auto object-contain" />
           </div>
 
           {step === 'login' ? (
