@@ -64,7 +64,7 @@ const repsBelowAdmin = [
 ];
 
 const severityColor = (s: string) =>
-  s === 'alta' ? 'bg-red-400/15 text-red-400' : s === 'media' ? 'bg-amber-400/15 text-amber-400' : 'bg-blue-400/15 text-blue-400';
+  s === 'alta' ? 'bg-red-400/15 text-red-400' : s === 'media' ? 'bg-amber-400/15 text-amber-400' : 'bg-black/15 text-black';
 
 export function RuptureAlerts({ profile }: RuptureAlertsProps) {
   const [tab, setTab] = useState<TabKey>('risco');
