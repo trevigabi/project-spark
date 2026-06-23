@@ -1,11 +1,12 @@
 import { useState } from "react";
 import {
-  Footprints, Filter, Tag, Layers, Palette, DollarSign,
+  Filter, Tag, Layers, Palette, DollarSign,
   Menu, X, LogOut, ChevronLeft, ChevronRight, Store, Search,
   ChevronUp, ChevronDown, Users,
 } from "lucide-react";
 import type { Client } from "../data/mockData";
 import { products, formatCurrency } from "../data/mockData";
+import teslaLogo from "../../assets/tesla-footwear-logo.png.asset.json";
 
 export type CatalogFilters = {
   search: string;
