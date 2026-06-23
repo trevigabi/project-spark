@@ -97,13 +97,7 @@ export function LojistaFiltersSidebar({ filters, onChange, onLogout, profile = '
           <img src={teslaLogo.url} alt="Tesla Footwear" className={collapsed ? 'h-6 w-auto object-contain' : 'h-7 w-auto object-contain'} />
         </div>
         {!collapsed && (
-          <div className="flex-1 min-w-0">
-            <div className="text-foreground truncate" style={{ fontWeight: 700, fontSize: '0.9rem' }}>Tesla Footwear</div>
-            <div className="text-muted-foreground truncate" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Pace Seller</div>
-          </div>
-        )}
-        {!collapsed && (
-          <button onClick={() => setCollapsed(true)} className="text-muted-foreground hover:text-foreground p-1 rounded">
+          <button onClick={() => setCollapsed(true)} className="ml-auto text-muted-foreground hover:text-foreground p-1 rounded">
             <ChevronLeft className="w-4 h-4" />
           </button>
         )}
