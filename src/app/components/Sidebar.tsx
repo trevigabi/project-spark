@@ -84,13 +84,13 @@ export function Sidebar({ currentView, onNavigate, profile, onLogout, notificati
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className={`flex items-center border-b border-sidebar-border px-4 h-14 ${collapsed ? 'justify-center' : 'gap-3'}`}>
-        <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
-          <Footprints className="w-4 h-4 text-primary-foreground" />
+        <div className={`flex items-center justify-center flex-shrink-0 ${collapsed ? 'w-7 h-7' : 'h-8'}`}>
+          <img src={teslaLogo.url} alt="Tesla Footwear" className={collapsed ? 'h-6 w-auto object-contain' : 'h-7 w-auto object-contain'} />
         </div>
         {!collapsed && (
           <div className="flex-1 min-w-0">
-            <div className="text-foreground truncate" style={{ fontWeight: 700, fontSize: '0.9rem' }}>Pace Seller</div>
-            <div className="text-muted-foreground truncate" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Tesla Footwear</div>
+            <div className="text-foreground truncate" style={{ fontWeight: 700, fontSize: '0.9rem' }}>Tesla Footwear</div>
+            <div className="text-muted-foreground truncate" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Pace Seller</div>
           </div>
         )}
         {!collapsed && (
