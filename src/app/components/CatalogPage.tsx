@@ -5,6 +5,8 @@ import {
   X, Package2, Eye, Zap, Check, Plus, Store,
 } from "lucide-react";
 import { products, Product, formatCurrency, Client } from "../data/mockData";
+import bannerLimitedAsset from "../../assets/banner-edicao-limitada.png.asset.json";
+
 import type { CartContext } from "./CartsListPage";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
@@ -520,6 +522,15 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
 
   return (
     <div className="p-6 space-y-5 max-w-[1400px] mx-auto w-full">
+      {/* Promo Banner */}
+      <div className="rounded-2xl overflow-hidden border border-border shadow-sm">
+        <img
+          src={bannerLimitedAsset.url}
+          alt="Edição Limitada"
+          className="w-full h-auto object-cover"
+        />
+      </div>
+
       {/* Header + Controls */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
