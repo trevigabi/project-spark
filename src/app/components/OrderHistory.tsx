@@ -12,7 +12,7 @@ interface OrderHistoryProps {
 }
 
 const statusColors: Record<string, string> = {
-  'aprovado': 'text-blue-400 bg-blue-400/10',
+  'aprovado': 'text-black bg-black/10',
   'em análise': 'text-amber-400 bg-amber-400/10',
   'faturado': 'text-emerald-400 bg-emerald-400/10',
   'cancelado': 'text-red-400 bg-red-400/10',
@@ -20,7 +20,7 @@ const statusColors: Record<string, string> = {
 };
 
 const statusDot: Record<string, string> = {
-  'aprovado': 'bg-blue-400',
+  'aprovado': 'bg-black',
   'em análise': 'bg-amber-400',
   'faturado': 'bg-emerald-400',
   'cancelado': 'bg-red-400',
