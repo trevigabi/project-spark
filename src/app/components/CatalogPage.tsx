@@ -5,7 +5,7 @@ import {
   X, Package2, Eye, Zap, Check, Plus, Store,
 } from "lucide-react";
 import { products, Product, formatCurrency, Client } from "../data/mockData";
-import bannerLimitedAsset from "../../assets/banner-edicao-limitada.png.asset.json";
+import bannerLimitedAsset from "../../assets/banner-edicao-limitada.webp";
 
 import type { CartContext } from "./CartsListPage";
 
@@ -525,7 +525,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
       {/* Promo Banner */}
       <div className="rounded-2xl overflow-hidden border border-border shadow-sm">
         <img
-          src={bannerLimitedAsset.url}
+          src={bannerLimitedAsset}
           alt="Edição Limitada"
           className="w-full h-auto object-cover"
         />

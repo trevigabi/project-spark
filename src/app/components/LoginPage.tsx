@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, Eye, EyeOff, Building2, Users, Store } from "lucide-react";
-import teslaLogo from "../../assets/tesla-footwear-logo.png.asset.json";
+import teslaLogo from "../../assets/tesla-footwear-logo.png";
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
@@ -73,7 +73,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         />
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <img src={teslaLogo.url} alt="Tesla Footwear" className="h-8 w-auto object-contain" />
+            <img src={teslaLogo} alt="Tesla Footwear" className="h-8 w-auto object-contain" />
           </div>
         </div>
 
@@ -131,7 +131,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2 mb-10">
-            <img src={teslaLogo.url} alt="Tesla Footwear" className="h-7 w-auto object-contain" />
+            <img src={teslaLogo} alt="Tesla Footwear" className="h-7 w-auto object-contain" />
           </div>
 
           {step === 'login' ? (
