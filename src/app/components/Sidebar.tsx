@@ -3,10 +3,11 @@ import { createPortal } from "react-dom";
 import {
   LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
-  Footprints, Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
+  Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
   UserCheck, Tag, Shield, Boxes,
 } from "lucide-react";
 import type { Client } from "../data/mockData";
+import teslaLogo from "../../assets/tesla-footwear-logo.png.asset.json";
 
 export type View =
   | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history'
@@ -83,13 +84,13 @@ export function Sidebar({ currentView, onNavigate, profile, onLogout, notificati
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className={`flex items-center border-b border-sidebar-border px-4 h-14 ${collapsed ? 'justify-center' : 'gap-3'}`}>
-        <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
-          <Footprints className="w-4 h-4 text-primary-foreground" />
+        <div className={`flex items-center justify-center flex-shrink-0 ${collapsed ? 'w-7 h-7' : 'h-8'}`}>
+          <img src={teslaLogo.url} alt="Tesla Footwear" className={collapsed ? 'h-6 w-auto object-contain' : 'h-7 w-auto object-contain'} />
         </div>
         {!collapsed && (
           <div className="flex-1 min-w-0">
-            <div className="text-foreground truncate" style={{ fontWeight: 700, fontSize: '0.9rem' }}>Pace Seller</div>
-            <div className="text-muted-foreground truncate" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Tesla Footwear</div>
+            <div className="text-foreground truncate" style={{ fontWeight: 700, fontSize: '0.9rem' }}>Tesla Footwear</div>
+            <div className="text-muted-foreground truncate" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Pace Seller</div>
           </div>
         )}
         {!collapsed && (
@@ -288,6 +289,11 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
   return (
     <header className="h-14 border-b border-border bg-background/80 backdrop-blur flex items-center px-6 gap-3 flex-shrink-0">
       <div className="flex-1 min-w-0 flex items-center gap-3">
+        {currentView !== 'catalog' && (
+          <div className="flex items-center pr-3 mr-1 border-r border-border h-8 flex-shrink-0">
+            <img src={teslaLogo.url} alt="Tesla Footwear" className="h-6 w-auto object-contain" />
+          </div>
+        )}
         {/* Nav items à esquerda quando existem, caso contrário título */}
         {headerItems.length > 0 ? (
           <div className="flex items-center gap-1">
