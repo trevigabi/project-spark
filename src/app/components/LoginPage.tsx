@@ -13,9 +13,9 @@ const profiles = [
     label: 'Indústria',
     description: 'Gestão completa da plataforma',
     icon: Building2,
-    color: 'from-blue-500/20 to-blue-600/5',
-    border: 'border-blue-500/40',
-    accent: 'text-blue-400',
+    color: 'from-black/20 to-black/5',
+    border: 'border-black/40',
+    accent: 'text-black',
   },
   {
     id: 'rep' as Profile,
