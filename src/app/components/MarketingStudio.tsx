@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Sparkles, Check, ChevronRight, ChevronLeft, Share2, Instagram, MessageCircle, Printer, Wand2, RefreshCw, Rocket, Tag, Trophy, Zap } from "lucide-react";
 import { products, formatCurrency } from "../data/mockData";
+import campaignPreviewMock from "@/assets/campaign-preview-mock.png";
 
 const OBJECTIVES = [
   { id: 'lancamento', label: 'Lançamento de coleção', icon: Rocket, description: 'Apresente novidades com destaque' },
@@ -248,64 +249,9 @@ export function MarketingStudio() {
               </button>
             </div>
 
-            {/* Generated banner mockup — renderizado em CSS */}
-            <div
-              className="rounded-2xl overflow-hidden border border-border mb-5 mx-auto"
-              style={{
-                maxWidth: 340,
-                background: `linear-gradient(145deg, ${selectedTheme.colors[0]} 0%, ${selectedTheme.colors[1]} 60%, ${selectedTheme.colors[2]}22 100%)`,
-              }}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 pt-5 pb-3">
-                <div>
-                  <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: selectedTheme.colors[2], textTransform: 'uppercase' }}>
-                    Tesla Footwear
-                  </p>
-                  <p style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', lineHeight: 1.2, marginTop: 2 }}>
-                    {selectedObj.label}
-                  </p>
-                </div>
-                <ObjIcon style={{ width: 28, height: 28, color: selectedTheme.colors[2], opacity: 0.85 }} />
-              </div>
-
-              {/* Product images grid */}
-              <div className={`grid gap-1.5 px-5 ${selectedList.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                {selectedList.slice(0, 4).map(p => (
-                  <div
-                    key={p.id}
-                    className="rounded-xl overflow-hidden bg-white/10 flex items-center justify-center"
-                    style={{ aspectRatio: '1/1' }}
-                  >
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="w-full h-full object-cover"
-                      onError={e => { (e.target as HTMLImageElement).style.opacity = '0'; }}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Prompt text */}
-              <div className="px-5 py-4">
-                <p style={{ fontSize: '0.7rem', color: '#fff', opacity: 0.75, lineHeight: 1.5, fontStyle: 'italic' }}>
-                  "{prompt.slice(0, 90)}{prompt.length > 90 ? '…' : ''}"
-                </p>
-              </div>
-
-              {/* Footer */}
-              <div
-                className="flex items-center justify-between px-5 py-3"
-                style={{ borderTop: `1px solid ${selectedTheme.colors[2]}33` }}
-              >
-                <p style={{ fontSize: '0.6rem', fontWeight: 600, color: selectedTheme.colors[2], letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Coleção 2026
-                </p>
-                <p style={{ fontSize: '0.6rem', color: '#fff', opacity: 0.5 }}>
-                  teslafootwear.com.br
-                </p>
-              </div>
+            {/* Generated banner mockup */}
+            <div className="rounded-2xl overflow-hidden border border-border mb-5 mx-auto" style={{ maxWidth: 340 }}>
+              <img src={campaignPreviewMock} alt="Preview da campanha" className="w-full h-auto block" />
             </div>
 
             {/* Export options */}
