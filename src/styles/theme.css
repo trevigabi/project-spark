@@ -194,9 +194,10 @@
     line-height: 1.5;
   }
 
-  /* Mono for data/labels */
+  /* Data/labels use a numeric variant of the same body font, for alignment */
   .mono {
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-family: 'Roboto', system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
   }
 
   /* Hide scrollbar by default, show on hover */
