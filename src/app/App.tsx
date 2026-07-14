@@ -9,8 +9,8 @@ import { DashboardRep } from "./components/DashboardRep";
 import { DashboardLojista } from "./components/DashboardLojista";
 import { CatalogPage } from "./components/CatalogPage";
 import { OrderGrade } from "./components/OrderGrade";
-import { CartPage, initialCartCount } from "./components/CartPage";
-import { CartsListPage, mockCarts, type CartContext } from "./components/CartsListPage";
+import { CartPage } from "./components/CartPage";
+import { CartsListPage, mockCarts, type CartContext, type CartCreator } from "./components/CartsListPage";
 import { OrderHistory } from "./components/OrderHistory";
 import { LojistaHistoryDashboard } from "./components/LojistaHistoryDashboard";
 import { MarketingStudio } from "./components/MarketingStudio";
@@ -45,22 +45,26 @@ export default function App() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [activeCart, setActiveCart] = useState<CartContext | null>(null);
   const [carts, setCarts] = useState<CartContext[]>(() =>
-    mockCarts.map(({ id, clientId, clientName, cartName }) => ({ id, clientId, clientName, cartName }))
+    mockCarts.map(({ id, clientId, clientName, cartName, createdBy }) => ({ id, clientId, clientName, cartName, createdBy }))
   );
   const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>(defaultFilters);
-  const [lojistaCartCount, setLojistaCartCount] = useState(initialCartCount);
 
-  const multiCart = profile === 'admin' || profile === 'rep';
-  const clientCarts = selectedClient ? carts.filter(c => c.clientId === selectedClient.id) : [];
+  // Todos os perfis suportam múltiplos carrinhos.
+  const multiCart = true;
+  const viewerRole: CartCreator = profile === 'lojista' ? 'lojista' : 'rep';
+  // Lojista não seleciona cliente — ele é o próprio cliente da sua loja.
+  const cartsClient = profile === 'lojista' ? clientsList[0] : selectedClient;
+  const clientCarts = cartsClient ? carts.filter(c => c.clientId === cartsClient.id) : [];
 
   const createCart = (name: string, client?: Client | null): CartContext | null => {
-    const c = client ?? selectedClient;
+    const c = client ?? cartsClient;
     if (!c) return null;
     const ctx: CartContext = {
       id: `CART-NEW-${Date.now()}`,
       clientId: c.id,
       clientName: c.name,
       cartName: name?.trim() || 'Novo carrinho',
+      createdBy: viewerRole,
     };
     setCarts(prev => [ctx, ...prev]);
     return ctx;
@@ -112,10 +116,10 @@ export default function App() {
             selectedClient={selectedClient}
             externalFilters={useFilters ? catalogFilters : undefined}
             onExternalFiltersChange={useFilters ? setCatalogFilters : undefined}
-            clientCarts={multiCart ? (selectedClient ? clientCarts : carts) : undefined}
+            clientCarts={cartsClient ? clientCarts : carts}
             activeCartId={activeCart?.id ?? null}
             onPickCart={(ctx) => {
-              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+              if (profile !== 'lojista' && (!selectedClient || selectedClient.id !== ctx.clientId)) {
                 const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
                 if (c) setSelectedClient(c);
               }
@@ -137,6 +141,7 @@ export default function App() {
             onNavigate={navigate}
             cartContext={activeCart}
             multiCart={multiCart}
+            viewerRole={viewerRole}
             onCreateNewCart={(name) => {
               const ctx = createCart(name);
               if (ctx) {
@@ -144,18 +149,19 @@ export default function App() {
                 setCurrentView('catalog');
               }
             }}
-            onCartCountChange={profile === 'lojista' ? setLojistaCartCount : undefined}
             selectedPriceTable={catalogFilters.priceTable}
           />
         );
       case 'carts':
         return (
           <CartsListPage
-            selectedClient={selectedClient}
-            onNavigateClients={() => setCurrentView('clients')}
-            onSelectClient={(c) => setSelectedClient(c)}
+            selectedClient={cartsClient}
+            viewerRole={viewerRole}
+            lockClient={profile === 'lojista'}
+            onNavigateClients={profile === 'lojista' ? undefined : () => setCurrentView('clients')}
+            onSelectClient={profile === 'lojista' ? undefined : (c) => setSelectedClient(c)}
             onOpenCart={(ctx) => {
-              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+              if (profile !== 'lojista' && (!selectedClient || selectedClient.id !== ctx.clientId)) {
                 const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
                 if (c) setSelectedClient(c);
               }
@@ -164,7 +170,7 @@ export default function App() {
             }}
             onCreateCart={(ctx) => {
               setCarts(prev => [ctx, ...prev]);
-              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+              if (profile !== 'lojista' && (!selectedClient || selectedClient.id !== ctx.clientId)) {
                 const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
                 if (c) setSelectedClient(c);
               }
@@ -172,7 +178,7 @@ export default function App() {
               setCurrentView('catalog');
             }}
             onGoToCatalog={(ctx) => {
-              if (!selectedClient || selectedClient.id !== ctx.clientId) {
+              if (profile !== 'lojista' && (!selectedClient || selectedClient.id !== ctx.clientId)) {
                 const c = clientsList.find(x => x.id === ctx.clientId) ?? null;
                 if (c) setSelectedClient(c);
               }
@@ -233,7 +239,7 @@ export default function App() {
           notifications={4}
           onNavigate={navigate}
           onLogout={handleLogout}
-          cartCount={multiCart ? (selectedClient ? clientCarts.length : carts.length) : (profile === 'lojista' ? lojistaCartCount : undefined)}
+          cartCount={cartsClient ? clientCarts.length : carts.length}
           selectedClient={['catalog', 'order-grade', 'cart', 'carts'].includes(currentView) ? selectedClient : null}
         />
         <main className="flex-1 overflow-y-auto">

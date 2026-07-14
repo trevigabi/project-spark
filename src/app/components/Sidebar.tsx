@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  LayoutDashboard, Package2, ShoppingBag, ShoppingCart, ShoppingBasket, Clock,
+  LayoutDashboard, Package2, ShoppingBag, ShoppingBasket, Clock,
   Sparkles, BarChart3, Settings, Users, Store, ChevronDown, ChevronRight,
   Bell, Search, Menu, X, Building2, LogOut, ChevronLeft,
   UserCheck, Tag, Shield, Boxes,
@@ -324,13 +324,13 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
       <div className="flex items-center gap-1 flex-shrink-0">
         {actions}
 
-        {/* Cart(s) — admin e rep usam multi-carrinhos */}
+        {/* Cart(s) — todos os perfis usam multi-carrinhos */}
         <button
-          onClick={() => onNavigate(profile === 'admin' || profile === 'rep' ? 'carts' : 'cart')}
+          onClick={() => onNavigate('carts')}
           className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-          title={profile === 'admin' || profile === 'rep' ? 'Carrinhos' : 'Carrinho'}
+          title="Carrinhos"
         >
-          {profile === 'admin' || profile === 'rep' ? <ShoppingBasket className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
+          <ShoppingBasket className="w-4 h-4" />
           {cartCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground rounded-full flex items-center justify-center" style={{ fontSize: '0.6rem', fontWeight: 700 }}>
               {cartCount}

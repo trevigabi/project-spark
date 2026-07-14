@@ -2,12 +2,26 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   Search, Filter, Grid3X3, List, Heart, Star, ShoppingCart,
-  X, Package2, Eye, Zap, Check, Plus, Store,
+  X, Package2, Eye, Zap, Check, Plus, Store, UserCheck,
 } from "lucide-react";
 import { products, Product, formatCurrency, Client } from "../data/mockData";
 import bannerLimitedAsset from "../../assets/banner-edicao-limitada.webp";
 
-import type { CartContext } from "./CartsListPage";
+import type { CartContext, CartCreator } from "./CartsListPage";
+
+function CartCreatorTag({ createdBy }: { createdBy?: CartCreator }) {
+  if (!createdBy) return null;
+  const isLojista = createdBy === 'lojista';
+  return (
+    <span
+      className={`inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.5 rounded ${isLojista ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'}`}
+      style={{ fontSize: '0.62rem', fontWeight: 600 }}
+    >
+      {isLojista ? <Store className="w-2.5 h-2.5" /> : <UserCheck className="w-2.5 h-2.5" />}
+      {isLojista ? 'Lojista' : 'Representante'}
+    </span>
+  );
+}
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -752,6 +766,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
                     <p className="text-muted-foreground flex items-center gap-1" style={{ fontSize: '0.7rem' }}>
                       <Store className="w-2.5 h-2.5" /> {c.clientName}
                     </p>
+                    <CartCreatorTag createdBy={c.createdBy} />
                   </div>
                   {confirmAdd.selectedCartId === c.id && (
                     <span className="text-primary" style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Atual</span>
@@ -827,6 +842,7 @@ export function CatalogPage({ onNavigate, externalFilters, onExternalFiltersChan
                     <p className="text-muted-foreground flex items-center gap-1" style={{ fontSize: '0.7rem' }}>
                       <Store className="w-2.5 h-2.5" /> {c.clientName}
                     </p>
+                    <CartCreatorTag createdBy={c.createdBy} />
                   </div>
                   {activeCartId === c.id && (
                     <span className="text-primary" style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Atual</span>

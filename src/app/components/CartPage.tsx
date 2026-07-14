@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft, FolderPlus, List } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Check, ChevronRight, Tag, Sparkles, Percent, Store, ChevronLeft, FolderPlus, List, UserCheck } from "lucide-react";
 import { products, formatCurrency } from "../data/mockData";
 import { priceTables } from "./LojistaFiltersSidebar";
-import type { CartContext } from "./CartsListPage";
+import type { CartContext, CartCreator } from "./CartsListPage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "./ui/dialog";
 
 
@@ -15,6 +15,8 @@ interface CartPageProps {
   onCreateNewCart?: (name: string) => void;
   onCartCountChange?: (count: number) => void;
   selectedPriceTable?: string;
+  /** Perfil de quem está vendo o carrinho — define quem é "Você" no identificador de criação. */
+  viewerRole?: CartCreator;
 }
 
 interface CartItem {
@@ -87,7 +89,7 @@ const campaignsByTable: Record<string, { id: string; name: string; description: 
   ],
 };
 
-export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, onCartCountChange, selectedPriceTable }: CartPageProps) {
+export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, onCartCountChange, selectedPriceTable, viewerRole = 'rep' }: CartPageProps) {
   const [cart, setCart] = useState<CartItem[]>(initialCart);
   useEffect(() => { onCartCountChange?.(cart.length); }, [cart.length]);
   const [tableId, setTableId] = useState<string>(selectedPriceTable ?? 'padrao');
@@ -180,7 +182,19 @@ export function CartPage({ onNavigate, cartContext, multiCart, onCreateNewCart, 
             </button>
             <div className="w-px h-5 bg-border" />
             <div className="min-w-0">
-              <p className="text-foreground truncate" style={{ fontSize: '1rem', fontWeight: 700 }}>{cartContext.cartName}</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-foreground truncate" style={{ fontSize: '1rem', fontWeight: 700 }}>{cartContext.cartName}</p>
+                {cartContext.createdBy && (
+                  <span
+                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${cartContext.createdBy === 'lojista' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'}`}
+                    style={{ fontSize: '0.65rem', fontWeight: 600 }}
+                    title={cartContext.createdBy === 'lojista' ? 'Carrinho criado pelo lojista' : 'Carrinho criado pelo representante'}
+                  >
+                    {cartContext.createdBy === 'lojista' ? <Store className="w-2.5 h-2.5" /> : <UserCheck className="w-2.5 h-2.5" />}
+                    {cartContext.createdBy === viewerRole ? 'Você' : cartContext.createdBy === 'lojista' ? 'Lojista' : 'Representante'}
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <Store className="w-3 h-3" />
                 <span className="truncate" style={{ fontSize: '0.75rem' }}>Cliente: <span className="text-foreground" style={{ fontWeight: 600 }}>{cartContext.clientName}</span></span>

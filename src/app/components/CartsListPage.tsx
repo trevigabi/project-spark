@@ -1,12 +1,15 @@
 import { useMemo, useState } from "react";
-import { ShoppingCart, Plus, Search, Store, Package2, Calendar, User, Users, ArrowLeftRight, ShoppingBag, Eye } from "lucide-react";
+import { ShoppingCart, Plus, Search, Store, Package2, Calendar, User, Users, ArrowLeftRight, ShoppingBag, Eye, UserCheck } from "lucide-react";
 import { clients, formatCurrency, type Client } from "../data/mockData";
+
+export type CartCreator = 'lojista' | 'rep';
 
 export interface CartContext {
   id: string;
   clientId: string;
   clientName: string;
   cartName: string;
+  createdBy?: CartCreator;
 }
 
 interface MockCart extends CartContext {
@@ -15,16 +18,36 @@ interface MockCart extends CartContext {
   total: number;
   updatedAt: string;
   rep: string;
+  createdBy: CartCreator;
 }
 
 export const mockCarts: MockCart[] = [
-  { id: 'CART-001', clientId: clients[0].id, clientName: clients[0].name, cartName: 'Reposição Inverno 26', items: 3, pairs: 44, total: 5652.97, updatedAt: '2026-06-16', rep: clients[0].rep },
-  { id: 'CART-002', clientId: clients[0].id, clientName: clients[0].name, cartName: 'Lançamento Flow XL', items: 2, pairs: 28, total: 3890.40, updatedAt: '2026-06-14', rep: clients[0].rep },
-  { id: 'CART-003', clientId: clients[2].id, clientName: clients[2].name, cartName: 'Pedido principal', items: 5, pairs: 72, total: 9120.00, updatedAt: '2026-06-15', rep: clients[2].rep },
-  { id: 'CART-004', clientId: clients[5].id, clientName: clients[5].name, cartName: 'Coleção Primavera', items: 4, pairs: 56, total: 7240.80, updatedAt: '2026-06-13', rep: clients[5].rep },
-  { id: 'CART-005', clientId: clients[1].id, clientName: clients[1].name, cartName: 'Reposição MG', items: 2, pairs: 22, total: 2750.60, updatedAt: '2026-06-12', rep: clients[1].rep },
-  { id: 'CART-006', clientId: clients[6].id, clientName: clients[6].name, cartName: 'Pedido teste Sul', items: 1, pairs: 12, total: 1480.00, updatedAt: '2026-06-11', rep: clients[6].rep },
+  { id: 'CART-001', clientId: clients[0].id, clientName: clients[0].name, cartName: 'Reposição Inverno 26', items: 3, pairs: 44, total: 5652.97, updatedAt: '2026-06-16', rep: clients[0].rep, createdBy: 'lojista' },
+  { id: 'CART-002', clientId: clients[0].id, clientName: clients[0].name, cartName: 'Lançamento Flow XL', items: 2, pairs: 28, total: 3890.40, updatedAt: '2026-06-14', rep: clients[0].rep, createdBy: 'rep' },
+  { id: 'CART-003', clientId: clients[2].id, clientName: clients[2].name, cartName: 'Pedido principal', items: 5, pairs: 72, total: 9120.00, updatedAt: '2026-06-15', rep: clients[2].rep, createdBy: 'rep' },
+  { id: 'CART-004', clientId: clients[5].id, clientName: clients[5].name, cartName: 'Coleção Primavera', items: 4, pairs: 56, total: 7240.80, updatedAt: '2026-06-13', rep: clients[5].rep, createdBy: 'rep' },
+  { id: 'CART-005', clientId: clients[1].id, clientName: clients[1].name, cartName: 'Reposição MG', items: 2, pairs: 22, total: 2750.60, updatedAt: '2026-06-12', rep: clients[1].rep, createdBy: 'rep' },
+  { id: 'CART-006', clientId: clients[6].id, clientName: clients[6].name, cartName: 'Pedido teste Sul', items: 1, pairs: 12, total: 1480.00, updatedAt: '2026-06-11', rep: clients[6].rep, createdBy: 'rep' },
 ];
+
+const creatorStyle: Record<CartCreator, { icon: React.ComponentType<{ className?: string }>; className: string }> = {
+  lojista: { icon: Store, className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
+  rep: { icon: UserCheck, className: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
+};
+
+/** Identifica quem montou o carrinho — o próprio lojista ou o representante — em relação a quem está olhando. */
+function CreatorBadge({ createdBy, viewerRole }: { createdBy?: CartCreator; viewerRole: CartCreator }) {
+  if (!createdBy) return null;
+  const { icon: Icon, className } = creatorStyle[createdBy];
+  const isViewer = createdBy === viewerRole;
+  const label = isViewer ? 'Você' : createdBy === 'lojista' ? 'Lojista' : 'Representante';
+  const title = createdBy === 'lojista' ? 'Carrinho criado pelo lojista' : 'Carrinho criado pelo representante';
+  return (
+    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${className}`} style={{ fontSize: '0.65rem', fontWeight: 600 }} title={title}>
+      <Icon className="w-2.5 h-2.5" /> {label}
+    </span>
+  );
+}
 
 interface CartsListPageProps {
   onOpenCart: (ctx: CartContext) => void;
@@ -33,9 +56,13 @@ interface CartsListPageProps {
   selectedClient?: Client | null;
   onSelectClient?: (client: Client) => void;
   onGoToCatalog?: (ctx: CartContext) => void;
+  /** Perfil de quem está vendo a lista — define quem é "Você" nos identificadores de criação. */
+  viewerRole?: CartCreator;
+  /** Quando true, esconde a troca/busca de cliente (lojista só enxerga os carrinhos da própria loja). */
+  lockClient?: boolean;
 }
 
-export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, selectedClient, onSelectClient, onGoToCatalog }: CartsListPageProps) {
+export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, selectedClient, onSelectClient, onGoToCatalog, viewerRole = 'rep', lockClient = false }: CartsListPageProps) {
   const [q, setQ] = useState('');
   const [newOpen, setNewOpen] = useState(false);
   const [newName, setNewName] = useState('');
@@ -44,13 +71,13 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
   const [showAll, setShowAll] = useState(!selectedClient);
 
   const scopedCarts = useMemo(() => {
-    if (selectedClient && !showAll) return mockCarts.filter(c => c.clientId === selectedClient.id);
+    if (selectedClient && (lockClient || !showAll)) return mockCarts.filter(c => c.clientId === selectedClient.id);
     return mockCarts;
-  }, [selectedClient, showAll]);
+  }, [selectedClient, showAll, lockClient]);
 
   const otherCarts = useMemo(
-    () => selectedClient ? mockCarts.filter(c => c.clientId !== selectedClient.id) : [],
-    [selectedClient]
+    () => (selectedClient && !lockClient) ? mockCarts.filter(c => c.clientId !== selectedClient.id) : [],
+    [selectedClient, lockClient]
   );
 
   const filtered = scopedCarts.filter(c =>
@@ -73,6 +100,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
       clientId: selectedClient.id,
       clientName: selectedClient.name,
       cartName: newName || 'Novo carrinho',
+      createdBy: viewerRole,
     };
     (onCreateCart ?? onOpenCart)(ctx);
   };
@@ -82,10 +110,12 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
       <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
         <div>
           <h2 className="text-foreground" style={{ fontWeight: 700, fontSize: '1.15rem' }}>
-            {selectedClient && !showAll ? `Carrinhos de ${selectedClient.name}` : 'Carrinhos em construção'}
+            {lockClient ? 'Meus carrinhos' : selectedClient && !showAll ? `Carrinhos de ${selectedClient.name}` : 'Carrinhos em construção'}
           </h2>
           <p className="text-muted-foreground" style={{ fontSize: '0.82rem' }}>
-            {selectedClient && !showAll
+            {lockClient
+              ? 'Carrinhos da sua loja. Você pode manter mais de um, e ver os que o representante montou para você.'
+              : selectedClient && !showAll
               ? 'Carrinhos vinculados ao cliente atual. Você pode manter mais de um.'
               : 'Cada carrinho está vinculado a um cliente. Abrir um carrinho de outro cliente troca o cliente ativo.'}
           </p>
@@ -104,7 +134,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
       </div>
 
       {/* Bloco sem cliente selecionado: busca rápida + atalho para carteira */}
-      {!selectedClient && (
+      {!lockClient && !selectedClient && (
         <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-5">
           <div className="flex items-center gap-2.5 mb-3">
             <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
@@ -167,7 +197,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
       )}
 
       {/* Toggle para ver carrinhos de outros clientes */}
-      {selectedClient && (
+      {!lockClient && selectedClient && (
         <div className="flex items-center gap-2 mb-4">
           <button
             onClick={() => setShowAll(false)}
@@ -240,7 +270,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
                 </span>
               )}
               <button
-                onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+                onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName, createdBy: c.createdBy })}
                 className="text-left flex-1"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -253,6 +283,9 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
                 <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
                   <Store className="w-3 h-3" />
                   <span className="truncate" style={{ fontSize: '0.76rem' }}>{c.clientName}</span>
+                </div>
+                <div className="mt-2">
+                  <CreatorBadge createdBy={c.createdBy} viewerRole={viewerRole} />
                 </div>
                 <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border">
                   <div className="flex items-center gap-1 text-muted-foreground" title="Itens">
@@ -274,7 +307,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
               </button>
               <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
                 <button
-                  onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+                  onClick={() => onOpenCart({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName, createdBy: c.createdBy })}
                   className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                   style={{ fontSize: '0.75rem', fontWeight: 500 }}
                 >
@@ -282,7 +315,7 @@ export function CartsListPage({ onOpenCart, onCreateCart, onNavigateClients, sel
                 </button>
                 {onGoToCatalog && (
                   <button
-                    onClick={() => onGoToCatalog({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName })}
+                    onClick={() => onGoToCatalog({ id: c.id, clientId: c.clientId, clientName: c.clientName, cartName: c.cartName, createdBy: c.createdBy })}
                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                     style={{ fontSize: '0.75rem', fontWeight: 600 }}
                   >
