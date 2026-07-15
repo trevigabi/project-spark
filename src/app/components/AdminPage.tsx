@@ -101,7 +101,7 @@ export function AdminPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${activeTab === tab.id ? 'bg-secondary/60 text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'}`}
               style={{ fontSize: '0.82rem', fontWeight: activeTab === tab.id ? 600 : 400 }}
             >
               <Icon className="w-3.5 h-3.5" />
