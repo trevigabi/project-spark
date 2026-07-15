@@ -230,7 +230,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
 
   if (viewMode === 'list') {
     return (
-      <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-border/60 transition-colors group">
+      <div className="bg-white border border-border rounded-xl overflow-hidden hover:border-border/60 transition-colors group">
         <div className="p-4 flex items-center gap-4">
           <button onClick={onOpenDetail} className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
             {!imgError ? (
