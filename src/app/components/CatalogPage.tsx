@@ -232,7 +232,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
     return (
       <div className="bg-white border border-border rounded-xl overflow-hidden hover:border-border/60 transition-colors group">
         <div className="p-4 flex items-center gap-4">
-          <button onClick={onOpenDetail} className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+          <button onClick={onOpenDetail} className="w-20 h-20 rounded-lg overflow-hidden bg-white flex-shrink-0">
             {!imgError ? (
               <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
             ) : (
@@ -286,7 +286,7 @@ function ProductCard({ product, onOrder, onQuickBuy, onOpenDetail, onToggleFav, 
 
   return (
     <div className="bg-white border border-border rounded-xl overflow-hidden hover:border-border/60 transition-all group hover:shadow-xl hover:shadow-black/20 hover:-translate-y-0.5">
-      <button onClick={onOpenDetail} className="relative w-full pt-[80%] bg-gray-50 overflow-hidden mb-[-12px] block">
+      <button onClick={onOpenDetail} className="relative w-full pt-[80%] bg-white overflow-hidden mb-[-12px] block">
         {!imgError ? (
           <img
             src={product.image}
