@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, Check, ArrowLeft, X, Info, MapPin, UserCircle2, Layers, Package, Lock, Building2, Briefcase, Store } from "lucide-react";
+import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, ArrowLeft, Info, MapPin, UserCircle2, Layers, Package, Lock, Building2, Briefcase, Store, PlugZap } from "lucide-react";
 
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
+import { visoes, profileDescriptions, defaultPermissions, type VisaoKey, type PermissionsState } from "../data/permissions";
+import { PermissionMatrixTable } from "./PermissionMatrixTable";
 
 const tabs = [
   { id: 'catalog', label: 'Produtos', icon: Package2 },
@@ -11,58 +13,14 @@ const tabs = [
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
 
-type VisaoKey = 'industria' | 'representante' | 'lojista';
-type PermissionsState = Record<VisaoKey, Record<string, Record<string, boolean>>>;
-
-const visoes: { id: VisaoKey; label: string; icon: React.ElementType; desc: string }[] = [
-  { id: 'industria', label: 'Indústria', icon: Building2, desc: 'Usuários internos da Tesla Footwear' },
-  { id: 'representante', label: 'Representante', icon: Briefcase, desc: 'Representantes comerciais externos' },
-  { id: 'lojista', label: 'Lojista', icon: Store, desc: 'Clientes lojistas da rede' },
-];
-
-const profileDescriptions: Record<string, string> = {
-  'Admin': 'Acesso completo a todos os módulos da plataforma',
-  'Analista': 'Acesso focado em vendas e análise de desempenho',
-  'Representante': 'Acesso completo à visão de representante',
-  'Preposto': 'Acesso restrito ao módulo de vendas, sem indicadores',
-  'Lojista': 'Acesso completo à visão de lojista',
-  'Comprador': 'Acesso restrito a catálogo e realização de pedidos',
-};
-
-const defaultPermissions: PermissionsState = {
-  industria: {
-    'Admin': {
-      'Dashboard': true, 'Catálogo (ver)': true, 'Catálogo (editar)': true,
-      'Pedidos (criar)': true, 'Pedidos (aprovar)': true, 'Marketing IA': true,
-      'Sell-out': true, 'Campanhas Comerciais': true, 'Políticas': true, 'Administração': true,
-    },
-    'Analista': {
-      'Dashboard': true, 'Catálogo (ver)': true, 'Catálogo (editar)': false,
-      'Pedidos (criar)': true, 'Pedidos (aprovar)': false, 'Marketing IA': false,
-      'Sell-out': true, 'Campanhas Comerciais': false, 'Políticas': false, 'Administração': false,
-    },
-  },
-  representante: {
-    'Representante': {
-      'Indicadores': true, 'Catálogo': true, 'Pedido por Grade': true,
-      'Sell-out': true, 'Marketing IA': true, 'Histórico de Pedidos': true,
-    },
-    'Preposto': {
-      'Indicadores': false, 'Catálogo': true, 'Pedido por Grade': true,
-      'Sell-out': false, 'Marketing IA': false, 'Histórico de Pedidos': true,
-    },
-  },
-  lojista: {
-    'Lojista': {
-      'Catálogo': true, 'Carrinho / Pedidos': true, 'Marketing IA': true,
-      'Meu Estoque': true, 'Histórico de Pedidos': true,
-    },
-    'Comprador': {
-      'Catálogo': true, 'Carrinho / Pedidos': true, 'Marketing IA': false,
-      'Meu Estoque': false, 'Histórico de Pedidos': false,
-    },
-  },
-};
+function ErpSyncNotice({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-2.5 rounded-xl border border-primary/20 bg-primary/5 p-3.5">
+      <PlugZap className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+      <p className="text-foreground" style={{ fontSize: '0.78rem', lineHeight: 1.55 }}>{text}</p>
+    </div>
+  );
+}
 
 const mockUsers = [
   { id: 'U001', name: 'Marcos Andrade', email: 'marcos@tesla.com.br', role: 'Representante', region: 'Sudeste', status: 'ativo', lastLogin: '2026-06-11' },
@@ -107,25 +65,6 @@ const coveredClientsMock = [
   { name: 'Calçados Estrela', city: 'Curitiba, PR', rep: 'Carlos Mendes' },
 ];
 
-const REGION_OPTIONS = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
-const LINE_OPTIONS = ['Coil', 'Hertz', 'Hertz Art', 'Flow', 'Flow XL'];
-const REP_OPTIONS = ['Carlos Mendes', 'Ana Souza', 'Marcos Andrade', 'Fernanda Lima', 'Rafael Costa'];
-
-function InadimplenciaSelect() {
-  const [value, setValue] = useState<'bloqueado' | 'avista'>('avista');
-  return (
-    <select
-      value={value}
-      onChange={e => setValue(e.target.value as 'bloqueado' | 'avista')}
-      className="px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary"
-      style={{ fontSize: '0.82rem', minWidth: 200 }}
-    >
-      <option value="avista">Apenas pagamento à vista</option>
-      <option value="bloqueado">Bloqueado</option>
-    </select>
-  );
-}
-
 export function AdminPage() {
   const [activeTab, setActiveTab] = useState('catalog');
   const [search, setSearch] = useState('');
@@ -133,7 +72,7 @@ export function AdminPage() {
   const [productSearch, setProductSearch] = useState('');
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
-  const [criteriaState, setCriteriaState] = useState<Record<string, PolicyCriteria>>(initialCriteria);
+  const criteriaState = initialCriteria;
   const [activeView, setActiveView] = useState<VisaoKey>('industria');
   const [permissionsState, setPermissionsState] = useState<PermissionsState>(defaultPermissions);
 
@@ -296,11 +235,9 @@ export function AdminPage() {
       {/* Pricing Tab */}
       {activeTab === 'pricing' && !selectedPolicyId && (
         <div className="space-y-4">
+          <ErpSyncNotice text="Campanhas comerciais são somente leitura neste momento — os dados vêm diretamente das regras cadastradas no ERP da Tesla." />
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground" style={{ fontSize: '0.85rem' }}>Políticas de preço ativas</p>
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-              <Plus className="w-3.5 h-3.5" /> Nova política
-            </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {pricePolicies.map(policy => (
@@ -311,7 +248,7 @@ export function AdminPage() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>{policy.name}</h3>
-                  <Edit3 className="w-3.5 h-3.5 text-muted-foreground" />
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   {[
@@ -339,8 +276,6 @@ export function AdminPage() {
       {activeTab === 'pricing' && selectedPolicyId && (() => {
         const policy = pricePolicies.find(p => p.id === selectedPolicyId)!;
         const criteria = criteriaState[selectedPolicyId] ?? { clients: [], regions: [], reps: [], lines: [], products: [] };
-        const update = (patch: Partial<PolicyCriteria>) =>
-          setCriteriaState(s => ({ ...s, [selectedPolicyId]: { ...criteria, ...patch } }));
         const covered = selectedPolicyId === 'P002' ? coveredClientsMock : coveredClientsMock.slice(0, Math.min(policy.clients, coveredClientsMock.length));
 
         const Section = ({ icon: Icon, title, hint, children }: any) => (
@@ -354,54 +289,16 @@ export function AdminPage() {
           </div>
         );
 
-        const Chips = ({ items, onRemove }: { items: string[]; onRemove: (v: string) => void }) => (
+        const Chips = ({ items }: { items: string[] }) => (
           <div className="flex flex-wrap gap-1.5">
-            {items.length === 0 && <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Nenhum item adicionado</span>}
+            {items.length === 0 && <span className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Nenhum item nesta condição</span>}
             {items.map(v => (
-              <span key={v} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20" style={{ fontSize: '0.75rem', fontWeight: 500 }}>
+              <span key={v} className="inline-flex items-center px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20" style={{ fontSize: '0.75rem', fontWeight: 500 }}>
                 {v}
-                <button onClick={() => onRemove(v)} className="hover:bg-primary/20 rounded-full p-0.5">
-                  <X className="w-3 h-3" />
-                </button>
               </span>
             ))}
           </div>
         );
-
-        const AddInput = ({ placeholder, options, current, onAdd }: { placeholder: string; options?: string[]; current: string[]; onAdd: (v: string) => void }) => {
-          const [val, setVal] = useState('');
-          const available = options?.filter(o => !current.includes(o)) ?? [];
-          return (
-            <div className="mt-3 space-y-2">
-              <div className="flex gap-2">
-                <input
-                  value={val}
-                  onChange={e => setVal(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && val.trim()) { onAdd(val.trim()); setVal(''); } }}
-                  placeholder={placeholder}
-                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-foreground outline-none focus:border-primary"
-                  style={{ fontSize: '0.8rem' }}
-                />
-                <button
-                  onClick={() => { if (val.trim()) { onAdd(val.trim()); setVal(''); } }}
-                  className="px-3 py-2 rounded-lg bg-secondary text-foreground hover:bg-secondary/70 transition-colors"
-                  style={{ fontSize: '0.78rem', fontWeight: 500 }}
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              {available.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {available.map(o => (
-                    <button key={o} onClick={() => onAdd(o)} className="px-2 py-1 rounded-md border border-dashed border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors" style={{ fontSize: '0.72rem' }}>
-                      + {o}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        };
 
         return (
           <div className="space-y-5">
@@ -409,16 +306,13 @@ export function AdminPage() {
               <ArrowLeft className="w-3.5 h-3.5" /> Voltar para políticas
             </button>
 
+            <ErpSyncNotice text="Esta política é somente leitura — a regra ativa vem do ERP da Tesla." />
+
             {/* Identidade */}
             <div className="bg-card border border-border rounded-xl p-5">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <h2 className="text-foreground mb-1" style={{ fontWeight: 700, fontSize: '1.15rem' }}>{policy.name}</h2>
-                  <p className="text-muted-foreground" style={{ fontSize: '0.78rem' }}>Configuração da política comercial</p>
-                </div>
-                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontSize: '0.78rem' }}>
-                  <Edit3 className="w-3.5 h-3.5" /> Editar identidade
-                </button>
+              <div className="mb-4">
+                <h2 className="text-foreground mb-1" style={{ fontWeight: 700, fontSize: '1.15rem' }}>{policy.name}</h2>
+                <p className="text-muted-foreground" style={{ fontSize: '0.78rem' }}>Configuração da política comercial</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
@@ -449,29 +343,24 @@ export function AdminPage() {
               <h3 className="text-foreground mb-3" style={{ fontWeight: 600, fontSize: '0.95rem' }}>Critérios de aplicação</h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <Section icon={UserCircle2} title="Clientes específicos" hint="Lojistas vinculados diretamente. Sobrepõe qualquer outro critério.">
-                  <Chips items={criteria.clients} onRemove={v => update({ clients: criteria.clients.filter(x => x !== v) })} />
-                  <AddInput placeholder="Buscar lojista..." current={criteria.clients} onAdd={v => update({ clients: [...criteria.clients, v] })} />
+                  <Chips items={criteria.clients} />
                 </Section>
 
                 <Section icon={MapPin} title="Regiões" hint="Vale para todos os clientes da região.">
-                  <Chips items={criteria.regions} onRemove={v => update({ regions: criteria.regions.filter(x => x !== v) })} />
-                  <AddInput placeholder="Adicionar região..." options={REGION_OPTIONS} current={criteria.regions} onAdd={v => update({ regions: [...criteria.regions, v] })} />
+                  <Chips items={criteria.regions} />
                 </Section>
 
                 <Section icon={Users} title="Representantes" hint="Aplica a toda a carteira do rep.">
-                  <Chips items={criteria.reps} onRemove={v => update({ reps: criteria.reps.filter(x => x !== v) })} />
-                  <AddInput placeholder="Adicionar representante..." options={REP_OPTIONS} current={criteria.reps} onAdd={v => update({ reps: [...criteria.reps, v] })} />
+                  <Chips items={criteria.reps} />
                 </Section>
 
                 <Section icon={Layers} title="Linhas de produto" hint="A política se aplica apenas a estas linhas.">
-                  <Chips items={criteria.lines} onRemove={v => update({ lines: criteria.lines.filter(x => x !== v) })} />
-                  <AddInput placeholder="Adicionar linha..." options={LINE_OPTIONS} current={criteria.lines} onAdd={v => update({ lines: [...criteria.lines, v] })} />
+                  <Chips items={criteria.lines} />
                 </Section>
 
                 <div className="lg:col-span-2">
                   <Section icon={Package} title="Produtos específicos (SKU)" hint="Granularidade por SKU. Se vazio, vale para todas as linhas marcadas acima.">
-                    <Chips items={criteria.products} onRemove={v => update({ products: criteria.products.filter(x => x !== v) })} />
-                    <AddInput placeholder="Buscar SKU ou referência..." current={criteria.products} onAdd={v => update({ products: [...criteria.products, v] })} />
+                    <Chips items={criteria.products} />
                   </Section>
                 </div>
               </div>
@@ -513,6 +402,7 @@ export function AdminPage() {
       {/* Policies Tab */}
       {activeTab === 'policies' && (
         <div className="space-y-4">
+          <ErpSyncNotice text="Políticas são somente leitura neste momento — os valores exibidos refletem as regras vigentes no ERP da Tesla." />
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="text-foreground mb-4" style={{ fontWeight: 600 }}>Configurações de aprovação</h3>
             <div className="space-y-4">
@@ -526,12 +416,7 @@ export function AdminPage() {
                     <p className="text-foreground" style={{ fontSize: '0.85rem', fontWeight: 500 }}>{setting.label}</p>
                     <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>{setting.desc}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-primary mono" style={{ fontWeight: 700 }}>{setting.value}</span>
-                    <button className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                      <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  <span className="text-primary mono" style={{ fontWeight: 700 }}>{setting.value}</span>
                 </div>
               ))}
             </div>
@@ -545,7 +430,9 @@ export function AdminPage() {
                 <p className="text-foreground" style={{ fontSize: '0.85rem', fontWeight: 500 }}>Clientes inadimplentes</p>
                 <p className="text-muted-foreground" style={{ fontSize: '0.75rem' }}>Condição de pagamento aplicada automaticamente a clientes com débitos em aberto</p>
               </div>
-              <InadimplenciaSelect />
+              <span className="px-3 py-2 rounded-lg border border-border bg-secondary/30 text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>
+                Apenas pagamento à vista
+              </span>
             </div>
           </div>
 
@@ -709,78 +596,11 @@ export function AdminPage() {
           </div>
 
           {/* Permission matrix */}
-          <div className="bg-card border border-border rounded-xl overflow-hidden">
-            {(() => {
-              const matrix = permissionsState[activeView];
-              const perfis = Object.keys(matrix);
-              const modulos = Object.keys(matrix[perfis[0]]);
-              return (
-                <>
-                  <div className="p-5 border-b border-border">
-                    <div className="flex items-center gap-3">
-                      {perfis.map(perfil => (
-                        <span key={perfil} className="px-2.5 py-1 rounded-full bg-primary/10 text-primary" style={{ fontSize: '0.72rem', fontWeight: 600 }}>{perfil}</span>
-                      ))}
-                    </div>
-                    <div className="mt-2 space-y-0.5">
-                      {perfis.map(perfil => (
-                        <p key={perfil} className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>
-                          <span className="text-foreground font-medium">{perfil}:</span> {profileDescriptions[perfil]}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border bg-muted/30">
-                          <th className="text-left px-5 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>Módulo</th>
-                          {perfis.map(p => (
-                            <th key={p} className="text-center px-4 py-3 text-foreground" style={{ fontSize: '0.75rem', fontWeight: 600 }}>{p}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {modulos.map(modulo => (
-                          <tr key={modulo} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
-                            <td className="px-5 py-3 text-foreground" style={{ fontSize: '0.82rem' }}>{modulo}</td>
-                            {perfis.map(perfil => {
-                              const allowed = matrix[perfil][modulo];
-                              return (
-                                <td key={perfil} className="px-4 py-3 text-center">
-                                  <button
-                                    onClick={() => togglePermission(activeView, perfil, modulo)}
-                                    className="mx-auto flex items-center justify-center w-6 h-6 rounded transition-colors hover:scale-110"
-                                    title={allowed ? 'Clique para revogar' : 'Clique para conceder'}
-                                  >
-                                    {allowed ? (
-                                      <Check className="w-4 h-4 text-emerald-400" />
-                                    ) : (
-                                      <div className="w-4 h-px bg-border" />
-                                    )}
-                                  </button>
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="px-5 py-3 border-t border-border/40 flex items-center justify-between">
-                    <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Clique em qualquer célula para alternar a permissão</p>
-                    <button
-                      onClick={() => setPermissionsState(prev => ({ ...prev, [activeView]: defaultPermissions[activeView] }))}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                      style={{ fontSize: '0.72rem' }}
-                    >
-                      Restaurar padrões
-                    </button>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
+          <PermissionMatrixTable
+            matrix={permissionsState[activeView]}
+            onToggle={(perfil, modulo) => togglePermission(activeView, perfil, modulo)}
+            onReset={() => setPermissionsState(prev => ({ ...prev, [activeView]: defaultPermissions[activeView] }))}
+          />
         </div>
       )}
     </div>

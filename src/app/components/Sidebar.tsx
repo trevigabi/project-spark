@@ -11,7 +11,8 @@ import teslaLogo from "../../assets/tesla-footwear-logo.png";
 
 export type View =
   | 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'carts' | 'history'
-  | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile' | 'stock';
+  | 'marketing' | 'sellout' | 'admin' | 'clients' | 'profile' | 'stock'
+  | 'industry-stock' | 'permissions';
 
 type Profile = 'admin' | 'rep' | 'lojista';
 
@@ -239,6 +240,7 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           { icon: BarChart3, label: 'Indicadores', view: 'dashboard' as View },
           { icon: Users, label: 'Clientes', view: 'clients' as View },
           ...(selectedClient ? [{ icon: Package2, label: 'Catálogo', view: 'catalog' as View }] : []),
+          { icon: Boxes, label: 'Estoque', view: 'industry-stock' as View },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
           { icon: Shield, label: 'Administração', view: 'admin' as View },
         ]
@@ -247,12 +249,15 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           { icon: BarChart3, label: 'Meus Indicadores', view: 'dashboard' as View },
           { icon: Store, label: 'Carteira de Clientes', view: 'clients' as View },
           ...(selectedClient ? [{ icon: Package2, label: 'Catálogo', view: 'catalog' as View }] : []),
+          { icon: Boxes, label: 'Estoque', view: 'industry-stock' as View },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' as View },
+          { icon: Shield, label: 'Permissões', view: 'permissions' as View },
         ]
       : [
           { icon: Package2, label: 'Catálogo', view: 'catalog' },
           { icon: Boxes, label: 'Meu Estoque', view: 'stock' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },
+          { icon: Shield, label: 'Permissões', view: 'permissions' },
         ];
 
   const dropdownItems: DropdownItem[] =
