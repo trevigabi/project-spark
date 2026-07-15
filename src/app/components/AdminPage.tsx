@@ -1,13 +1,16 @@
 import React, { useState, useMemo } from "react";
-import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronDown, ChevronRight, ArrowLeft, Info, MapPin, UserCircle2, Layers, Package, Lock, Building2, Briefcase, Store, PlugZap } from "lucide-react";
+import { Users, Boxes, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, ChevronRight, ArrowLeft, Info, MapPin, UserCircle2, Layers, Package, Lock, Building2, Briefcase, Store, PlugZap } from "lucide-react";
 
-import { clients, products, formatCurrency, formatDate } from "../data/mockData";
+import { clients, formatDate } from "../data/mockData";
 import { visoes, profileDescriptions, defaultPermissions, type VisaoKey, type PermissionsState } from "../data/permissions";
 import { linkedUsers } from "../data/linkedUsers";
 import { PermissionMatrixTable } from "./PermissionMatrixTable";
+import { IndustryStockTable } from "./IndustryStockTable";
+import { ClientStockTab } from "./ClientStockTab";
 
 const tabs = [
-  { id: 'catalog', label: 'Produtos', icon: Package2 },
+  { id: 'industry-stock', label: 'Estoque Industrial', icon: Boxes },
+  { id: 'client-stock', label: 'Estoque do Cliente', icon: Store },
   { id: 'pricing', label: 'Campanhas Comerciais', icon: Tag },
   { id: 'policies', label: 'Políticas', icon: Lock },
   { id: 'permissions', label: 'Permissões', icon: Shield },
@@ -67,11 +70,9 @@ const coveredClientsMock = [
 ];
 
 export function AdminPage() {
-  const [activeTab, setActiveTab] = useState('catalog');
+  const [activeTab, setActiveTab] = useState('industry-stock');
   const [search, setSearch] = useState('');
   const [showAddUser, setShowAddUser] = useState(false);
-  const [productSearch, setProductSearch] = useState('');
-  const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const criteriaState = initialCriteria;
   const [activeView, setActiveView] = useState<VisaoKey>('industria');
@@ -110,127 +111,14 @@ export function AdminPage() {
         })}
       </div>
 
-      {/* Catalog Tab */}
-      {activeTab === 'catalog' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Buscar produto por nome ou referência..."
-                value={productSearch}
-                onChange={e => setProductSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-card text-foreground outline-none focus:border-primary"
-                style={{ fontSize: '0.82rem' }}
-              />
-            </div>
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-              <Plus className="w-3.5 h-3.5" /> Novo produto
-            </button>
-          </div>
-          <div className="bg-card border border-border rounded-xl overflow-hidden">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  {['', 'Produto', 'Referência', 'Linha', 'Preço', 'Estoque', 'Disponibilidade', ''].map(col => (
-                    <th key={col} className="px-4 py-2.5 font-semibold text-muted-foreground" style={{ fontSize: '0.72rem' }}>{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {products
-                  .filter(p => p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.reference.toLowerCase().includes(productSearch.toLowerCase()))
-                  .map(product => {
-                  const totalStock = Object.values(product.grades).reduce((a, b) => a + b, 0);
-                  const availColor = {
-                    'disponível': 'bg-emerald-400/10 text-emerald-400',
-                    'baixo estoque': 'bg-amber-400/10 text-amber-400',
-                    'esgotado': 'bg-red-400/10 text-red-400',
-                  }[product.availability];
-                  const expanded = expandedProduct === product.id;
-                  return (
-                    <>
-                      <tr key={product.id} className="border-b border-border hover:bg-primary/5 transition-colors cursor-pointer">
-                        <td className="px-3 py-3">
-                          <button
-                            onClick={() => setExpandedProduct(expanded ? null : product.id)}
-                            className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                          >
-                            <ChevronRight className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-90' : ''}`} />
-                          </button>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
-                              <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                            </div>
-                            <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{product.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{product.reference}</td>
-                        <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{product.line}</td>
-                        <td className="px-4 py-3 text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{formatCurrency(product.price)}</td>
-                        <td className="px-4 py-3 text-foreground mono" style={{ fontSize: '0.82rem' }}>{totalStock}</td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-0.5 rounded-full ${availColor}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>
-                            {product.availability}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <button className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                      {expanded && (
-                        <tr key={`${product.id}-detail`} className="border-b border-border bg-primary/5">
-                          <td colSpan={8} className="px-6 py-4">
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                              <div>
-                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Categoria</p>
-                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.category}</p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Coleção</p>
-                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.collection}</p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avaliação</p>
-                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.rating} ★</p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pedidos</p>
-                                <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{(product as any).orders ?? '—'}</p>
-                              </div>
-                              <div className="col-span-2 sm:col-span-4">
-                                <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Grade de numeração</p>
-                                <div className="flex gap-2 flex-wrap">
-                                  {Object.entries(product.grades).map(([size, stock]) => (
-                                    <span key={size} className="px-2 py-1 rounded-md bg-background border border-border" style={{ fontSize: '0.75rem' }}>
-                                      <span className="text-foreground font-medium">Nº {size}</span>
-                                      <span className="text-muted-foreground ml-1">({stock})</span>
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                              {product.description && (
-                                <div className="col-span-2 sm:col-span-4">
-                                  <p className="text-muted-foreground mb-1" style={{ fontSize: '0.7rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Descrição</p>
-                                  <p className="text-foreground" style={{ fontSize: '0.82rem' }}>{product.description}</p>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {/* Estoque Industrial Tab */}
+      {activeTab === 'industry-stock' && (
+        <IndustryStockTable />
+      )}
+
+      {/* Estoque do Cliente Tab */}
+      {activeTab === 'client-stock' && (
+        <ClientStockTab />
       )}
 
       {/* Pricing Tab */}

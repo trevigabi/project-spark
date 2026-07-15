@@ -1,99 +1,52 @@
 import { useMemo, useState } from "react";
 import {
   Boxes, Search, Filter, Pencil, Save, X, AlertTriangle, PackageX,
-  PackageCheck, TrendingDown, Eye, Upload, Plus,
+  PackageCheck, TrendingDown, Upload, Plus,
 } from "lucide-react";
-import { products as allProducts, formatCurrency, type Product } from "../data/mockData";
+import { formatCurrency } from "../data/mockData";
+import { statusOf, type StockItem, type StockStatusKey } from "../data/stockData";
 
-interface IndustryStockPageProps {
-  /** Rep (e viewers sem gestão) só enxergam os dados, sem controles de edição. */
+interface StockTableProps {
+  items: StockItem[];
+  onUpdateStock?: (sku: string, stock: number) => void;
   readOnly?: boolean;
+  /** Botões de "Importar planilha" / "Adicionar SKU" — só fazem sentido no estoque industrial completo. */
+  showBulkActions?: boolean;
 }
 
-interface StockRow {
-  sku: string;
-  name: string;
-  line: string;
-  category: string;
-  image: string;
-  price: number;
-  stock: number;
-  availability: Product['availability'];
-}
-
-const initialRows: StockRow[] = allProducts.map(p => ({
-  sku: p.id,
-  name: p.name,
-  line: p.line,
-  category: p.category,
-  image: p.image,
-  price: p.price,
-  stock: Object.values(p.grades).reduce((a, b) => a + b, 0),
-  availability: p.availability,
-}));
-
-const statusMeta: Record<Product['availability'], { label: string; cls: string }> = {
-  'esgotado': { label: 'Ruptura', cls: 'bg-red-400/15 text-red-400' },
-  'baixo estoque': { label: 'Baixo', cls: 'bg-amber-400/15 text-amber-400' },
-  'disponível': { label: 'OK', cls: 'bg-emerald-400/15 text-emerald-400' },
-};
-
-export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) {
-  const [rows, setRows] = useState<StockRow[]>(initialRows);
+export function StockTable({ items, onUpdateStock, readOnly = false, showBulkActions = false }: StockTableProps) {
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<'todos' | Product['availability']>('todos');
+  const [filter, setFilter] = useState<'todos' | StockStatusKey>('todos');
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState(0);
 
   const filtered = useMemo(() => {
-    return rows.filter(r => {
-      if (query && !`${r.name} ${r.sku}`.toLowerCase().includes(query.toLowerCase())) return false;
-      if (filter !== 'todos' && r.availability !== filter) return false;
+    return items.filter(it => {
+      if (query && !`${it.name} ${it.sku}`.toLowerCase().includes(query.toLowerCase())) return false;
+      if (filter !== 'todos' && statusOf(it).key !== filter) return false;
       return true;
     });
-  }, [rows, query, filter]);
+  }, [items, query, filter]);
 
   const kpis = useMemo(() => {
-    const ruptura = rows.filter(r => r.availability === 'esgotado').length;
-    const baixo = rows.filter(r => r.availability === 'baixo estoque').length;
-    const ok = rows.length - ruptura - baixo;
-    const valor = rows.reduce((s, r) => s + r.stock * r.price, 0);
-    return { ruptura, baixo, ok, valor, total: rows.length };
-  }, [rows]);
+    const ruptura = items.filter(i => i.stock <= 0).length;
+    const baixo = items.filter(i => i.stock > 0 && i.stock < i.min).length;
+    const ok = items.length - ruptura - baixo;
+    const valor = items.reduce((s, i) => s + i.stock * i.price, 0);
+    return { ruptura, baixo, ok, valor, total: items.length };
+  }, [items]);
 
-  const startEdit = (r: StockRow) => {
-    setEditing(r.sku);
-    setDraft(r.stock);
+  const startEdit = (it: StockItem) => {
+    setEditing(it.sku);
+    setDraft(it.stock);
   };
   const saveEdit = (sku: string) => {
-    setRows(prev => prev.map(r => r.sku === sku ? { ...r, stock: draft } : r));
+    onUpdateStock?.(sku, draft);
     setEditing(null);
   };
 
   return (
-    <div className="p-6 space-y-5 max-w-[1400px] mx-auto w-full">
-      {/* Header */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <Boxes className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-foreground" style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Estoque da Indústria</h2>
-            <p className="text-muted-foreground" style={{ fontSize: '0.78rem' }}>
-              {readOnly
-                ? 'Disponibilidade consolidada de fábrica por SKU. Somente visualização.'
-                : 'Gerencie a disponibilidade consolidada de fábrica que alimenta o catálogo e os alertas de ruptura.'}
-            </p>
-          </div>
-          {readOnly && (
-            <span className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/60 text-muted-foreground flex-shrink-0" style={{ fontSize: '0.7rem', fontWeight: 600 }}>
-              <Eye className="w-3 h-3" /> Somente visualização
-            </span>
-          )}
-        </div>
-      </div>
-
+    <div className="space-y-4">
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
@@ -133,9 +86,9 @@ export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) 
         <div className="inline-flex rounded-lg bg-secondary p-0.5">
           {([
             { v: 'todos', l: 'Todos' },
-            { v: 'esgotado', l: 'Ruptura' },
-            { v: 'baixo estoque', l: 'Baixo' },
-            { v: 'disponível', l: 'OK' },
+            { v: 'ruptura', l: 'Ruptura' },
+            { v: 'baixo', l: 'Baixo' },
+            { v: 'ok', l: 'OK' },
           ] as const).map(o => (
             <button
               key={o.v}
@@ -147,7 +100,7 @@ export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) 
             </button>
           ))}
         </div>
-        {!readOnly && (
+        {showBulkActions && !readOnly && (
           <>
             <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary/60 border border-border text-foreground hover:bg-secondary transition-colors" style={{ fontSize: '0.78rem', fontWeight: 500 }}>
               <Upload className="w-3.5 h-3.5" /> Importar planilha
@@ -165,7 +118,7 @@ export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) 
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
-                {['Produto', 'SKU', 'Linha', 'Estoque de fábrica', 'Status', ...(readOnly ? [] : ['Ações'])].map(h => (
+                {['Produto', 'SKU', 'Linha', 'Estoque', 'Limiar mín.', 'Status', 'Atualizado', ...(readOnly ? [] : ['Ações'])].map(h => (
                   <th key={h} className="text-left text-muted-foreground px-4 py-2.5" style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     {h}
                   </th>
@@ -173,48 +126,50 @@ export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) 
               </tr>
             </thead>
             <tbody>
-              {filtered.map(r => {
-                const st = statusMeta[r.availability];
-                const isEditing = editing === r.sku;
+              {filtered.map(it => {
+                const st = statusOf(it);
+                const isEditing = editing === it.sku;
                 return (
-                  <tr key={r.sku} className="border-b border-border/60 hover:bg-secondary/30">
+                  <tr key={it.sku} className="border-b border-border/60 hover:bg-secondary/30">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
-                          <img src={r.image} alt={r.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          <img src={it.image} alt={it.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-foreground truncate" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{r.name}</p>
-                          <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{r.category} · {formatCurrency(r.price)}</p>
+                          <p className="text-foreground truncate" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{it.name}</p>
+                          <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{it.category} · {formatCurrency(it.price)}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{r.sku}</td>
-                    <td className="px-4 py-3 text-foreground" style={{ fontSize: '0.78rem' }}>{r.line}</td>
+                    <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{it.sku}</td>
+                    <td className="px-4 py-3 text-foreground" style={{ fontSize: '0.78rem' }}>{it.line}</td>
                     <td className="px-4 py-3">
                       {isEditing ? (
                         <input
                           type="number"
                           value={draft}
                           onChange={e => setDraft(Number(e.target.value))}
-                          className="w-24 bg-secondary border border-border rounded-md px-2 py-1 text-foreground outline-none focus:border-primary"
+                          className="w-20 bg-secondary border border-border rounded-md px-2 py-1 text-foreground outline-none focus:border-primary"
                           style={{ fontSize: '0.78rem' }}
                         />
                       ) : (
-                        <span className="text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{r.stock}</span>
+                        <span className="text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{it.stock}</span>
                       )}
                     </td>
+                    <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.78rem' }}>{it.min}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full ${st.cls} inline-flex items-center gap-1`} style={{ fontSize: '0.68rem', fontWeight: 700 }}>
-                        {r.availability !== 'disponível' && <AlertTriangle className="w-3 h-3" />}
+                        {st.key !== 'ok' && <AlertTriangle className="w-3 h-3" />}
                         {st.label}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.72rem' }}>{it.updatedAt}</td>
                     {!readOnly && (
                       <td className="px-4 py-3">
                         {isEditing ? (
                           <div className="flex items-center gap-1">
-                            <button onClick={() => saveEdit(r.sku)} className="p-1.5 rounded-md bg-primary/15 text-primary hover:bg-primary/25 transition-colors">
+                            <button onClick={() => saveEdit(it.sku)} className="p-1.5 rounded-md bg-primary/15 text-primary hover:bg-primary/25 transition-colors">
                               <Save className="w-3.5 h-3.5" />
                             </button>
                             <button onClick={() => setEditing(null)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
@@ -222,7 +177,7 @@ export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) 
                             </button>
                           </div>
                         ) : (
-                          <button onClick={() => startEdit(r)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
+                          <button onClick={() => startEdit(it)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                         )}
@@ -233,7 +188,7 @@ export function IndustryStockPage({ readOnly = false }: IndustryStockPageProps) 
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={readOnly ? 5 : 6} className="px-4 py-10 text-center text-muted-foreground" style={{ fontSize: '0.82rem' }}>
+                  <td colSpan={readOnly ? 7 : 8} className="px-4 py-10 text-center text-muted-foreground" style={{ fontSize: '0.82rem' }}>
                     <Filter className="w-5 h-5 mx-auto mb-2 opacity-60" />
                     Nenhum SKU encontrado para os filtros aplicados.
                   </td>

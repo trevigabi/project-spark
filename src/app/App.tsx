@@ -20,7 +20,7 @@ import { ClientsPage } from "./components/ClientsPage";
 import { ProfilePage } from "./components/ProfilePage";
 import { LojistaFiltersSidebar, defaultFilters, type CatalogFilters } from "./components/LojistaFiltersSidebar";
 import { StockPage } from "./components/StockPage";
-import { IndustryStockPage } from "./components/IndustryStockPage";
+import { RepStockPage } from "./components/RepStockPage";
 import { AccessPermissionsPage } from "./components/AccessPermissionsPage";
 
 type Profile = 'admin' | 'rep' | 'lojista';
@@ -38,7 +38,7 @@ const viewTitles: Record<View, { title: string; subtitle?: string }> = {
   clients: { title: 'Clientes', subtitle: 'Sua carteira de clientes' },
   profile: { title: 'Meu Perfil', subtitle: 'Seus dados, preferências e acesso' },
   stock: { title: 'Meu Estoque', subtitle: 'Cadastre ou integre seu estoque da marca' },
-  'industry-stock': { title: 'Estoque da Indústria', subtitle: 'Disponibilidade consolidada de fábrica por SKU' },
+  'industry-stock': { title: 'Estoque', subtitle: 'Estoque industrial e por cliente — somente visualização' },
   permissions: { title: 'Permissões de Acesso', subtitle: 'Controle o que os usuários vinculados à sua conta podem acessar' },
 };
 
@@ -206,7 +206,7 @@ export default function App() {
       case 'stock':
         return <StockPage />;
       case 'industry-stock':
-        return <IndustryStockPage readOnly={profile !== 'admin'} />;
+        return <RepStockPage />;
       case 'permissions':
         return <AccessPermissionsPage profile={profile === 'lojista' ? 'lojista' : 'rep'} />;
       default:
