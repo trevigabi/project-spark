@@ -3,6 +3,7 @@ import { Users, Package2, Tag, Settings, Shield, Plus, Edit3, Trash2, Search, Ch
 
 import { clients, products, formatCurrency, formatDate } from "../data/mockData";
 import { visoes, profileDescriptions, defaultPermissions, type VisaoKey, type PermissionsState } from "../data/permissions";
+import { linkedUsers } from "../data/linkedUsers";
 import { PermissionMatrixTable } from "./PermissionMatrixTable";
 
 const tabs = [
@@ -483,7 +484,7 @@ export function AdminPage() {
                   <div>
                     <label className="block text-muted-foreground mb-1" style={{ fontSize: '0.75rem' }}>Perfil</label>
                     <select className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-foreground outline-none focus:border-primary" style={{ fontSize: '0.82rem' }}>
-                      <option>Representante</option><option>Lojista</option><option>Admin</option>
+                      <option>Representante</option><option>Preposto</option><option>Lojista</option><option>Comprador</option><option>Admin</option>
                     </select>
                   </div>
                   <div>
@@ -534,6 +535,52 @@ export function AdminPage() {
                           <button className="p-1.5 rounded text-muted-foreground hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Usuários vinculados a representantes e lojistas */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <h3 className="text-foreground" style={{ fontWeight: 600 }}>Usuários vinculados</h3>
+            <p className="text-muted-foreground mt-1 mb-4" style={{ fontSize: '0.78rem' }}>
+              Contas registradas sob um representante ou lojista (ex.: prepostos e compradores). Cada um gerencia o perfil de acesso da própria equipe.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/20">
+                    {['Usuário', 'E-mail', 'Perfil', 'Vinculado a', 'Status', 'Último acesso'].map(col => (
+                      <th key={col} className="text-left px-4 py-3 text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {linkedUsers.map(user => (
+                    <tr key={user.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                            <span className="text-primary" style={{ fontSize: '0.62rem', fontWeight: 700 }}>{user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</span>
+                          </div>
+                          <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{user.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground" style={{ fontSize: '0.78rem' }}>{user.email}</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary" style={{ fontSize: '0.65rem', fontWeight: 600 }}>{user.profile}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full ${user.ownerType === 'representante' ? 'bg-amber-400/10 text-amber-500' : 'bg-emerald-400/10 text-emerald-500'}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>
+                          {user.ownerType === 'representante' ? 'Rep · ' : 'Lojista · '}{user.ownerName}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full ${user.status === 'ativo' ? 'bg-emerald-400/10 text-emerald-400' : 'bg-muted text-muted-foreground'}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{user.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground mono" style={{ fontSize: '0.75rem' }}>{user.lastLogin === '—' ? '—' : formatDate(user.lastLogin)}</td>
                     </tr>
                   ))}
                 </tbody>
