@@ -18,7 +18,8 @@ const brl = (n: number) => 'R$ ' + n.toLocaleString('pt-BR');
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 
 function Card({ title, hint, span = 12, children, right }: { title?: string; hint?: string; span?: number; children: React.ReactNode; right?: React.ReactNode }) {
-  const colClass = `lg:col-span-${span}`;
+  const colMap:Record<number,string>={3:'lg:col-span-3',4:'lg:col-span-4',5:'lg:col-span-5',6:'lg:col-span-6',7:'lg:col-span-7',8:'lg:col-span-8',9:'lg:col-span-9',12:'lg:col-span-12'};
+  const colClass = colMap[span] || 'lg:col-span-12';
   return (
     <div className={`bg-card border border-border rounded-xl p-5 ${colClass}`}>
       {(title || right) && (
