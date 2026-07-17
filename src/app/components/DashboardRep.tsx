@@ -39,7 +39,7 @@ function Card({ title, hint, span = 12, children, right }: { title?: string; hin
 function Tile({ lab, val, sub, tone }: { lab: string; val: string; sub?: string; tone?: 'amber' | 'neg' | 'pos' }) {
   const toneCls =
     tone === 'amber' ? 'text-amber-500' :
-    tone === 'neg' ? 'text-red-500' :
+    tone === 'neg' ? 'text-amber-500' :
     tone === 'pos' ? 'text-emerald-500' :
     'text-foreground';
   return (
@@ -219,7 +219,7 @@ export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) 
             { n: 'Faturado', q: 12, color: '#3b82f6' },
             { n: 'Em transporte', q: 5, color: '#8b5cf6' },
             { n: 'Aguardando aprovação', q: 6, color: '#f59e0b', action: true },
-            { n: 'Cancelado', q: 2, color: '#ef4444' },
+            { n: 'Cancelado', q: 2, color: '#f59e0b' },
           ]} />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
             <Tile lab="Total de pedidos" val="47" />
@@ -243,7 +243,7 @@ export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) 
         <StatusStack segs={[
           { n: 'Atendidos', q: 38, color: '#111' },
           { n: 'Aguardando visita', q: 12, color: '#f59e0b', action: true },
-          { n: 'Não atendidos', q: 14, color: '#ef4444' },
+          { n: 'Não atendidos', q: 14, color: '#f59e0b' },
         ]} />
         <div className="mt-4">
           <div className="flex justify-between mb-1"><span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Cobertura (comprou no período)</span><b style={{ fontSize: '0.85rem' }}>59%</b></div>
@@ -260,11 +260,11 @@ export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) 
             </thead>
             <tbody>
               {frm.map(r => (
-                <tr key={r.c} className={`border-b border-border/40 ${r.risk ? 'text-red-600' : ''}`}>
+                <tr key={r.c} className={`border-b border-border/40 ${r.risk ? 'text-amber-600' : ''}`}>
                   <td className="py-2 pr-2 text-foreground">{r.c}</td>
                   <td className="py-2 pr-2"><span className="px-1.5 py-0.5 rounded bg-secondary" style={{ fontSize: '0.7rem', fontWeight: 600 }}>{r.s}</span></td>
                   <td className="py-2 pr-2">{r.f}/mês</td>
-                  <td className={`py-2 pr-2 ${r.r > 40 ? 'text-red-600 font-semibold' : ''}`}>{r.r}</td>
+                  <td className={`py-2 pr-2 ${r.r > 40 ? 'text-amber-600 font-semibold' : ''}`}>{r.r}</td>
                   <td className="py-2 pr-2 mono">{brl(r.m)}</td>
                   <td className="py-2 pr-2 mono">{brl(r.t)}</td>
                 </tr>

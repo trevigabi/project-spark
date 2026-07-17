@@ -27,7 +27,7 @@ function Card({ title, hint, span = 12, children }: { title: string; hint?: stri
 function Tile({ lab, val, sub, tone }: { lab: string; val: string; sub?: string; tone?: 'amber' | 'neg' | 'pos' | 'muted' }) {
   const toneCls =
     tone === 'amber' ? 'text-amber-500' :
-    tone === 'neg' ? 'text-red-500' :
+    tone === 'neg' ? 'text-amber-500' :
     tone === 'pos' ? 'text-emerald-500' :
     'text-foreground';
   return (
@@ -43,7 +43,7 @@ function Badge({ children, tone = 'ok' }: { children: React.ReactNode; tone?: 'o
   const cls =
     tone === 'ok' ? 'bg-emerald-500/10 text-emerald-600' :
     tone === 'warn' ? 'bg-amber-500/10 text-amber-600' :
-    'bg-red-500/10 text-red-600';
+    'bg-amber-500/10 text-amber-600';
   return <span className={`inline-block px-1.5 py-0.5 rounded-full ${cls}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>{children}</span>;
 }
 
@@ -193,7 +193,7 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
                   <tr key={r[0]} className="border-b border-border/40">
                     <td className="py-2 pr-2">{r[0]}</td><td className="py-2 pr-2 text-muted-foreground">{r[1]}</td>
                     <td className="py-2 pr-2">{r[2]}</td><td className="py-2 pr-2 text-muted-foreground">{r[3]}</td>
-                    <td className={`py-2 pr-2 ${r[5] ? 'text-red-600 font-semibold' : ''}`}>{r[4]}</td>
+                    <td className={`py-2 pr-2 ${r[5] ? 'text-amber-600 font-semibold' : ''}`}>{r[4]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -232,8 +232,8 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
                     <td className="py-2 pr-2">{r[0]}</td>
                     <td className="py-2 pr-2"><Badge tone={r[1]}>{r[2]}</Badge></td>
                     <td className="py-2 pr-2">{r[3]}</td>
-                    <td className={`py-2 pr-2 ${typeof r[4] === 'number' ? 'text-red-600 font-semibold' : 'text-muted-foreground'}`}>{r[4]}</td>
-                    <td className={`py-2 pr-2 ${r[5] > 30 ? 'text-red-600 font-semibold' : ''}`}>{r[5]}</td>
+                    <td className={`py-2 pr-2 ${typeof r[4] === 'number' ? 'text-amber-600 font-semibold' : 'text-muted-foreground'}`}>{r[4]}</td>
+                    <td className={`py-2 pr-2 ${r[5] > 30 ? 'text-amber-600 font-semibold' : ''}`}>{r[5]}</td>
                     <td className="py-2 pr-2">{r[6]}</td>
                   </tr>
                 ))}
