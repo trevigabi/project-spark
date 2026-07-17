@@ -1,5 +1,11 @@
-import { ShoppingBag, Star, RotateCcw, Tag, TrendingUp, ChevronRight, Package, Sparkles } from "lucide-react";
-import { products, orders, formatCurrency, formatDate } from "../data/mockData";
+import { useState } from "react";
+import { ShoppingBag, Star, RotateCcw, Tag, TrendingUp, ChevronRight, Package, Sparkles, RefreshCw, Boxes } from "lucide-react";
+import {
+  products, orders, formatCurrency, formatDate,
+  clientOrderSummary, clientOrderStatus, clientRepeatOrders, clientTopProducts,
+  clientRecurringPurchases, clientSellout, clientStockControl, clientRecommendations, clientSimilarStores,
+} from "../data/mockData";
+import { SectionTitle, StatusStack, RankBars, RecommendationList } from "./DashboardWidgets";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -7,7 +13,15 @@ interface DashboardLojistaProps {
   onNavigate: (view: View) => void;
 }
 
+const stockStatusLabel: Record<string, string> = { ruptura: 'Ruptura', baixo: 'Baixo', ok: 'OK' };
+const stockStatusClass: Record<string, string> = {
+  ruptura: 'bg-red-400/10 text-red-400',
+  baixo: 'bg-amber-400/10 text-amber-500',
+  ok: 'bg-emerald-400/10 text-emerald-400',
+};
+
 export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
+  const [activeTab, setActiveTab] = useState<'geral' | 'indicadores'>('geral');
   const myOrders = orders.slice(0, 4);
   const featuredProducts = products.slice(0, 4);
   const favProducts = products.filter(p => p.isFavorite);
@@ -22,6 +36,168 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
+      {/* Tabs */}
+      <div className="flex items-center gap-1 border-b border-border">
+        <button
+          onClick={() => setActiveTab('geral')}
+          className={`px-4 py-2.5 font-medium transition-colors border-b-2 -mb-px ${activeTab === 'geral' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+          style={{ fontSize: '0.85rem' }}
+        >
+          Visão Geral
+        </button>
+        <button
+          onClick={() => setActiveTab('indicadores')}
+          className={`px-4 py-2.5 font-medium transition-colors border-b-2 -mb-px ${activeTab === 'indicadores' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+          style={{ fontSize: '0.85rem' }}
+        >
+          Indicadores
+        </button>
+      </div>
+
+      {activeTab === 'indicadores' ? (
+        <>
+          {/* ============ MEUS PEDIDOS ============ */}
+          <SectionTitle>Meus pedidos</SectionTitle>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Resumo do período</h3>
+              <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Recência e volume da loja</p>
+              <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Último pedido</p>
+              <p className="text-foreground" style={{ fontSize: '1.3rem', fontWeight: 700 }}>há {clientOrderSummary.lastOrderDays} dias</p>
+              <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{formatDate(clientOrderSummary.lastOrderDate)} · dentro do esperado</p>
+              <div className="flex gap-4 mt-4 pt-4 border-t border-border">
+                <div><p className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>Pedidos</p><p className="text-foreground" style={{ fontSize: '1rem', fontWeight: 700 }}>{clientOrderSummary.ordersCount}</p></div>
+                <div><p className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>Pares</p><p className="text-foreground" style={{ fontSize: '1rem', fontWeight: 700 }}>{clientOrderSummary.pairs}</p></div>
+                <div><p className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>Valor</p><p className="text-foreground mono" style={{ fontSize: '1rem', fontWeight: 700 }}>{formatCurrency(clientOrderSummary.value)}</p></div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Carteira de pedidos por status</h3>
+              <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Situação dos {clientOrderSummary.ordersCount} pedidos do período</p>
+              <StatusStack segments={clientOrderStatus} />
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+              <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Pedidos repetidos</h3>
+            </div>
+            <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Contados pelo botão "repetir pedido" do histórico</p>
+            <p className="text-foreground" style={{ fontSize: '1.6rem', fontWeight: 700 }}>{clientRepeatOrders.count}</p>
+            <p className="text-emerald-400 mb-3" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{clientRepeatOrders.deltaLabel}</p>
+            <div className="space-y-2">
+              {clientRepeatOrders.list.map(o => (
+                <div key={o.orderId} className="flex items-start gap-2.5 p-2.5 rounded-lg border border-border/60">
+                  <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'oklch(0.6 0.22 262)' }} />
+                  <div>
+                    <p className="text-foreground" style={{ fontSize: '0.8rem', fontWeight: 600 }}>{o.orderId} → repetido {o.times}x</p>
+                    <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{o.product}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ============ RECOMPRA E PRODUTOS ============ */}
+          <SectionTitle>Recompra e produtos</SectionTitle>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Produtos mais comprados</h3>
+              <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Mix da loja · por pares</p>
+              <RankBars rows={clientTopProducts} />
+            </div>
+            <div className="bg-card border border-border rounded-xl p-5 overflow-x-auto">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Compra recorrente</h3>
+              <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Itens comprados com regularidade</p>
+              <table className="w-full" style={{ fontSize: '0.78rem' }}>
+                <thead>
+                  <tr className="border-b border-border">
+                    {['Produto', 'Cadência média', 'Compras', 'Última compra', 'Próxima prevista'].map((c, i) => (
+                      <th key={c} className={`pb-2 text-muted-foreground font-medium ${i === 0 ? 'text-left' : 'text-right'}`} style={{ fontSize: '0.66rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientRecurringPurchases.map(p => (
+                    <tr key={p.product} className="border-b border-border/40">
+                      <td className="py-2 text-foreground" style={{ fontWeight: 500 }}>{p.product}</td>
+                      <td className="py-2 text-right text-muted-foreground">a cada {p.cadenceDays} dias</td>
+                      <td className="py-2 text-right text-muted-foreground">{p.purchasesInPeriod}</td>
+                      <td className="py-2 text-right text-muted-foreground">há {p.lastPurchaseDays} dias</td>
+                      <td className={`py-2 text-right ${p.nextExpectedDays < 0 ? 'text-red-400' : 'text-muted-foreground'}`} style={{ fontWeight: p.nextExpectedDays < 0 ? 600 : 400 }}>
+                        {p.nextExpectedDays < 0 ? `atrasado ${Math.abs(p.nextExpectedDays)}d` : `em ~${p.nextExpectedDays}d`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* ============ ESTOQUE E SELL-OUT ============ */}
+          <SectionTitle>Estoque e sell-out da loja</SectionTitle>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div className="bg-card border border-border rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-1">
+                <Boxes className="w-4 h-4 text-muted-foreground" />
+                <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Sell-out</h3>
+              </div>
+              <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Envio do dado de venda na ponta</p>
+              {clientSellout.participating && (
+                <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 mb-3" style={{ fontSize: '0.7rem', fontWeight: 700 }}>✓ Loja participante</span>
+              )}
+              <div className="space-y-3">
+                <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Giro médio do estoque</p><p className="text-foreground" style={{ fontSize: '1rem', fontWeight: 700 }}>{clientSellout.turnoverDays} dias</p></div>
+                <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Valor em estoque</p><p className="text-foreground mono" style={{ fontSize: '1rem', fontWeight: 700 }}>{formatCurrency(clientSellout.stockValue)}</p></div>
+                <div><p className="text-red-400" style={{ fontSize: '0.7rem' }}>SKUs em ruptura</p><p className="text-red-400" style={{ fontSize: '1rem', fontWeight: 700 }}>{clientSellout.ruptureSkus}</p></div>
+              </div>
+            </div>
+            <div className="lg:col-span-3 bg-card border border-border rounded-xl p-5 overflow-x-auto">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Controle de estoque</h3>
+              <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Situação por SKU: ruptura, baixo, OK e valor</p>
+              <table className="w-full" style={{ fontSize: '0.78rem' }}>
+                <thead>
+                  <tr className="border-b border-border">
+                    {['Produto', 'Situação', 'Estoque (pares)', 'Dias em ruptura', 'Giro (dias)', 'Valor em estoque'].map((c, i) => (
+                      <th key={c} className={`pb-2 text-muted-foreground font-medium ${i === 0 ? 'text-left' : 'text-right'}`} style={{ fontSize: '0.66rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientStockControl.map(p => (
+                    <tr key={p.product} className="border-b border-border/40">
+                      <td className="py-2 text-foreground" style={{ fontWeight: 500 }}>{p.product}</td>
+                      <td className="py-2 text-right"><span className={`px-2 py-0.5 rounded-full ${stockStatusClass[p.status]}`} style={{ fontSize: '0.66rem', fontWeight: 700 }}>{stockStatusLabel[p.status]}</span></td>
+                      <td className="py-2 text-right text-muted-foreground">{p.stockPairs}</td>
+                      <td className={`py-2 text-right ${p.ruptureDays ? 'text-red-400' : 'text-muted-foreground'}`} style={{ fontWeight: p.ruptureDays ? 600 : 400 }}>{p.ruptureDays ?? '—'}</td>
+                      <td className="py-2 text-right text-muted-foreground">{p.turnoverDays}</td>
+                      <td className="py-2 text-right text-foreground mono">{p.stockValue ? formatCurrency(p.stockValue) : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* ============ RECOMENDAÇÕES ============ */}
+          <SectionTitle>Recomendações</SectionTitle>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Sugestões para a loja</h3>
+              <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Top produto da empresa + top produto da região</p>
+              <RecommendationList items={clientRecommendations} />
+            </div>
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Lojas de perfil semelhante estão comprando</h3>
+              <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Recomendação por perfil/região similar</p>
+              <RecommendationList items={clientSimilarStores} />
+            </div>
+          </div>
+        </>
+      ) : (
+      <>
       {/* Header banner */}
       <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/10 to-transparent p-5">
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -196,6 +372,8 @@ export function DashboardLojista({ onNavigate }: DashboardLojistaProps) {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

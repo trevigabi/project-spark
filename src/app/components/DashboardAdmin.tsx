@@ -1,13 +1,20 @@
+import { useState } from "react";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell,
 } from "recharts";
 import {
   TrendingUp, TrendingDown, Package2, ShoppingBag, Users, AlertTriangle,
-  ArrowUpRight, ArrowDownRight, BarChart3, Zap, ChevronRight,
+  ArrowUpRight, ArrowDownRight, BarChart3, Zap, ChevronRight, Clock, Megaphone,
 } from "lucide-react";
-import { kpiData, selloutData, regionData, topProducts, repTargets, formatCurrency, orders } from "../data/mockData";
+import {
+  kpiData, selloutData, regionData, topProducts, repTargets, formatCurrency, orders,
+  adminGoalData, networkOrderStatus, networkCoverage, repNetworkPerformance, repSlaRanking,
+  catalogActiveStats, stockTurnoverAdmin, campaignEffect, campaignList, collectionHistory,
+  type Granularity,
+} from "../data/mockData";
 import { RuptureAlerts } from "./RuptureAlerts";
+import { SectionTitle, GoalPanel, StatusStack, RankBars, RecommendationList } from "./DashboardWidgets";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -70,6 +77,7 @@ function KPICard({ title, value, sub, trend, trendVal, icon: Icon, iconColor }: 
 }
 
 export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
+  const [granularity, setGranularity] = useState<Granularity>('semana');
   const recentOrders = orders.slice(0, 5);
 
   const statusColors: Record<string, string> = {
@@ -343,6 +351,176 @@ export function DashboardAdmin({ onNavigate }: DashboardAdminProps) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ============ META GERAL DOS REPRESENTANTES ============ */}
+      <SectionTitle>Meta geral dos representantes</SectionTitle>
+      <GoalPanel
+        title="Meta geral dos representantes — rede consolidada"
+        data={adminGoalData}
+        granularity={granularity}
+        onGranularityChange={setGranularity}
+      />
+
+      {/* ============ PEDIDOS POR STATUS E COBERTURA ============ */}
+      <SectionTitle>Pedidos por status e cobertura</SectionTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
+          <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Pedidos por status — rede</h3>
+          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>
+            {networkOrderStatus.reduce((a, s) => a + s.qty, 0).toLocaleString('pt-BR')} pedidos no período
+          </p>
+          <StatusStack segments={networkOrderStatus} />
+        </div>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Cobertura e clientes</h3>
+          <div className="flex flex-col gap-4">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-muted-foreground" style={{ fontSize: '0.78rem' }}>Cobertura de carteira</span>
+                <span className="text-foreground" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{networkCoverage.coveragePct}%</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-secondary">
+                <div className="h-full rounded-full bg-primary" style={{ width: `${networkCoverage.coveragePct}%` }} />
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>{networkCoverage.activeClients} de {networkCoverage.totalClients} clientes</span>
+                <span className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>alvo {networkCoverage.target}%</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Frequência de clientes</p>
+              <p className="text-foreground" style={{ fontSize: '1rem', fontWeight: 700 }}>{networkCoverage.frequency}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Prazo médio dos clientes</p>
+              <p className="text-foreground" style={{ fontSize: '1rem', fontWeight: 700 }}>{networkCoverage.avgTerm}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ============ REDE DE REPRESENTANTES ============ */}
+      <SectionTitle>Rede de representantes</SectionTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5 overflow-x-auto">
+          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Carteira ativa e performance de representantes</h3>
+          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>{repNetworkPerformance.length} reps ativos · ranking por venda</p>
+          <table className="w-full" style={{ fontSize: '0.8rem' }}>
+            <thead>
+              <tr className="border-b border-border">
+                {['Representante', 'Clientes', 'Cobertura', 'Venda', '% da meta', 'Ticket médio', 'Δ vs mês ant.'].map((c, i) => (
+                  <th key={c} className={`pb-2.5 text-muted-foreground font-medium ${i === 0 ? 'text-left' : 'text-right'}`} style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{c}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {repNetworkPerformance.map(r => (
+                <tr key={r.name} className="border-b border-border/40">
+                  <td className="py-2.5 text-foreground" style={{ fontWeight: 500 }}>{r.name}</td>
+                  <td className="py-2.5 text-right text-muted-foreground">{r.clients}</td>
+                  <td className="py-2.5 text-right text-muted-foreground">{r.coveragePct}%</td>
+                  <td className="py-2.5 text-right text-foreground mono">{formatCurrency(r.sales)}</td>
+                  <td className={`py-2.5 text-right ${r.metaPct >= 100 ? 'text-emerald-400' : 'text-red-400'}`} style={{ fontWeight: 600 }}>{r.metaPct}%</td>
+                  <td className="py-2.5 text-right text-foreground mono">{formatCurrency(r.avgTicket)}</td>
+                  <td className={`py-2.5 text-right ${r.deltaPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`} style={{ fontWeight: 600 }}>
+                    {r.deltaPct >= 0 ? '▲' : '▼'} {Math.abs(r.deltaPct)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Tempo até aprovação</h3>
+          </div>
+          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Média entre pedido e aprovação · SLA 2 dias</p>
+          <RankBars rows={repSlaRanking.map(r => ({ label: r.name.split(' ')[0], value: r.days }))} formatValue={v => `${v.toFixed(1).replace('.', ',')} dia`} />
+        </div>
+      </div>
+
+      {/* ============ CATÁLOGO E ESTOQUE ============ */}
+      <SectionTitle>Catálogo e estoque</SectionTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Produtos ofertados × ativos</h3>
+          <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Cobertura do catálogo realmente ativo</p>
+          <div className="flex gap-5 mb-3">
+            <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Ofertados</p><p className="text-foreground" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{catalogActiveStats.offered}</p></div>
+            <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Ativos c/ giro</p><p className="text-foreground" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{catalogActiveStats.activeWithTurn}</p></div>
+            <div><p className="text-amber-500" style={{ fontSize: '0.7rem' }}>Sem giro</p><p className="text-amber-500" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{catalogActiveStats.activeNoTurn}</p></div>
+            <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Não ativos</p><p className="text-muted-foreground" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{catalogActiveStats.notActive}</p></div>
+          </div>
+          <div className="flex h-5 rounded-md overflow-hidden gap-0.5">
+            <div className="bg-primary flex items-center justify-center text-white" style={{ flex: catalogActiveStats.activeWithTurn, fontSize: '0.65rem', fontWeight: 600 }}>{catalogActiveStats.activeWithTurn}</div>
+            <div className="bg-amber-400 flex items-center justify-center text-white" style={{ flex: catalogActiveStats.activeNoTurn, fontSize: '0.65rem', fontWeight: 600 }}>{catalogActiveStats.activeNoTurn}</div>
+            <div className="bg-secondary flex items-center justify-center text-muted-foreground" style={{ flex: catalogActiveStats.notActive, fontSize: '0.65rem', fontWeight: 600 }}>{catalogActiveStats.notActive}</div>
+          </div>
+          <p className="text-muted-foreground mt-2" style={{ fontSize: '0.72rem' }}>
+            {Math.round(catalogActiveStats.activeWithTurn / catalogActiveStats.offered * 100)}% do catálogo ofertado tem giro real · {catalogActiveStats.activeNoTurn} itens ativos sem giro
+          </p>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Giro de estoque</h3>
+          <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Sell-out ÷ estoque médio no trimestre</p>
+          <p className="text-foreground" style={{ fontSize: '1.8rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{stockTurnoverAdmin.rate}</p>
+          <p className="text-emerald-400 mt-1" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{stockTurnoverAdmin.delta}</p>
+        </div>
+      </div>
+
+      {/* ============ GESTÃO COMERCIAL ============ */}
+      <SectionTitle>Gestão comercial</SectionTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="bg-card border border-border rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <Megaphone className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Campanhas comerciais</h3>
+          </div>
+          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Média mensal de venda com × sem campanha (R$ mi)</p>
+          <ResponsiveContainer width="100%" height={140}>
+            <BarChart data={campaignEffect} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis hide />
+              <Tooltip formatter={(v: any) => [`R$ ${v} mi`, 'Venda média']} />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                {campaignEffect.map((_, i) => <Cell key={i} fill={i === 1 ? 'oklch(0.6 0.22 262)' : 'oklch(0.85 0.03 262)'} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="space-y-2 mt-3">
+            {campaignList.map(c => (
+              <div key={c.name} className="flex items-center justify-between p-2.5 rounded-lg border border-border/60">
+                <div>
+                  <p className="text-foreground" style={{ fontSize: '0.8rem', fontWeight: 600 }}>{c.name}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{c.message}</p>
+                </div>
+                <span className={`flex-shrink-0 ${c.deltaPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`} style={{ fontSize: '0.78rem', fontWeight: 700 }}>
+                  {c.deltaPct >= 0 ? '▲' : '▼'} {Math.abs(c.deltaPct)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Histórico de coleções</h3>
+          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Comparativo de desempenho entre coleções (R$ mi no ciclo)</p>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={collectionHistory} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis hide />
+              <Tooltip formatter={(v: any) => [`R$ ${v} mi`, 'Venda']} />
+              <Bar dataKey="value" fill="oklch(0.6 0.22 262)" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+          <p className="text-emerald-400 mt-2" style={{ fontSize: '0.78rem', fontWeight: 600 }}>▲ 13% Verão 26 vs Verão 25 · Inverno 26 em andamento</p>
         </div>
       </div>
     </div>
