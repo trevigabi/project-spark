@@ -64,7 +64,7 @@ const repsBelowAdmin = [
 ];
 
 const severityColor = (s: string) =>
-  s === 'alta' ? 'bg-red-400/15 text-red-400' : s === 'media' ? 'bg-amber-400/15 text-amber-400' : 'bg-black/15 text-black';
+  s === 'alta' ? 'bg-amber-400/15 text-amber-400' : s === 'media' ? 'bg-amber-400/15 text-amber-400' : 'bg-black/15 text-black';
 
 export function RuptureAlerts({ profile }: RuptureAlertsProps) {
   const [tab, setTab] = useState<TabKey>('risco');
@@ -84,8 +84,8 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-red-400/10 flex items-center justify-center">
-            <AlertTriangle className="w-4 h-4 text-red-400" />
+          <div className="w-8 h-8 rounded-lg bg-amber-400/10 flex items-center justify-center">
+            <AlertTriangle className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Alerta de Riscos</h3>
@@ -137,7 +137,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
                     </span>
                   </div>
                   <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.72rem' }}>
-                    <MapPin className="inline w-3 h-3 mr-0.5" />{c.city} · sem visita há <span className="text-red-400 font-semibold">{c.lastVisit}d</span> · sem pedido há <span className="text-red-400 font-semibold">{c.lastOrder}d</span>
+                    <MapPin className="inline w-3 h-3 mr-0.5" />{c.city} · sem visita há <span className="text-amber-400 font-semibold">{c.lastVisit}d</span> · sem pedido há <span className="text-amber-400 font-semibold">{c.lastOrder}d</span>
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
@@ -179,7 +179,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
                   <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{p.sku} · {p.line}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-red-400" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{p.days}d sem venda</p>
+                  <p className="text-amber-400" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{p.days}d sem venda</p>
                   <p className="text-muted-foreground mono" style={{ fontSize: '0.68rem' }}>{p.stock} un. estoque</p>
                 </div>
               </div>
@@ -210,8 +210,8 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
 
         {tab === 'meta' && (profile === 'rep' ? (
           <div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-red-400/5 border border-red-400/20 mb-3">
-              <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-400/5 border border-amber-400/20 mb-3">
+              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 600 }}>3 meses consecutivos abaixo da meta</p>
                 <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Risco estrutural identificado. Gap médio: -15%</p>
@@ -226,7 +226,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
                     <p className="text-foreground mt-1" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{pct}%</p>
                     <p className="text-muted-foreground mono" style={{ fontSize: '0.65rem' }}>{m.real}k / {m.meta}k</p>
                     <div className="w-full h-1 rounded-full bg-secondary mt-2">
-                      <div className="h-full rounded-full bg-red-400" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-amber-400" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 );
@@ -237,8 +237,8 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
           <div className="space-y-2">
             {repsBelowAdmin.map(r => (
               <div key={r.name} className="flex items-center gap-3 p-3 rounded-lg border border-border/60 hover:border-primary/30 transition-colors cursor-pointer">
-                <div className="w-9 h-9 rounded-full bg-red-400/15 flex items-center justify-center flex-shrink-0">
-                  <span className="text-red-400" style={{ fontSize: '0.7rem', fontWeight: 700 }}>
+                <div className="w-9 h-9 rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                  <span className="text-amber-400" style={{ fontSize: '0.7rem', fontWeight: 700 }}>
                     {r.name.split(' ').map(p=>p[0]).slice(0,2).join('')}
                   </span>
                 </div>
@@ -247,7 +247,7 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
                   <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{r.region} · gestor: {r.manager}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-red-400" style={{ fontSize: '0.8rem', fontWeight: 700 }}>{r.months} meses</p>
+                  <p className="text-amber-400" style={{ fontSize: '0.8rem', fontWeight: 700 }}>{r.months} meses</p>
                   <p className="text-muted-foreground mono" style={{ fontSize: '0.68rem' }}>gap {r.gap}%</p>
                 </div>
               </div>
@@ -257,27 +257,27 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
 
         {tab === 'ruptura' && (profile === 'rep' ? (
           <div className="space-y-2">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-red-400/5 border border-red-400/20 mb-2">
-              <AlertOctagon className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-400/5 border border-amber-400/20 mb-2">
+              <AlertOctagon className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 600 }}>Produtos indisponíveis para compra</p>
                 <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Notifique clientes da sua carteira para evitar vendas perdidas e frustração.</p>
               </div>
             </div>
             {catalogRuptureRep.map(p => (
-              <div key={p.sku} className="flex items-center gap-3 p-3 rounded-lg border border-border/60 hover:border-red-400/30 hover:bg-red-400/5 transition-colors cursor-pointer">
-                <div className="w-9 h-9 rounded-lg bg-red-400/15 flex items-center justify-center flex-shrink-0">
-                  <Box className="w-4 h-4 text-red-400" />
+              <div key={p.sku} className="flex items-center gap-3 p-3 rounded-lg border border-border/60 hover:border-amber-400/30 hover:bg-amber-400/5 transition-colors cursor-pointer">
+                <div className="w-9 h-9 rounded-lg bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                  <Box className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-foreground truncate" style={{ fontSize: '0.83rem', fontWeight: 500 }}>{p.name}</p>
-                    <span className="px-1.5 py-0.5 rounded-full bg-red-400/15 text-red-400" style={{ fontSize: '0.62rem', fontWeight: 700 }}>Ruptura</span>
+                    <span className="px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400" style={{ fontSize: '0.62rem', fontWeight: 700 }}>Ruptura</span>
                   </div>
                   <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{p.sku} · {p.line} · estoque zerado</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-red-400" style={{ fontSize: '0.8rem', fontWeight: 700 }}>{p.clientsAffected} clientes</p>
+                  <p className="text-amber-400" style={{ fontSize: '0.8rem', fontWeight: 700 }}>{p.clientsAffected} clientes</p>
                   <p className="text-muted-foreground" style={{ fontSize: '0.68rem' }}>última venda há {p.lastSale}d</p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -289,11 +289,11 @@ export function RuptureAlerts({ profile }: RuptureAlertsProps) {
             <GroupBySwitch value={ruptureGroupBy} onChange={setRuptureGroupBy} options={[{v:'linha',l:'Linha'},{v:'marca',l:'Marca'},{v:'regiao',l:'Região'}]} />
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {catalogRuptureAdmin.map(g => (
-                <div key={g.group} className="rounded-lg border border-red-400/20 p-3 hover:border-red-400/40 transition-colors cursor-pointer bg-red-400/5">
+                <div key={g.group} className="rounded-lg border border-amber-400/20 p-3 hover:border-amber-400/40 transition-colors cursor-pointer bg-amber-400/5">
                   <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{g.group}</p>
                   <p className="text-foreground mt-1" style={{ fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{g.count}</p>
-                  <p className="text-red-400" style={{ fontSize: '0.7rem', fontWeight: 600 }}>SKUs em ruptura</p>
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-red-400/10">
+                  <p className="text-amber-400" style={{ fontSize: '0.7rem', fontWeight: 600 }}>SKUs em ruptura</p>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-amber-400/10">
                     <span className="text-foreground" style={{ fontSize: '0.72rem', fontWeight: 600 }}>{g.totalClients} clientes</span>
                     <span className="text-muted-foreground" style={{ fontSize: '0.65rem' }}>{g.skus}</span>
                   </div>

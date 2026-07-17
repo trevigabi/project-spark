@@ -35,7 +35,7 @@ function Card({ title, hint, span = 12, children, right }: { title?: string; hin
 function Tile({ lab, val, sub, tone }: { lab: string; val: string; sub?: string; tone?: 'amber' | 'neg' | 'pos' }) {
   const toneCls =
     tone === 'amber' ? 'text-amber-500' :
-    tone === 'neg' ? 'text-red-500' :
+    tone === 'neg' ? 'text-amber-500' :
     tone === 'pos' ? 'text-emerald-500' :
     'text-foreground';
   return (
@@ -251,7 +251,7 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
             { n: 'Faturado', q: 280, color: '#3b82f6' },
             { n: 'Em transporte', q: 150, color: '#8b5cf6' },
             { n: 'Aguardando aprovação', q: 96, color: '#f59e0b', action: true },
-            { n: 'Cancelado', q: 56, color: '#ef4444' },
+            { n: 'Cancelado', q: 56, color: '#f59e0b' },
           ]} />
         </Card>
       </div>
@@ -266,14 +266,14 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
             </thead>
             <tbody>
               {repPerf.map(r => (
-                <tr key={r.n} className={`border-b border-border/40 ${r.low ? 'text-red-600' : ''}`}>
+                <tr key={r.n} className={`border-b border-border/40 ${r.low ? 'text-amber-600' : ''}`}>
                   <td className="py-2 pr-2 text-foreground">{r.n}</td>
                   <td className="py-2 pr-2">{r.cli}</td>
                   <td className="py-2 pr-2">{r.cov}</td>
                   <td className="py-2 pr-2 mono">{brl(r.v)}</td>
-                  <td className={`py-2 pr-2 ${r.meta < 100 ? 'text-red-600 font-semibold' : 'text-emerald-600 font-semibold'}`}>{r.meta}%</td>
+                  <td className={`py-2 pr-2 ${r.meta < 100 ? 'text-amber-600 font-semibold' : 'text-emerald-600 font-semibold'}`}>{r.meta}%</td>
                   <td className="py-2 pr-2 mono">{brl(r.tm)}</td>
-                  <td className={`py-2 pr-2 ${r.delta.startsWith('+') ? 'text-emerald-600' : 'text-red-600'} font-semibold`}>{r.delta}</td>
+                  <td className={`py-2 pr-2 ${r.delta.startsWith('+') ? 'text-emerald-600' : 'text-amber-600'} font-semibold`}>{r.delta}</td>
                 </tr>
               ))}
             </tbody>
@@ -293,8 +293,8 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
             {slaRank.map(r => (
               <div key={r.n} className="flex items-center gap-3">
                 <span className="text-foreground flex-1 truncate" style={{ fontSize: '0.8rem' }}>{r.n}</span>
-                <div className="flex-1 h-1.5 rounded-full bg-secondary"><div className={`h-full rounded-full ${r.v > 2 ? 'bg-red-500' : 'bg-primary'}`} style={{ width: `${Math.min(r.v / 3 * 100, 100).toFixed(0)}%` }} /></div>
-                <span className={`w-14 text-right mono ${r.v > 2 ? 'text-red-600 font-semibold' : 'text-foreground'}`} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{r.v} d</span>
+                <div className="flex-1 h-1.5 rounded-full bg-secondary"><div className={`h-full rounded-full ${r.v > 2 ? 'bg-amber-500' : 'bg-primary'}`} style={{ width: `${Math.min(r.v / 3 * 100, 100).toFixed(0)}%` }} /></div>
+                <span className={`w-14 text-right mono ${r.v > 2 ? 'text-amber-600 font-semibold' : 'text-foreground'}`} style={{ fontSize: '0.75rem', fontWeight: 600 }}>{r.v} d</span>
               </div>
             ))}
           </div>
@@ -326,7 +326,7 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
         </Card>
 
         <Card title="Ruptura na operação" hint="SKUs indisponíveis" span={4}>
-          <div className="text-red-600" style={{ fontSize: '1.6rem', fontWeight: 700 }}>12 SKUs</div>
+          <div className="text-amber-600" style={{ fontSize: '1.6rem', fontWeight: 700 }}>12 SKUs</div>
           <div className="mt-2 space-y-2">
             {[
               { t: 'Tênis Runner X · 38 preto', m: 'em ruptura há 9 dias' },
@@ -334,7 +334,7 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
               { t: 'Oxford Clássico · 41', m: 'em ruptura há 3 dias' },
             ].map(x => (
               <div key={x.t} className="flex items-start gap-2 rounded-lg border border-border/60 p-2">
-                <span className="w-2 h-2 rounded-full bg-red-500 mt-1.5" />
+                <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5" />
                 <div>
                   <div className="text-foreground" style={{ fontSize: '0.78rem', fontWeight: 500 }}>{x.t}</div>
                   <div className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{x.m}</div>
@@ -399,12 +399,12 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
               { t: 'Inverno 26', m: '−2% — abaixo da média sem campanha', d: '▼ 2%', up: false },
             ].map(x => (
               <div key={x.t} className="flex items-start gap-2 rounded-lg border border-border/60 p-2.5">
-                <span className={`w-2 h-2 rounded-full mt-1.5 ${x.up ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                <span className={`w-2 h-2 rounded-full mt-1.5 ${x.up ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                 <div className="flex-1">
                   <div className="text-foreground" style={{ fontSize: '0.8rem', fontWeight: 500 }}>{x.t}</div>
                   <div className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{x.m}</div>
                 </div>
-                <span className={`${x.up ? 'text-emerald-600' : 'text-red-600'} font-semibold`} style={{ fontSize: '0.72rem' }}>{x.d}</span>
+                <span className={`${x.up ? 'text-emerald-600' : 'text-amber-600'} font-semibold`} style={{ fontSize: '0.72rem' }}>{x.d}</span>
               </div>
             ))}
           </div>
