@@ -253,7 +253,6 @@ export function TopBar({ title, subtitle, profile, currentView, notifications = 
           { icon: Shield, label: 'Permissões', view: 'permissions' as View },
         ]
       : [
-          { icon: BarChart3, label: 'Indicadores', view: 'dashboard' as View },
           { icon: Package2, label: 'Catálogo', view: 'catalog' },
           { icon: Boxes, label: 'Meu Estoque', view: 'stock' },
           { icon: Sparkles, label: 'Marketing IA', view: 'marketing' },

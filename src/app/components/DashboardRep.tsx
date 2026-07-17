@@ -1,16 +1,9 @@
 import { useState } from "react";
-import { Users, ShoppingBag, Target, Star, ChevronRight, MapPin, Boxes, Map } from "lucide-react";
-import {
-  clients, orders, formatCurrency, formatDate, products, Client,
-  repGoalData, repOrderStatus, repTicket, repPortfolio, repFrmClients, repProductsSold,
-  repActiveCatalog, repLineBreakdown, repTerritory, repSelloutParticipation,
-  repRupturaOpportunities, repRecommendClients, repRecommendProducts,
-  type Granularity,
-} from "../data/mockData";
+import { Users, ShoppingBag, Target, Star, ChevronRight, MapPin } from "lucide-react";
+import { clients, orders, formatCurrency, formatDate, products, Client } from "../data/mockData";
 import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { SelloutDashboard } from "./SelloutDashboard";
 import { RuptureAlerts } from "./RuptureAlerts";
-import { SectionTitle, GoalPanel, StatusStack, RankBars, RecommendationList } from "./DashboardWidgets";
 
 type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
 
@@ -31,7 +24,6 @@ const monthlyData = [
 
 export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
   const [activeTab, setActiveTab] = useState<'indicadores' | 'sellout'>('indicadores');
-  const [granularity, setGranularity] = useState<Granularity>('semana');
 
   const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
   const myOrders = orders.filter(o => o.rep === 'Marcos Andrade');
@@ -233,210 +225,6 @@ export function DashboardRep({ onNavigate, selectedClient, embedded = false }: D
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* ============ META E VENDA ============ */}
-      <SectionTitle>Meta e venda</SectionTitle>
-      <GoalPanel title="Meta e venda" data={repGoalData} granularity={granularity} onGranularityChange={setGranularity} />
-
-      {/* ============ PEDIDOS E TICKET ============ */}
-      <SectionTitle>Pedidos e ticket</SectionTitle>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Pedidos por status</h3>
-          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>
-            {repOrderStatus.reduce((a, s) => a + s.qty, 0)} pedidos no período
-          </p>
-          <StatusStack segments={repOrderStatus} />
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Ticket médio</h3>
-          <div>
-            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Atual (semana)</p>
-            <p className="text-foreground mono" style={{ fontSize: '1.4rem', fontWeight: 700 }}>{formatCurrency(repTicket.current)}</p>
-            <p className="text-emerald-400" style={{ fontSize: '0.75rem', fontWeight: 600 }}>▲ {repTicket.deltaPct}% vs semana anterior</p>
-          </div>
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Acumulado (ano)</p>
-            <p className="text-foreground mono" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{formatCurrency(repTicket.yearAvg)}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ============ CARTEIRA DE CLIENTES ============ */}
-      <SectionTitle>Carteira de clientes — composição e valor</SectionTitle>
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Composição da carteira + cobertura</h3>
-        <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>{repPortfolio.total} clientes na carteira</p>
-        <StatusStack segments={[
-          { label: 'Atendidos', qty: repPortfolio.atendidos, color: 'oklch(0.6 0.22 262)' },
-          { label: 'Não atendidos', qty: repPortfolio.naoAtendidos, color: 'oklch(0.55 0.22 25)' },
-          { label: 'Aguardando visita', qty: repPortfolio.aguardandoVisita, color: 'oklch(0.78 0.15 80)', action: true },
-        ]} />
-        <div className="mt-4">
-          <div className="flex justify-between items-baseline mb-1">
-            <span className="text-muted-foreground" style={{ fontSize: '0.78rem' }}>Cobertura (comprou no período)</span>
-            <span className="text-foreground" style={{ fontSize: '0.9rem', fontWeight: 700 }}>{repPortfolio.coveragePct}%</span>
-          </div>
-          <div className="w-full h-2.5 rounded-full bg-secondary">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${repPortfolio.coveragePct}%` }} />
-          </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{repPortfolio.atendidos} atendidos</span>
-            <span className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>alvo {repPortfolio.target}%</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-card border border-border rounded-xl p-5 overflow-x-auto">
-        <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>FRM + Ticket médio por cliente</h3>
-        <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Frequência, Recência e Montante · vermelho para risco/churn e recência acima do limite (40 dias)</p>
-        <table className="w-full" style={{ fontSize: '0.8rem' }}>
-          <thead>
-            <tr className="border-b border-border">
-              {['Cliente', 'Score', 'Frequência', 'Recência (dias)', 'Montante', 'Ticket médio'].map((c, i) => (
-                <th key={c} className={`pb-2.5 text-muted-foreground font-medium ${i === 0 ? 'text-left' : 'text-right'}`} style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{c}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {repFrmClients.map(c => {
-              const badgeClass = c.score === 'A' ? 'bg-emerald-400/10 text-emerald-400' : c.score === 'B' ? 'bg-primary/10 text-primary' : c.score === 'C' ? 'bg-amber-400/10 text-amber-500' : 'bg-red-400/10 text-red-400';
-              const risky = c.score === 'Risco' || c.recencyDays > 40;
-              return (
-                <tr key={c.name} className="border-b border-border/40">
-                  <td className="py-2.5 text-foreground" style={{ fontWeight: 500 }}>{c.name}</td>
-                  <td className="py-2.5 text-right"><span className={`px-2 py-0.5 rounded-full ${badgeClass}`} style={{ fontSize: '0.68rem', fontWeight: 700 }}>{c.score}</span></td>
-                  <td className="py-2.5 text-right text-muted-foreground">{c.freq}</td>
-                  <td className={`py-2.5 text-right ${risky ? 'text-red-400' : 'text-muted-foreground'}`} style={{ fontWeight: risky ? 600 : 400 }}>{c.recencyDays}</td>
-                  <td className="py-2.5 text-right text-foreground mono">{formatCurrency(c.montante)}</td>
-                  <td className="py-2.5 text-right text-foreground mono">{formatCurrency(c.ticket)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ============ PRODUTOS ============ */}
-      <SectionTitle>Produtos</SectionTitle>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Produtos mais vendidos</h3>
-          <RankBars rows={repProductsSold} />
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Produtos ativos × vendidos</h3>
-          <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Catálogo do rep · período</p>
-          <div className="flex gap-4 mb-3">
-            <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Ativos</p><p className="text-foreground" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{repActiveCatalog.active}</p></div>
-            <div><p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>Vendidos</p><p className="text-foreground" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{repActiveCatalog.sold}</p></div>
-            <div><p className="text-amber-500" style={{ fontSize: '0.7rem' }}>Sem venda</p><p className="text-amber-500" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{repActiveCatalog.noSale}</p></div>
-          </div>
-          <div className="flex h-5 rounded-md overflow-hidden gap-0.5">
-            <div className="bg-primary flex items-center justify-center text-white" style={{ flex: repActiveCatalog.sold, fontSize: '0.65rem', fontWeight: 600 }}>{repActiveCatalog.sold}</div>
-            <div className="bg-amber-400 flex items-center justify-center text-white" style={{ flex: repActiveCatalog.noSale, fontSize: '0.65rem', fontWeight: 600 }}>{repActiveCatalog.noSale}</div>
-          </div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Tipo de linha ativa</h3>
-          <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Participação da oferta</p>
-          <div className="flex h-6 rounded-md overflow-hidden gap-0.5">
-            {repLineBreakdown.map(l => (
-              <div key={l.label} className="flex items-center justify-center text-white" style={{ flex: l.qty, background: l.color, fontSize: '0.62rem', fontWeight: 600 }}>{l.qty}</div>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-3">
-            {repLineBreakdown.map(l => (
-              <span key={l.label} className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: '0.72rem' }}>
-                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: l.color }} /> {l.label} · {l.qty}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ============ VENDA POR REGIÃO ============ */}
-      <SectionTitle>Venda por região — território do representante</SectionTitle>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-1">
-            <Map className="w-4 h-4 text-muted-foreground" />
-            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Por estado</h3>
-          </div>
-          <div className="space-y-2 mt-3">
-            {repTerritory.states.map(s => (
-              <div key={s.uf} className="flex items-center justify-between p-2.5 rounded-lg border border-border/60">
-                <span className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{s.name}</span>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-foreground mono" style={{ fontSize: '0.8rem', fontWeight: 600 }}>{formatCurrency(s.value)}</span>
-                  <span className={`${s.deltaPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`} style={{ fontSize: '0.75rem', fontWeight: 600 }}>
-                    {s.deltaPct >= 0 ? '▲' : '▼'} {Math.abs(s.deltaPct)}%
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Total do território</p>
-            <p className="text-foreground mono" style={{ fontSize: '1.1rem', fontWeight: 700 }}>{formatCurrency(repTerritory.total)}</p>
-            <p className="text-emerald-400" style={{ fontSize: '0.75rem', fontWeight: 600 }}>▲ {repTerritory.totalDeltaPct}% vs período anterior</p>
-          </div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Por cidade</h3>
-          <RankBars rows={repTerritory.cities.map(c => ({ label: c.name, value: c.value }))} formatValue={formatCurrency} />
-        </div>
-      </div>
-
-      {/* ============ SELL-OUT E INTELIGÊNCIA ============ */}
-      <SectionTitle>Sell-out e inteligência</SectionTitle>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-1" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Clientes com sell-out</h3>
-          <p className="text-muted-foreground mb-3" style={{ fontSize: '0.75rem' }}>Enviam o dado</p>
-          <p className="text-foreground" style={{ fontSize: '1.8rem', fontWeight: 700 }}>
-            {repSelloutParticipation.participating} <span className="text-muted-foreground" style={{ fontSize: '0.9rem', fontWeight: 500 }}>/ {repSelloutParticipation.total}</span>
-          </p>
-          <p className="text-amber-500 mt-1" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
-            {repSelloutParticipation.total - repSelloutParticipation.participating} não participam
-          </p>
-          <div className="w-full h-2 rounded-full bg-secondary mt-2">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${(repSelloutParticipation.participating / repSelloutParticipation.total) * 100}%` }} />
-          </div>
-        </div>
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-1">
-            <Boxes className="w-4 h-4 text-muted-foreground" />
-            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Alerta de ruptura como oportunidade</h3>
-          </div>
-          <p className="text-muted-foreground mb-4" style={{ fontSize: '0.75rem' }}>Cobertura em dias abaixo do lead time de entrega</p>
-          <div className="space-y-2">
-            {repRupturaOpportunities.map((r, i) => (
-              <div key={i} className="flex items-start gap-2.5 p-3 rounded-lg border border-amber-400/30 bg-amber-400/5">
-                <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'oklch(0.78 0.15 80)' }} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{r.client} — {r.product}</p>
-                  <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.75rem' }}>Cobertura {r.coverageDays} dias · entrega {r.leadDays} dias → repor antes de zerar</p>
-                </div>
-                <span className="px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-500 flex-shrink-0" style={{ fontSize: '0.65rem', fontWeight: 700 }}>oportunidade</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ============ RECOMENDAÇÕES ============ */}
-      <SectionTitle>Recomendações</SectionTitle>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Clientes para atender</h3>
-          <RecommendationList items={repRecommendClients} />
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-foreground mb-4" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Produtos a oferecer</h3>
-          <RecommendationList items={repRecommendProducts} />
         </div>
       </div>
       </>
