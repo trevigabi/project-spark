@@ -67,6 +67,7 @@ export function Sidebar({ currentView, onNavigate, profile, onLogout, notificati
     }
     if (profile === 'lojista') {
       return [
+        { id: 'dashboard', label: 'Indicadores', icon: LayoutDashboard },
         { id: 'catalog', label: 'Catálogo', icon: Package2 },
       ];
     }
