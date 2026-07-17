@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Users, ShoppingBag, Target, Star, ChevronRight, MapPin } from "lucide-react";
-import { clients, orders, formatCurrency, formatDate, products, Client } from "../data/mockData";
-import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
-import { SelloutDashboard } from "./SelloutDashboard";
-import { RuptureAlerts } from "./RuptureAlerts";
+import { ChevronRight } from "lucide-react";
+import {
+  ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
+  BarChart, Bar, ReferenceLine, Cell,
+} from "recharts";
+import { Client } from "../data/mockData";
 
-type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients';
+type View = 'dashboard' | 'catalog' | 'order-grade' | 'cart' | 'history' | 'marketing' | 'sellout' | 'admin' | 'clients' | 'stock';
 
 interface DashboardRepProps {
   onNavigate: (view: View) => void;
@@ -13,222 +14,408 @@ interface DashboardRepProps {
   embedded?: boolean;
 }
 
-const monthlyData = [
-  { month: 'Jan', valor: 180000 },
-  { month: 'Fev', valor: 210000 },
-  { month: 'Mar', valor: 195000 },
-  { month: 'Abr', valor: 240000 },
-  { month: 'Mai', valor: 228000 },
-  { month: 'Jun', valor: 524000 },
+const brl = (n: number) => 'R$ ' + n.toLocaleString('pt-BR');
+const fmt = (n: number) => n.toLocaleString('pt-BR');
+
+function Card({ title, hint, span = 12, children, right }: { title?: string; hint?: string; span?: number; children: React.ReactNode; right?: React.ReactNode }) {
+  const colClass = `lg:col-span-${span}`;
+  return (
+    <div className={`bg-card border border-border rounded-xl p-5 ${colClass}`}>
+      {(title || right) && (
+        <div className="flex items-start justify-between gap-2 flex-wrap">
+          <div>
+            {title && <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>{title}</h3>}
+            {hint && <p className="text-muted-foreground mt-1" style={{ fontSize: '0.72rem' }}>{hint}</p>}
+          </div>
+          {right}
+        </div>
+      )}
+      <div className="mt-3">{children}</div>
+    </div>
+  );
+}
+
+function Tile({ lab, val, sub, tone }: { lab: string; val: string; sub?: string; tone?: 'amber' | 'neg' | 'pos' }) {
+  const toneCls =
+    tone === 'amber' ? 'text-amber-500' :
+    tone === 'neg' ? 'text-red-500' :
+    tone === 'pos' ? 'text-emerald-500' :
+    'text-foreground';
+  return (
+    <div className="rounded-lg border border-border/60 bg-secondary/30 p-3">
+      <div className="text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{lab}</div>
+      <div className={toneCls} style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{val}</div>
+      {sub && <div className="text-muted-foreground mt-0.5" style={{ fontSize: '0.68rem' }}>{sub}</div>}
+    </div>
+  );
+}
+
+function StatusStack({ segs }: { segs: { n: string; q: number; color: string; action?: boolean }[] }) {
+  const tot = segs.reduce((a, b) => a + b.q, 0);
+  return (
+    <>
+      <div className="flex w-full h-6 rounded-md overflow-hidden">
+        {segs.map(s => (
+          <div key={s.n} className="flex items-center justify-center text-white" style={{ flex: s.q, background: s.color, fontSize: '0.7rem', fontWeight: 600 }} title={`${s.n}: ${s.q}`}>
+            {s.q / tot >= 0.06 ? s.q : ''}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-3 mt-3">
+        {segs.map(s => (
+          <span key={s.n} className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: '0.72rem' }}>
+            <span className="w-2.5 h-2.5 rounded-sm" style={{ background: s.color }} /> {s.n} · {s.q}
+            {s.action && <span className="ml-1 px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600" style={{ fontSize: '0.62rem', fontWeight: 600 }}>ação</span>}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function Rank({ rows }: { rows: { n: string; v: number }[] }) {
+  const max = Math.max(...rows.map(r => r.v));
+  return (
+    <div className="space-y-2">
+      {rows.map(r => (
+        <div key={r.n} className="flex items-center gap-3">
+          <span className="text-foreground flex-1 truncate" style={{ fontSize: '0.8rem' }}>{r.n}</span>
+          <div className="flex-1 h-1.5 rounded-full bg-secondary">
+            <div className="h-full rounded-full bg-primary" style={{ width: `${(r.v / max * 100).toFixed(1)}%` }} />
+          </div>
+          <span className="text-foreground mono w-14 text-right" style={{ fontSize: '0.75rem', fontWeight: 600 }}>{fmt(r.v)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const TICKET = 5000;
+const metaData: Record<string, any> = {
+  semana: {
+    hint: 'Visão semana · barras por dia (% da meta diária)',
+    sub: { title: 'Meta diária (hoje)', meta: 50000, vend: 45000, counts: ['6 pedidos', '350 pares', '5 clientes'] },
+    main: { title: 'Meta semanal', meta: 250000, vend: 245000, delta: '▲ +10% vs semana passada' },
+    bars: [{ lb: 'Seg', p: 95 }, { lb: 'Ter', p: 110 }, { lb: 'Qua', p: 95 }, { lb: 'Qui', p: 100 }, { lb: 'Sex', p: 90, cur: true }],
+  },
+  mes: {
+    hint: 'Visão mês · barras por semana (% da meta semanal)',
+    sub: { title: 'Meta semanal (atual)', meta: 250000, vend: 245000, counts: ['24 pedidos', '1.400 pares', '18 clientes'] },
+    main: { title: 'Meta mensal', meta: 1000000, vend: 985000, delta: '▲ +6% vs mês passado' },
+    bars: [{ lb: 'Sem 1', p: 110 }, { lb: 'Sem 2', p: 95 }, { lb: 'Sem 3', p: 100 }, { lb: 'Atual', p: 98, cur: true }],
+  },
+  ano: {
+    hint: 'Visão ano · barras por mês (% da meta mensal)',
+    sub: { title: 'Meta mensal (jul)', meta: 1000000, vend: 985000, counts: ['96 pedidos', '5.600 pares', '41 clientes'] },
+    main: { title: 'Meta acumulada (jan–jul)', meta: 7000000, vend: 6870000, delta: '▲ +8% vs mesmo período do ano passado' },
+    bars: [{ lb: 'Jan', p: 95 }, { lb: 'Fev', p: 105 }, { lb: 'Mar', p: 100 }, { lb: 'Abr', p: 92 }, { lb: 'Mai', p: 110 }, { lb: 'Jun', p: 103 }, { lb: 'Jul', p: 98, cur: true }],
+  },
+};
+
+function MetaPanel({ v }: { v: any }) {
+  const pct = Math.round(v.vend / v.meta * 100);
+  const falta = Math.max(0, v.meta - v.vend);
+  const nped = Math.max(1, Math.round(falta / TICKET));
+  return (
+    <div className="rounded-lg border border-border/60 bg-secondary/30 p-4">
+      <div className="text-muted-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{v.title}</div>
+      <div className="text-foreground mono" style={{ fontSize: '1.05rem', fontWeight: 700 }}>{brl(v.meta)}</div>
+      <div className="text-muted-foreground mt-2" style={{ fontSize: '0.7rem' }}>Vendido</div>
+      <div className="flex items-center gap-2">
+        <span className="text-foreground mono" style={{ fontSize: '1.05rem', fontWeight: 700 }}>{brl(v.vend)}</span>
+        <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary" style={{ fontSize: '0.7rem', fontWeight: 700 }}>{pct}%</span>
+      </div>
+      {v.delta && <div className="text-emerald-600 mt-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>{v.delta}</div>}
+      {v.counts && <div className="flex flex-wrap gap-2 mt-2 text-muted-foreground" style={{ fontSize: '0.7rem' }}>{v.counts.map((c: string) => <span key={c} className="px-1.5 py-0.5 rounded bg-secondary">{c}</span>)}</div>}
+      <div className="text-muted-foreground mt-2" style={{ fontSize: '0.72rem' }}>Falta {brl(falta)} · ≈ {nped} pedido{nped > 1 ? 's' : ''} médio{nped > 1 ? 's' : ''}</div>
+    </div>
+  );
+}
+
+const histRep = [
+  { m: 'Fev', v: 155 }, { m: 'Mar', v: 168 }, { m: 'Abr', v: 172 },
+  { m: 'Mai', v: 178 }, { m: 'Jun', v: 183 }, { m: 'Jul', v: 200 },
 ];
 
-export function DashboardRep({ onNavigate, selectedClient, embedded = false }: DashboardRepProps) {
-  const [activeTab, setActiveTab] = useState<'indicadores' | 'sellout'>('indicadores');
+const frm = [
+  { c: 'Calçadão Paulista', s: 'A', f: 4, r: 8, m: 42000, t: 4200, risk: false },
+  { c: 'Shoestore Norte', s: 'B', f: 2, r: 22, m: 18500, t: 1850, risk: false },
+  { c: 'Fashion Feet SP', s: 'A', f: 5, r: 4, m: 61000, t: 5100, risk: false },
+  { c: 'Pé Descalço', s: 'C', f: 1, r: 47, m: 8200, t: 820, risk: true },
+  { c: 'Passo Firme', s: 'B', f: 3, r: 15, m: 22400, t: 2100, risk: false },
+];
 
-  const myClients = clients.filter(c => c.rep === 'Marcos Andrade');
-  const myOrders = orders.filter(o => o.rep === 'Marcos Andrade');
-  const metaPercent = Math.round((524000 / 480000) * 100);
+const ufRank = [
+  { n: 'SP', v: 78000 }, { n: 'RJ', v: 45000 }, { n: 'MG', v: 38000 },
+  { n: 'RS', v: 32000 }, { n: 'PR', v: 21000 },
+];
+const cidRank = [
+  { n: 'São Paulo', v: 42000 }, { n: 'Rio', v: 26000 }, { n: 'BH', v: 18000 },
+  { n: 'Porto Alegre', v: 15000 }, { n: 'Curitiba', v: 12000 },
+];
 
-  const opportunities = [
-    { client: 'Calçadão Paulista', product: 'Bota Chelsea Couro', reason: 'Reposição sugerida', value: 4800 },
-    { client: 'Shoestore Norte', product: 'Derby Casual Urban', reason: 'Último pedido há 35 dias', value: 2400 },
-    { client: 'Fashion Feet SP', product: 'Oxford Clássico', reason: 'Alta demanda na região', value: 7200 },
-  ];
-
-  const statusColors: Record<string, string> = {
-    'aprovado': 'bg-black/20 text-black',
-    'em análise': 'bg-amber-400/20 text-amber-400',
-    'faturado': 'bg-emerald-400/20 text-emerald-400',
-    'cancelado': 'bg-red-400/20 text-red-400',
-    'entregue': 'bg-purple-400/20 text-purple-400',
-  };
+export function DashboardRep({ onNavigate, selectedClient }: DashboardRepProps) {
+  const [gran, setGran] = useState<'semana' | 'mes' | 'ano'>('semana');
+  const d = metaData[gran];
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
-      {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-border">
-        <button
-          onClick={() => setActiveTab('indicadores')}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-            activeTab === 'indicadores'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          style={{ fontSize: '0.85rem' }}
-        >
-          Meus Indicadores
-        </button>
-        <button
-          onClick={() => setActiveTab('sellout')}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-            activeTab === 'sellout'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          style={{ fontSize: '0.85rem' }}
-        >
-          Sell-out
-        </button>
-      </div>
-
-      {activeTab === 'sellout' ? (
-        <div className="-mx-6 -mb-6">
-          <SelloutDashboard />
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h2 className="text-foreground" style={{ fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Meus indicadores</h2>
+          <p className="text-muted-foreground mt-1" style={{ fontSize: '0.82rem' }}>Representante · Marcos Andrade{selectedClient ? ` · cliente ativo: ${selectedClient.name}` : ''}</p>
         </div>
-      ) : (
-      <>
-      {/* Welcome + Meta */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <p className="text-muted-foreground mb-1" style={{ fontSize: '0.78rem' }}>Bom dia,</p>
-              <h2 className="text-foreground" style={{ fontSize: '1.3rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Marcos Andrade</h2>
-              <p className="text-muted-foreground mt-1" style={{ fontSize: '0.82rem' }}>
-                Você tem <span className="text-primary font-semibold">3 visitas</span> agendadas e <span className="text-amber-400 font-semibold">2 pedidos</span> pendentes hoje.
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Junho 2026</p>
-              <p className="text-foreground mono" style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{formatCurrency(524000)}</p>
-              <p className="text-emerald-400" style={{ fontSize: '0.78rem', fontWeight: 600 }}>+9,2% vs meta</p>
-            </div>
-          </div>
-          <ResponsiveContainer width="100%" height={100}>
-            <AreaChart data={monthlyData} margin={{ top: 2, right: 2, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="repGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="oklch(0.6 0.22 262)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="oklch(0.6 0.22 262)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area type="monotone" dataKey="valor" stroke="oklch(0.6 0.22 262)" strokeWidth={2} fill="url(#repGrad)" dot={false} />
-              <XAxis dataKey="month" tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 11 }}
-                formatter={(v: any) => [formatCurrency(v), 'Vendido']}
-                labelStyle={{ color: '#6b7280' }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Meta Donut */}
-        <div className="bg-card border border-border rounded-xl p-5 flex flex-col items-center justify-center">
-          <p className="text-muted-foreground mb-3" style={{ fontSize: '0.78rem', fontWeight: 500 }}>Meta Mensal</p>
-          <div className="relative w-28 h-28">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadialBarChart innerRadius="70%" outerRadius="100%" data={[{ value: metaPercent }]} startAngle={90} endAngle={90 - (metaPercent / 100) * 360}>
-                <RadialBar dataKey="value" fill="oklch(0.5 0.22 262)" background={{ fill: '#f3f4f6' }} cornerRadius={4} />
-              </RadialBarChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-foreground" style={{ fontSize: '1.4rem', fontWeight: 700, lineHeight: 1 }}>{metaPercent}%</span>
-              <span className="text-muted-foreground" style={{ fontSize: '0.65rem' }}>atingido</span>
-            </div>
-          </div>
-          <div className="text-center mt-3">
-            <p className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{formatCurrency(524000)}</p>
-            <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>de {formatCurrency(480000)}</p>
-          </div>
-        </div>
-      </div>
-
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Clientes da carteira */}
-        <div className="bg-card border border-border rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Carteira de Clientes</h3>
-            <button onClick={() => onNavigate('clients')} className="text-primary" style={{ fontSize: '0.78rem' }}>
-              Ver todos <ChevronRight className="inline w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div className="space-y-3">
-            {myClients.slice(0, 4).map(client => (
-              <div key={client.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/40 cursor-pointer transition-colors -mx-2">
-                <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary" style={{ fontSize: '0.7rem', fontWeight: 700 }}>{client.avatar}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-foreground truncate" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{client.name}</p>
-                  <p className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>
-                    <MapPin className="inline w-3 h-3 mr-0.5" />{client.city} · Último: {formatDate(client.lastOrder)}
-                  </p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-foreground mono" style={{ fontSize: '0.78rem', fontWeight: 600 }}>{formatCurrency(client.totalPurchased)}</p>
-                  <span className={`px-1.5 py-0.5 rounded-full text-emerald-400 bg-emerald-400/10`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>ativo</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Oportunidades */}
-        <div className="bg-card border border-border rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Oportunidades</h3>
-            <span className="px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400" style={{ fontSize: '0.65rem', fontWeight: 600 }}>
-              {opportunities.length} sugestões
-            </span>
-          </div>
-          <div className="space-y-3">
-            {opportunities.map((opp, i) => (
-              <div key={i} className="rounded-lg border border-border/60 p-3 hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-pointer">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{opp.client}</p>
-                    <p className="text-muted-foreground mt-0.5" style={{ fontSize: '0.75rem' }}>{opp.product}</p>
-                    <p className="text-amber-400 mt-1" style={{ fontSize: '0.72rem' }}>{opp.reason}</p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-foreground mono" style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatCurrency(opp.value)}</p>
-                    <button
-                      onClick={() => onNavigate('order-grade')}
-                      className="mt-1 px-2 py-1 rounded-md bg-primary/15 text-primary text-right hover:bg-primary/25 transition-colors"
-                      style={{ fontSize: '0.68rem', fontWeight: 600 }}
-                    >
-                      Pedir →
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <RuptureAlerts profile="rep" />
-
-      {/* Recent Orders */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-foreground" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Pedidos Recentes</h3>
-          <button onClick={() => onNavigate('history')} className="text-primary" style={{ fontSize: '0.78rem' }}>
-            Histórico completo
-          </button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {myOrders.map(order => (
-            <div key={order.id} className="flex items-center gap-3 p-3 rounded-lg border border-border/60 hover:border-border transition-colors">
-              <div>
-                <p className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{order.client}</p>
-                <p className="text-muted-foreground" style={{ fontSize: '0.7rem' }}>{order.id} · {formatDate(order.date)}</p>
-              </div>
-              <div className="ml-auto text-right">
-                <p className="text-foreground mono" style={{ fontSize: '0.82rem', fontWeight: 600 }}>{formatCurrency(order.total)}</p>
-                <span className={`px-1.5 py-0.5 rounded-full ${statusColors[order.status]}`} style={{ fontSize: '0.65rem', fontWeight: 600 }}>
-                  {order.status}
-                </span>
-              </div>
-            </div>
+        <div className="flex flex-wrap gap-2">
+          {['Período: Semana atual', 'Região: Todas', 'Coleção: Verão 26'].map(c => (
+            <span key={c} className="px-2.5 py-1 rounded-full bg-secondary text-foreground" style={{ fontSize: '0.72rem', fontWeight: 500 }}>{c}</span>
           ))}
         </div>
       </div>
-      </>
-      )}
+
+      {/* META E VENDA */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Meta e venda</div>
+      <Card
+        title="Meta e venda"
+        hint={d.hint}
+        right={
+          <div className="inline-flex rounded-lg bg-secondary p-1">
+            {(['semana', 'mes', 'ano'] as const).map(k => (
+              <button key={k} onClick={() => setGran(k)} className={`px-3 py-1 rounded-md capitalize ${gran === k ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`} style={{ fontSize: '0.72rem', fontWeight: 600 }}>
+                {k === 'mes' ? 'Mês' : k[0].toUpperCase() + k.slice(1)}
+              </button>
+            ))}
+          </div>
+        }
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <MetaPanel v={d.sub} />
+          <MetaPanel v={d.main} />
+          <div>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={d.bars}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                <XAxis dataKey="lb" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
+                <Tooltip formatter={(v: any) => [`${v}%`, 'da meta']} />
+                <ReferenceLine y={100} stroke="#10b981" strokeDasharray="4 4" />
+                <Bar dataKey="p" radius={[6, 6, 0, 0]}>
+                  {d.bars.map((b: any, i: number) => (
+                    <Cell key={i} fill={b.cur ? '#f59e0b' : b.p >= 100 ? '#10b981' : '#ef4444'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </Card>
+
+      {/* PEDIDOS E TICKET */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Pedidos e ticket</div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <Card title="Pedidos por status" hint="Distribuição de 47 pedidos · barra 100% empilhada" span={8}>
+          <StatusStack segs={[
+            { n: 'Aprovado', q: 22, color: '#111' },
+            { n: 'Faturado', q: 12, color: '#3b82f6' },
+            { n: 'Em transporte', q: 5, color: '#8b5cf6' },
+            { n: 'Aguardando aprovação', q: 6, color: '#f59e0b', action: true },
+            { n: 'Cancelado', q: 2, color: '#ef4444' },
+          ]} />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+            <Tile lab="Total de pedidos" val="47" />
+            <Tile lab="Pares" val="1.284" />
+            <Tile lab="Valor" val={brl(86500)} />
+            <Tile lab="Aguardando sua ação" val="6" tone="amber" />
+          </div>
+        </Card>
+
+        <Card title="Ticket médio" hint="Valor médio por pedido" span={4}>
+          <div className="space-y-3">
+            <Tile lab="Atual (semana)" val={brl(1840)} sub="▲ 7% vs semana anterior" tone="pos" />
+            <Tile lab="Acumulado (ano)" val={brl(1720)} sub="— referência" />
+          </div>
+        </Card>
+      </div>
+
+      {/* CARTEIRA */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Carteira de clientes</div>
+      <Card title="Composição da carteira + cobertura" hint="64 clientes · barra 100% empilhada">
+        <StatusStack segs={[
+          { n: 'Atendidos', q: 38, color: '#111' },
+          { n: 'Aguardando visita', q: 12, color: '#f59e0b', action: true },
+          { n: 'Não atendidos', q: 14, color: '#ef4444' },
+        ]} />
+        <div className="mt-4">
+          <div className="flex justify-between mb-1"><span className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>Cobertura (comprou no período)</span><b style={{ fontSize: '0.85rem' }}>59%</b></div>
+          <div className="w-full h-2 bg-secondary rounded-full"><div className="h-full bg-primary rounded-full" style={{ width: '59%' }} /></div>
+          <div className="flex justify-between mt-1 text-muted-foreground" style={{ fontSize: '0.68rem' }}><span>38 atendidos</span><span>alvo 70%</span></div>
+        </div>
+      </Card>
+
+      <Card title="FRM + Ticket médio por cliente" hint="Frequência, Recência, Montante · vermelho para risco/churn (recência > 40 dias)">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left" style={{ fontSize: '0.78rem' }}>
+            <thead className="text-muted-foreground border-b border-border">
+              <tr><th className="py-2 pr-2 font-medium">Cliente</th><th className="py-2 pr-2 font-medium">Score FRM</th><th className="py-2 pr-2 font-medium">Frequência</th><th className="py-2 pr-2 font-medium">Recência (dias)</th><th className="py-2 pr-2 font-medium">Montante</th><th className="py-2 pr-2 font-medium">Ticket médio</th></tr>
+            </thead>
+            <tbody>
+              {frm.map(r => (
+                <tr key={r.c} className={`border-b border-border/40 ${r.risk ? 'text-red-600' : ''}`}>
+                  <td className="py-2 pr-2 text-foreground">{r.c}</td>
+                  <td className="py-2 pr-2"><span className="px-1.5 py-0.5 rounded bg-secondary" style={{ fontSize: '0.7rem', fontWeight: 600 }}>{r.s}</span></td>
+                  <td className="py-2 pr-2">{r.f}/mês</td>
+                  <td className={`py-2 pr-2 ${r.r > 40 ? 'text-red-600 font-semibold' : ''}`}>{r.r}</td>
+                  <td className="py-2 pr-2 mono">{brl(r.m)}</td>
+                  <td className="py-2 pr-2 mono">{brl(r.t)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* PRODUTOS */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Produtos</div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <Card title="Produtos mais vendidos" hint="Ranking por pares" span={5}>
+          <Rank rows={[
+            { n: 'Tênis Runner X', v: 340 }, { n: 'Sandália Verão', v: 260 },
+            { n: 'Sapatilha Flex', v: 180 }, { n: 'Bota Couro', v: 140 }, { n: 'Oxford Clássico', v: 120 },
+          ]} />
+        </Card>
+
+        <Card title="Venda histórica" hint="Últimos 6 meses (R$ mil)" span={4}>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={histRep}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey="m" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}k`} />
+              <Tooltip formatter={(v: any) => [`R$ ${v} mil`, 'Venda']} />
+              <Line type="monotone" dataKey="v" stroke="#111" strokeWidth={2} dot={{ r: 3, fill: '#111' }} />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="text-emerald-600 mt-2" style={{ fontSize: '0.75rem', fontWeight: 600 }}>▲ 9% jul vs jun · ▲ 26% vs fev</div>
+        </Card>
+
+        <Card title="Ativos × vendidos" hint="Catálogo do rep · período" span={3}>
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            <Tile lab="Ativos" val="128" />
+            <Tile lab="Vendidos" val="86" />
+            <Tile lab="Sem venda" val="42" tone="amber" />
+          </div>
+          <div className="flex w-full h-5 rounded-md overflow-hidden">
+            <div className="bg-primary flex items-center justify-center text-white" style={{ flex: 86, fontSize: '0.7rem' }}>86</div>
+            <div className="bg-amber-500 flex items-center justify-center text-white" style={{ flex: 42, fontSize: '0.7rem' }}>42</div>
+          </div>
+          <p className="text-muted-foreground mt-2" style={{ fontSize: '0.7rem' }}>67% do catálogo ativo teve venda · 42 sem giro</p>
+        </Card>
+      </div>
+
+      {/* VENDA POR REGIÃO */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Venda por região — território</div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <Card title="Por estado" span={6}>
+          <Rank rows={ufRank} />
+          <div className="mt-3">
+            <Tile lab="Total do território" val={brl(214000)} sub="▲ 6% vs período anterior" tone="pos" />
+          </div>
+        </Card>
+        <Card title="Por cidade" span={6}>
+          <Rank rows={cidRank} />
+        </Card>
+      </div>
+
+      {/* SELL-OUT */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Sell-out e inteligência · só clientes participantes</div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <Card title="Clientes com sell-out" hint="Enviam o dado" span={3}>
+          <div className="text-foreground" style={{ fontSize: '1.8rem', fontWeight: 700 }}>18 <span className="text-muted-foreground" style={{ fontSize: '0.85rem', fontWeight: 500 }}>/ 64</span></div>
+          <div className="text-amber-600 mt-1" style={{ fontSize: '0.72rem', fontWeight: 600 }}>46 não participam</div>
+          <div className="w-full h-2 bg-secondary rounded-full mt-3"><div className="h-full bg-primary rounded-full" style={{ width: '28%' }} /></div>
+        </Card>
+
+        <Card title="Sell-in × Sell-out" hint="Vendido (pedido) vs vendido na ponta (R$ mil)" span={4}>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={[
+              { m: 'Abr', sellIn: 55, sellOut: 48 },
+              { m: 'Mai', sellIn: 62, sellOut: 50 },
+              { m: 'Jun', sellIn: 70, sellOut: 45 },
+              { m: 'Jul', sellIn: 68, sellOut: 52 },
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey="m" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}k`} />
+              <Tooltip />
+              <Bar dataKey="sellIn" fill="#111" radius={[4, 4, 0, 0]} name="Sell-in" />
+              <Bar dataKey="sellOut" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Sell-out" />
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="rounded-lg bg-amber-500/10 p-2 mt-2 text-amber-700" style={{ fontSize: '0.72rem' }}>
+            <b>Alerta:</b> sell-out de jun 36% abaixo do sell-in — produto parado no cliente.
+          </div>
+        </Card>
+
+        <Card title="Alerta de ruptura como oportunidade" hint="Cobertura em dias < lead time · reposição prioritária" span={5}>
+          <div className="space-y-2">
+            {[
+              { c: 'Calçadão Paulista', p: 'Tênis Runner X 38 preto', d: 'cobertura 3 dias · lead 7' },
+              { c: 'Shoestore Norte', p: 'Sandália Verão 35/36', d: 'cobertura 2 dias · lead 5' },
+              { c: 'Fashion Feet SP', p: 'Oxford Clássico 41', d: 'ruptura há 3 dias' },
+            ].map(x => (
+              <div key={x.p} className="flex items-start gap-2 rounded-lg border border-border/60 p-2.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5" />
+                <div className="flex-1">
+                  <div className="text-foreground" style={{ fontSize: '0.8rem', fontWeight: 500 }}>{x.p}</div>
+                  <div className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{x.c} · {x.d}</div>
+                </div>
+                <button onClick={() => onNavigate('catalog')} className="text-primary" style={{ fontSize: '0.72rem', fontWeight: 600 }}>Repor →</button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* RECOMENDAÇÕES */}
+      <div className="text-muted-foreground uppercase tracking-wider" style={{ fontSize: '0.7rem', fontWeight: 600 }}>Recomendações</div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <Card title="Clientes para atender" hint="Prioridade por recência, não atendidos e aguardando visita" span={6}>
+          <div className="space-y-2">
+            {[
+              { c: 'Pé Descalço', m: 'sem compra há 47 dias · risco de churn' },
+              { c: 'Passo Firme', m: 'aguardando visita há 15 dias' },
+              { c: 'Loja do Sapato', m: 'nunca atendido no período' },
+            ].map(x => (
+              <div key={x.c} className="flex items-start gap-2 rounded-lg border border-border/60 p-2.5">
+                <span className="w-2 h-2 rounded-full bg-primary mt-1.5" />
+                <div className="flex-1">
+                  <div className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{x.c}</div>
+                  <div className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{x.m}</div>
+                </div>
+                <button onClick={() => onNavigate('clients')} className="text-primary" style={{ fontSize: '0.72rem', fontWeight: 600 }}>Abrir →</button>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card title="Produtos a oferecer" hint="Por cliente · histórico + região + ruptura + top produto" span={6}>
+          <div className="space-y-2">
+            {[
+              { c: 'Calçadão Paulista', p: 'Bota Chelsea Couro', m: 'top produto da região' },
+              { c: 'Shoestore Norte', p: 'Derby Casual Urban', m: 'último pedido há 35 dias' },
+              { c: 'Fashion Feet SP', p: 'Oxford Clássico', m: 'alta demanda na região' },
+            ].map(x => (
+              <div key={x.p} className="flex items-start gap-2 rounded-lg border border-border/60 p-2.5">
+                <span className="w-2 h-2 rounded-full bg-primary mt-1.5" />
+                <div className="flex-1">
+                  <div className="text-foreground" style={{ fontSize: '0.82rem', fontWeight: 500 }}>{x.p}</div>
+                  <div className="text-muted-foreground" style={{ fontSize: '0.72rem' }}>{x.c} · {x.m}</div>
+                </div>
+                <button onClick={() => onNavigate('order-grade')} className="text-primary" style={{ fontSize: '0.72rem', fontWeight: 600 }}>Pedir →</button>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => onNavigate('catalog')} className="mt-3 flex items-center gap-1 text-primary" style={{ fontSize: '0.78rem', fontWeight: 500 }}>Ir ao catálogo <ChevronRight className="w-3.5 h-3.5" /></button>
+        </Card>
+      </div>
     </div>
   );
 }
