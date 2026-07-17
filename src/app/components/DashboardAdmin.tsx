@@ -203,7 +203,7 @@ export function DashboardAdmin({ onNavigate: _onNavigate }: DashboardAdminProps)
                 <ReferenceLine y={100} stroke="#10b981" strokeDasharray="4 4" />
                 <Bar dataKey="p" radius={[6, 6, 0, 0]}>
                   {d.bars.map((b: any, i: number) => (
-                    <Cell key={i} fill={b.cur ? '#f59e0b' : b.p >= 100 ? '#10b981' : '#ef4444'} />
+                    <Cell key={i} fill="#111" />
                   ))}
                 </Bar>
               </BarChart>
