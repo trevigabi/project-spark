@@ -93,8 +93,14 @@ export default function App() {
 
   const navigate = (view: View) => setCurrentView(view);
 
-  const viewInfo = currentView === 'dashboard' && (profile === 'rep' || profile === 'admin')
-    ? { title: 'Indicadores', subtitle: profile === 'admin' ? 'Visão geral da indústria' : 'Sua performance e carteira' }
+  const viewInfo = currentView === 'dashboard'
+    ? {
+        title: 'Indicadores',
+        subtitle:
+          profile === 'admin' ? 'Visão geral da indústria' :
+          profile === 'rep' ? 'Sua performance e carteira' :
+          'Sua loja em números',
+      }
     : viewTitles[currentView];
 
   if (!authenticated) {
